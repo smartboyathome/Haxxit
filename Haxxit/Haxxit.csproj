@@ -60,10 +60,12 @@
     <Compile Include="Maps\MapNode.cs" />
     <Compile Include="PlayerAction.cs" />
     <Compile Include="Maps\Point.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Programs\Program.cs" />
+    <Compile Include="Programs\ProgramFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="UndoStack.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimplePubSub\SimplePubSub.csproj">

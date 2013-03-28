@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SmartboyDevelopments.SimplePubSub;
+using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit
 {
     public abstract class Player
     {
-        Dictionary<Type, ushort> owned_programs;
-        ushort total_silicoins;
-        NotifiableManager _notifiable_manager;
+        private Dictionary<ProgramFactory, ushort> owned_programs;
+        private ushort total_silicoins;
+        private NotifiableManager _notifiable_manager;
         public INotifiable Notifiable
         {
             get
@@ -25,7 +26,7 @@ namespace SmartboyDevelopments.Haxxit
 
         public Player()
         {
-            owned_programs = new Dictionary<Type, ushort>();
+            owned_programs = new Dictionary<ProgramFactory, ushort>();
             total_silicoins = 0;
             _notifiable_manager = new NotifiableManager();
         }
@@ -38,35 +39,26 @@ namespace SmartboyDevelopments.Haxxit
             }
         }
 
-        public bool AddProgramCopies<T>(ushort count) where T: Program
+        public bool AddProgramCopies(ProgramFactory factory, ushort count)
         {
-            Type t = typeof(T);
-            return AddProgramCopies(t, count);
-        }
-
-        public bool AddProgramCopies(Type t, ushort count)
-        {
-            if (!t.IsSubclassOf(typeof(Program)))
-                return false;
-            if (owned_programs.ContainsKey(t) && owned_programs[t] + count > owned_programs[t])
+            if (owned_programs.ContainsKey(factory) && owned_programs[factory] + count > owned_programs[factory])
             {
-                owned_programs[t] += count;
+                owned_programs[factory] += count;
                 return true;
             }
-            else if (!owned_programs.ContainsKey(t))
+            else if (!owned_programs.ContainsKey(factory))
             {
-                owned_programs.Add(t, count);
+                owned_programs.Add(factory, count);
                 return true;
             }
             return false;
         }
 
-        public bool RemoveProgramCopies<T>(ushort count) where T: Program
+        public bool RemoveProgramCopies(ProgramFactory factory, ushort count)
         {
-            Type t = typeof(T);
-            if (owned_programs.ContainsKey(t) && owned_programs[t] - count < owned_programs[t])
+            if (owned_programs.ContainsKey(factory) && owned_programs[factory] - count < owned_programs[factory])
             {
-                owned_programs[t] += count;
+                owned_programs[factory] += count;
                 return true;
             }
             return false;

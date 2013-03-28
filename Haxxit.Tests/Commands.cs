@@ -6,14 +6,15 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
-    class BasicDamageCommand : DamageCommand
+    class DynamicDamageCommand : DamageCommand
     {
-        public BasicDamageCommand()
+        public DynamicDamageCommand(ushort strength, ushort range, string name="Damage")
         {
-            _strength = 2;
-            Range = 3;
-            Name = "Damage";
-            Description = "Removes 2 nodes from target.";
+            _strength = strength;
+            Range = range;
+            Name = name;
+            string type = _strength == 1 ? " node" : " nodes";
+            Description = "Removes " + _strength.ToString() + type + " from target.";
         }
     }
 }

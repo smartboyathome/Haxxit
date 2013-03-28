@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SmartboyDevelopments.Haxxit
 {
-    public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    /*public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private IDictionary<TKey, TValue> _dictionary;
 
@@ -135,5 +135,5 @@ namespace SmartboyDevelopments.Haxxit
         {
             return new NotSupportedException("This dictionary is read-only");
         }
-    }
+    }*/
 }

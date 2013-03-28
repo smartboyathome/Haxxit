@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SmartboyDevelopments.Haxxit.Maps;
+using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.Commands
 {
-    public abstract class Command
+    public abstract class Command : IEquatable<Command>
     {
         public int Range
         {
@@ -76,9 +77,25 @@ namespace SmartboyDevelopments.Haxxit.Commands
         {
             attacked_program.Moves.DecreaseSpeed(_speed);
         }
+
+        public bool Equals(Command other)
+        {
+            return Range == other.Range && Name == other.Name && Description == other.Description;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = Range.GetHashCode();
+                hash = hash * 2 + Name.GetHashCode();
+                hash = hash * 3 + Description.GetHashCode();
+                return hash;
+            }
+        }
     }
 
-    // TODO: Create increase size and add nodes to program commands.
+    // TODO: Create increase Size and add nodes to program Commands.
 
-    // TODO: Create remove square and add square commands.
+    // TODO: Create remove square and add square Commands.
 }

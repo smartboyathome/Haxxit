@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SmartboyDevelopments.Haxxit.Commands;
+using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.Maps
 {
@@ -210,6 +211,33 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             SpawnNode spawn = (SpawnNode)map[p.X, p.Y];
             spawn.program = new T();
+            return true;
+        }
+
+        /// <summary>
+        /// Spawns a program at the point (x,y).
+        /// </summary>
+        /// <typeparam name="T">The type of program to spawn.</typeparam>
+        /// <param name="x">The X-coordinate of the point where the program will be spawned.</param>
+        /// <param name="y">The Y-coordinate of the point where the program will be spawned.</param>
+        /// <returns>Whether the program could be spawned at that point.</returns>
+        public bool SpawnProgram(ProgramFactory factory, int x, int y)
+        {
+            return SpawnProgram(factory, new Point(x, y));
+        }
+
+        /// <summary>
+        /// Spawns a program at the given point.
+        /// </summary>
+        /// <typeparam name="T">The type of program to spawn.</typeparam>
+        /// <param name="p">The point at which to spawn the program.</param>
+        /// <returns>Whether the program could be spawned.</returns>
+        public bool SpawnProgram(ProgramFactory factory, Point p)
+        {
+            if (!IsInBounds(p) || !NodeIsType<SpawnNode>(p))
+                return false;
+            SpawnNode spawn = (SpawnNode)map[p.X, p.Y];
+            spawn.program = factory.NewInstance();
             return true;
         }
 

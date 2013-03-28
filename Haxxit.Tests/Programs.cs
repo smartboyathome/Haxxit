@@ -2,36 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SmartboyDevelopments.Haxxit.Programs;
+using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
-    class BasicProgram : Program
+    class DynamicProgramFactory : ProgramFactory
     {
-        public BasicProgram()
+        public DynamicProgramFactory(ushort moves, ushort size, IEnumerable<Command> commands)
         {
-            _moves = new Movement(4);
-            _size = new ProgramSize(4);
-            _commands.Add("Damage", new BasicDamageCommand());
-        }
-    }
-
-    class FasterBasicProgram : Program
-    {
-        public FasterBasicProgram()
-        {
-            _moves = new Movement(8);
-            _size = new ProgramSize(4);
-            _commands.Add("Damage", new BasicDamageCommand());
-        }
-    }
-
-    class BiggerFasterBasicProgram : Program
-    {
-        public BiggerFasterBasicProgram()
-        {
-            _moves = new Movement(16);
-            _size = new ProgramSize(8);
-            _commands.Add("Damage", new BasicDamageCommand());
+            Moves = moves;
+            Size = size;
+            TypeName = "DynamicProgram " + moves.ToString() + "." + size.ToString("D2");
+            Commands = commands;
         }
     }
 }
