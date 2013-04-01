@@ -592,7 +592,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
 
         /// <summary>
-        /// Resets all the programs so they can be used for a new turn.
+        /// Resets all the programs so they can be used for a new turn, then rotates the player queue.
         /// </summary>
         public void TurnDone()
         {
