@@ -23,7 +23,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
             if (!map.NodeIsType<ProgramNode>(attacked_point))
                 return null;
             ProgramNode attacked_node = (ProgramNode)map.GetNode(attacked_point);
-            Program attacked_program = attacked_node.program;
+            Program attacked_program = attacked_node.Program;
             DecreaseProgramSpeed(attacked_program, _speed);
             return null; // TODO: implement UndoDecreaseSpeedCommand
         }

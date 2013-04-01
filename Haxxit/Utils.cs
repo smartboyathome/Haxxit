@@ -5,6 +5,26 @@ using System.Text;
 
 namespace SmartboyDevelopments.Haxxit
 {
+    public interface IDeepCloneable
+    {
+        object DeepClone();
+    }
+
+    public interface IDeepCloneable<T>
+    {
+        T DeepClone();
+    }
+
+    public interface IShallowCloneable
+    {
+        object ShallowClone();
+    }
+
+    public interface IShallowCloneable<T>
+    {
+        T ShallowClone();
+    }
+
     class Primes
     {
         public static IEnumerable<int> firstn(int n, IEnumerable<int> the_iterator)

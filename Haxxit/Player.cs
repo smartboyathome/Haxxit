@@ -7,10 +7,16 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit
 {
-    public abstract class Player
+    public class Player : IEquatable<Player>, IDeepCloneable<Player>
     {
         private Dictionary<ProgramFactory, ushort> owned_programs;
-        private ushort total_silicoins;
+        
+        public ushort TotalSilicoins
+        {
+            get;
+            private set;
+        }
+
         private NotifiableManager _notifiable_manager;
         public INotifiable Notifiable
         {
@@ -24,19 +30,34 @@ namespace SmartboyDevelopments.Haxxit
             }
         }
 
-        public Player()
+        public string Name
         {
-            owned_programs = new Dictionary<ProgramFactory, ushort>();
-            total_silicoins = 0;
-            _notifiable_manager = new NotifiableManager();
+            get;
+            protected set;
         }
 
-        public ushort TotalSilicoins
+        private Guid _guid;
+
+        public Player(string name="")
         {
-            get
+            owned_programs = new Dictionary<ProgramFactory, ushort>();
+            TotalSilicoins = 0;
+            _notifiable_manager = new NotifiableManager();
+            Name = name;
+            _guid = Guid.NewGuid();
+        }
+
+        public Player DeepClone()
+        {
+            Player duplicate = new Player(string.Copy(Name));
+            foreach (KeyValuePair<ProgramFactory, ushort> pair in owned_programs)
             {
-                return total_silicoins;
+                duplicate.owned_programs.Add(pair.Key, pair.Value);
             }
+            duplicate.TotalSilicoins = TotalSilicoins;
+            duplicate.Notifiable = Notifiable;
+            duplicate._guid = _guid;
+            return duplicate;
         }
 
         public bool AddProgramCopies(ProgramFactory factory, ushort count)
@@ -66,9 +87,9 @@ namespace SmartboyDevelopments.Haxxit
 
         public bool AddSilicoins(ushort count)
         {
-            if (total_silicoins + count > total_silicoins)
+            if (TotalSilicoins + count > TotalSilicoins)
             {
-                total_silicoins += count;
+                TotalSilicoins += count;
                 return true;
             }
             return false;
@@ -76,12 +97,17 @@ namespace SmartboyDevelopments.Haxxit
 
         public bool RemoveSilicoins(ushort count)
         {
-            if (total_silicoins - count < total_silicoins)
+            if (TotalSilicoins - count < TotalSilicoins)
             {
-                total_silicoins -= count;
+                TotalSilicoins -= count;
                 return true;
             }
             return false;
+        }
+
+        public bool Equals(Player other)
+        {
+            return Name == other.Name && _guid == other._guid;
         }
     }
 }

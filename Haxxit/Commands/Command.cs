@@ -63,7 +63,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
             }
             if(nodes_stack.Count != 0)
                 nodes_stack.Peek().Tail = null;
-            attacked_node.program.Size.DecreaseCurrentSize(strength);
+            attacked_node.Program.Size.DecreaseCurrentSize(strength);
             removed_nodes.Reverse();
             return removed_nodes;
         }
@@ -95,7 +95,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
         }
     }
 
-    // TODO: Create increase Size and add nodes to program Commands.
+    // TODO: Create increase Size and add nodes to Program Commands.
 
     // TODO: Create remove square and add square Commands.
 }

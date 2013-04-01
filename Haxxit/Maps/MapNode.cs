@@ -50,17 +50,33 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
     }
 
-    public abstract class ProgramNode : MapNode
+    public abstract class OwnedNode : MapNode
+    {
+        public Player Player
+        {
+            get;
+            set;
+        }
+    }
+
+    public abstract class ProgramNode : OwnedNode
     {
         public ProgramTailNode Tail;
         public ProgramNode Head;
-        protected Program _program;
-        public Program program
+        public Program Program
         {
-            get
-            {
-                return _program;
-            }
+            get;
+            protected set;
+        }
+        public IEnumerable<ProgramNode> GetAllNodes()
+        {
+            List<ProgramNode> nodes = new List<ProgramNode>();
+            nodes.Add(this);
+            while (nodes.First().Head != null)
+                nodes.Add(nodes.First().Head);
+            while (nodes.Last().Tail != null)
+                nodes.Add(nodes.Last().Tail);
+            return nodes;
         }
     }
 
@@ -68,7 +84,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
     {
         public ProgramHeadNode(Program p)
         {
-            _program = p;
+            Program = p;
             Tail = null;
             Head = null;
         }
@@ -88,14 +104,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
     {
         public ProgramTailNode(Program p, ProgramNode head)
         {
-            _program = p;
+            Program = p;
             Head = head;
             Tail = null;
         }
 
         public ProgramTailNode(Program p, ProgramNode head, ProgramTailNode tail)
         {
-            _program = p;
+            Program = p;
             Head = head;
             Tail = tail;
         }
@@ -111,7 +127,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
     }
 
-    public class SpawnNode : MapNode
+    public class SpawnNode : OwnedNode
     {
         private Program p;
 

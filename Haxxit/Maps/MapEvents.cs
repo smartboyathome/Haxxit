@@ -48,7 +48,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         {
             MoveEventArgs move_args = (MoveEventArgs)args;
             bool program_resized = this.NodeIsType<ProgramHeadNode>(move_args.Start) &&
-                !((ProgramHeadNode)this.GetNode(move_args.Start)).program.Size.IsMaxSize();
+                !((ProgramHeadNode)this.GetNode(move_args.Start)).Program.Size.IsMaxSize();
             bool end_was_tailnode = this.NodeIsType<ProgramTailNode>(move_args.Start + move_args.Direction);
             Point tail_location = new Point(-1, -1);
             if(program_resized)

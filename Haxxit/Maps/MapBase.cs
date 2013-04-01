@@ -10,9 +10,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
     public abstract partial class Map
     {
         protected MapNode[,] map; // map[x,y]
-        private bool spawning_finished;
-        protected bool has_been_hacked;
-        protected ushort earned_silicoins;
+        private bool spawning_finished; // Users have finished spawning
+        protected bool has_been_hacked; // Whether this map has been completed already
+        protected ushort earned_silicoins; // How many silicoins have been earned from this map
+        protected Queue<Player> players; // The player queue
 
         /// <summary>
         /// Whether this map has been hacked (completed) yet.
@@ -55,6 +56,72 @@ namespace SmartboyDevelopments.Haxxit.Maps
             get
             {
                 return map.GetLength(1);
+            }
+        }
+
+        /// <summary>
+        /// The turn player's object.
+        /// </summary>
+        public Player CurrentPlayer
+        {
+            get
+            {
+                return players.Peek();
+            }
+        }
+
+        /// <summary>
+        /// Add a player to the player queue.
+        /// </summary>
+        /// <param name="player">The player being added to the queue.</param>
+        public void AddPlayer(Player player)
+        {
+            if (players.Contains(player))
+                return;
+            players.Enqueue(player);
+        }
+
+        /// <summary>
+        /// Remove a player from the player queue (if they are in the queue) then removes them from all owned tiles on the map.
+        /// </summary>
+        /// <param name="player">The player to remove from the queue.</param>
+        public void RemovePlayer(Player player)
+        {
+            int iterations = players.Count;
+            // I don't trust my own equals function for player, so here's a for loop.
+            for (int i = 0; i < iterations; i++)
+            {
+                if (players.Peek() != player)
+                    players.Enqueue(players.Dequeue());
+                else
+                {
+                    players.Dequeue();
+                    foreach(Point p in (new Point(0, 0)).IterateOverRange(new Point(XSize - 1, YSize - 1)))
+                    {
+                        if (NodeIsType<OwnedNode>(p))
+                        {
+                            OwnedNode node = (OwnedNode)GetNode(p);
+                            if(node.Player == player)
+                                node.Player = null;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove all players from the queue and remove them all from the map.
+        /// </summary>
+        public void ClearPlayers()
+        {
+            players.Clear();
+            foreach (Point p in (new Point(0, 0)).IterateOverRange(new Point(XSize - 1, YSize - 1)))
+            {
+                if (NodeIsType<OwnedNode>(p))
+                {
+                    OwnedNode node = (OwnedNode)GetNode(p);
+                    node.Player = null;
+                }
             }
         }
 
@@ -139,6 +206,15 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return true;
         }
 
+        public bool SetNodeOwner(Point p, Player player)
+        {
+            if (!IsInBounds(p) || !NodeIsType<OwnedNode>(p) || !players.Contains(player))
+                return false;
+            OwnedNode node = (OwnedNode)GetNode(p);
+            node.Player = player;
+            return true;
+        }
+
         /// <summary>
         /// Checks the type of the node at the point (x,y).
         /// </summary>
@@ -188,50 +264,23 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
 
         /// <summary>
-        /// Spawns a program at the point (x,y).
+        /// Spawns a Program at the point (x,y).
         /// </summary>
-        /// <typeparam name="T">The type of program to spawn.</typeparam>
-        /// <param name="x">The X-coordinate of the point where the program will be spawned.</param>
-        /// <param name="y">The Y-coordinate of the point where the program will be spawned.</param>
-        /// <returns>Whether the program could be spawned at that point.</returns>
-        public bool SpawnProgram<T>(int x, int y) where T : Program, new()
-        {
-            return SpawnProgram<T>(new Point(x, y));
-        }
-
-        /// <summary>
-        /// Spawns a program at the given point.
-        /// </summary>
-        /// <typeparam name="T">The type of program to spawn.</typeparam>
-        /// <param name="p">The point at which to spawn the program.</param>
-        /// <returns>Whether the program could be spawned.</returns>
-        public bool SpawnProgram<T>(Point p) where T : Program, new()
-        {
-            if (!IsInBounds(p) || !NodeIsType<SpawnNode>(p))
-                return false;
-            SpawnNode spawn = (SpawnNode)map[p.X, p.Y];
-            spawn.program = new T();
-            return true;
-        }
-
-        /// <summary>
-        /// Spawns a program at the point (x,y).
-        /// </summary>
-        /// <typeparam name="T">The type of program to spawn.</typeparam>
-        /// <param name="x">The X-coordinate of the point where the program will be spawned.</param>
-        /// <param name="y">The Y-coordinate of the point where the program will be spawned.</param>
-        /// <returns>Whether the program could be spawned at that point.</returns>
+        /// <param name="factory">The factory that will create an instance of the program.</param>
+        /// <param name="x">The X-coordinate of the point where the Program will be spawned.</param>
+        /// <param name="y">The Y-coordinate of the point where the Program will be spawned.</param>
+        /// <returns>Whether the Program could be spawned at that point.</returns>
         public bool SpawnProgram(ProgramFactory factory, int x, int y)
         {
             return SpawnProgram(factory, new Point(x, y));
         }
 
         /// <summary>
-        /// Spawns a program at the given point.
+        /// Spawns a Program at the given point.
         /// </summary>
-        /// <typeparam name="T">The type of program to spawn.</typeparam>
-        /// <param name="p">The point at which to spawn the program.</param>
-        /// <returns>Whether the program could be spawned.</returns>
+        /// <param name="T">The factory that will create an instance of the program.</param>
+        /// <param name="p">The point at which to spawn the Program.</param>
+        /// <returns>Whether the Program could be spawned.</returns>
         public bool SpawnProgram(ProgramFactory factory, Point p)
         {
             if (!IsInBounds(p) || !NodeIsType<SpawnNode>(p))
@@ -259,6 +308,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                         Program program = node.program;
                         ProgramHeadNode prognode = new ProgramHeadNode(program);
                         prognode.coordinate = p;
+                        prognode.Player = node.Player;
                         map[p.X, p.Y] = prognode;
                     }
                     else
@@ -280,13 +330,13 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
 
         /// <summary>
-        /// Moves a program at point (start_x, start_y) in the direction of (dir_x, dir_y). (dir_x, dir_y) must move
-        /// the program one square, which means one of them must be a {+|-}1 and one must be a 0.
+        /// Moves a Program at point (start_x, start_y) in the direction of (dir_x, dir_y). (dir_x, dir_y) must move
+        /// the Program one square, which means one of them must be a {+|-}1 and one must be a 0.
         /// </summary>
-        /// <param name="start_x">The X-coordinate of the program that should be moved.</param>
-        /// <param name="start_y">The Y-coordinate of the program that should be moved.</param>
-        /// <param name="dir_x">The horizontal direction in which the program should move.</param>
-        /// <param name="dir_y">The vertical direction in which the program should move.</param>
+        /// <param name="start_x">The X-coordinate of the Program that should be moved.</param>
+        /// <param name="start_y">The Y-coordinate of the Program that should be moved.</param>
+        /// <param name="dir_x">The horizontal direction in which the Program should move.</param>
+        /// <param name="dir_y">The vertical direction in which the Program should move.</param>
         /// <returns>Whether the move was successful.</returns>
         public bool MoveProgram(int start_x, int start_y, int dir_x, int dir_y)
         {
@@ -294,12 +344,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
 
         /// <summary>
-        /// Moves a program from the starting point in the direction of the direction point. The direction point must
-        /// move the program only one square, whih means either X must be {+|-}1 and Y must be 0, or Y must be {+|-}1
+        /// Moves a Program from the starting point in the direction of the direction point. The direction point must
+        /// move the Program only one square, whih means either X must be {+|-}1 and Y must be 0, or Y must be {+|-}1
         /// and X must be 0.
         /// </summary>
-        /// <param name="start">The starting point of the program that should be moved.</param>
-        /// <param name="direction"> The direction point in which to move the program.</param>
+        /// <param name="start">The starting point of the Program that should be moved.</param>
+        /// <param name="direction"> The direction point in which to move the Program.</param>
         /// <returns>Whether the move was successful.</returns>
         public bool MoveProgram(Point start, Point direction)
         {
@@ -309,18 +359,19 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             bool end_is_tail_node = NodeIsType<ProgramTailNode>(end);
             ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
-            if (!head_node.program.Moves.CanMove() || head_node.program.AlreadyRanCommand())
+            if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand())
                 return false;
-            ProgramTailNode tail_node = new ProgramTailNode(head_node.program, head_node, head_node.Tail);
+            ProgramTailNode tail_node = new ProgramTailNode(head_node.Program, head_node, head_node.Tail);
             if (head_node.Tail != null)
                 head_node.Tail.Head = tail_node;
             head_node.coordinate = end;
             head_node.Tail = tail_node;
             tail_node.coordinate = start;
+            tail_node.Player = head_node.Player;
             map[end.X, end.Y] = head_node;
             map[start.X, start.Y] = tail_node;
 
-            if (head_node.program.Size.IsMaxSize() && !end_is_tail_node)
+            if (head_node.Program.Size.IsMaxSize() && !end_is_tail_node)
             {
                 ProgramTailNode end_node = head_node.Tail;
                 while (end_node.Tail != null)
@@ -336,25 +387,25 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 end_node.Head.Tail = null;
             }
             else if(!end_is_tail_node)
-                head_node.program.Size.IncreaseCurrentSize(1);
-            head_node.program.Moves.Moved();
+                head_node.Program.Size.IncreaseCurrentSize(1);
+            head_node.Program.Moves.Moved();
             return true;
         }
 
         /// <summary>
-        /// Undoes the movement of a program, which means it will make it so that it looks like a program never made a
+        /// Undoes the movement of a Program, which means it will make it so that it looks like a Program never made a
         /// move. Unlike the MoveProgram method, this requires it also knowing whether the move being undone resized
-        /// the program or whether the program moved over one of its own tail nodes.
+        /// the Program or whether the Program moved over one of its own tail nodes.
         /// 
-        /// This specific method allows for use of the method when the program is not resized. If the program was
+        /// This specific method allows for use of the method when the Program is not resized. If the Program was
         /// not resized, then it would require the use of a location of where the ending tail node was prior to the
-        /// program moving.
+        /// Program moving.
         /// </summary>
-        /// <param name="start">Where the program's movement started.</param>
-        /// <param name="direction">What direction the program originally moved in.</param>
-        /// <param name="program_resized">Whether the program's movement resized it.</param>
-        /// <param name="end_was_tail_node">Whether where the program moved to was originally its own tail node.</param>
-        /// <returns>Whether the undo was sucessful. It will always return false if the program was not resized and the
+        /// <param name="start">Where the Program's movement started.</param>
+        /// <param name="direction">What direction the Program originally moved in.</param>
+        /// <param name="program_resized">Whether the Program's movement resized it.</param>
+        /// <param name="end_was_tail_node">Whether where the Program moved to was originally its own tail node.</param>
+        /// <returns>Whether the undo was sucessful. It will always return false if the Program was not resized and the
         /// end was not a tail node.</returns>
         public bool UndoMoveProgram(Point start, Point direction, bool program_resized, bool end_was_tail_node)
         {
@@ -364,19 +415,19 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
 
         /// <summary>
-        /// Undoes the movement of a program, which means it will make it so that it looks like a program never made a
+        /// Undoes the movement of a Program, which means it will make it so that it looks like a Program never made a
         /// move. Unlike the MoveProgram method, this requires it also knowing whether the move being undone resized
-        /// the program or whether the program moved over one of its own tail nodes.
+        /// the Program or whether the Program moved over one of its own tail nodes.
         /// 
-        /// This is the main UndoMoveProgram method, which allows for when the program was not resized. The tail
-        /// location is only used if the program was neither resized nor when the end was a tail node. Otherwise, it
+        /// This is the main UndoMoveProgram method, which allows for when the Program was not resized. The tail
+        /// location is only used if the Program was neither resized nor when the end was a tail node. Otherwise, it
         /// can be any value and it doesn't matter.
         /// </summary>
-        /// <param name="start">Where the program's movement started.</param>
-        /// <param name="direction">What direction the program originally moved in.</param>
-        /// <param name="program_resized">Whether the program's movement resized it.</param>
-        /// <param name="end_was_tail_node">Whether where the program moved to was originally its own tail node.</param>
-        /// <param name="tail_location">The location of the tail when the program was not resized.</param>
+        /// <param name="start">Where the Program's movement started.</param>
+        /// <param name="direction">What direction the Program originally moved in.</param>
+        /// <param name="program_resized">Whether the Program's movement resized it.</param>
+        /// <param name="end_was_tail_node">Whether where the Program moved to was originally its own tail node.</param>
+        /// <param name="tail_location">The location of the tail when the Program was not resized.</param>
         /// <returns>Whether the undo was successful or not.</returns>
         public bool UndoMoveProgram(Point start, Point direction, bool program_resized, bool end_was_tail_node, Point tail_location)
         {
@@ -393,25 +444,25 @@ namespace SmartboyDevelopments.Haxxit.Maps
             map[start.X, start.Y] = head_node;
             head_node.coordinate = start;
 
-            if (end_was_tail_node) // If the program originally moved over a tail node
+            if (end_was_tail_node) // If the Program originally moved over a tail node
             {
                 ProgramTailNode end_node = head_node.Tail;
                 while (end_node.Tail != null)
                 {
                     end_node = end_node.Tail;
                 }
-                map[end.X, end.Y] = new ProgramTailNode(head_node.program, head_node);
+                map[end.X, end.Y] = new ProgramTailNode(head_node.Program, head_node);
                 map[end.X, end.Y].coordinate = end;
                 end_node.Tail = (ProgramTailNode)map[end.X, end.Y];
                 ((ProgramTailNode)map[end.X, end.Y]).Head = end_node;
             }
-            else if (!program_resized) // If the program wasn't resized
+            else if (!program_resized) // If the Program wasn't resized
             {
                 map[end.X, end.Y] = new AvailableNode();
                 map[end.X, end.Y].coordinate = end;
                 if (IsInBounds(tail_location))
                 {
-                    map[tail_location.X, tail_location.Y] = new ProgramTailNode(head_node.program, head_node);
+                    map[tail_location.X, tail_location.Y] = new ProgramTailNode(head_node.Program, head_node);
                     map[tail_location.X, tail_location.Y].coordinate = tail_location;
                     ProgramTailNode end_node = head_node.Tail;
                     while (end_node.Tail != null)
@@ -422,35 +473,35 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     ((ProgramTailNode)map[tail_location.X, tail_location.Y]).Head = end_node;
                 }
             }
-            else // The program was resized and didn't move over a tail node
+            else // The Program was resized and didn't move over a tail node
             {
                 map[end.X, end.Y] = new AvailableNode();
                 map[end.X, end.Y].coordinate = end;
-                head_node.program.Size.DecreaseCurrentSize(1);
+                head_node.Program.Size.DecreaseCurrentSize(1);
             }
-            head_node.program.Moves.UndoMove();
+            head_node.Program.Moves.UndoMove();
             return true;
         }
 
         /// <summary>
-        /// Runs the specified program's command directed at the attacked node.
+        /// Runs the specified Program's command directed at the attacked node.
         /// </summary>
-        /// <param name="attacker_point">The point at which the program's head node is currently situated.</param>
-        /// <param name="attacked_point">The point the program is attacking.</param>
-        /// <param name="command">The name of the command that the program is using.</param>
-        /// <returns></returns>
+        /// <param name="attacker_point">The point at which the Program's head node is currently situated.</param>
+        /// <param name="attacked_point">The point the Program is attacking.</param>
+        /// <param name="command">The name of the command that the Program is using.</param>
+        /// <returns>An UndoCommand that will undo the actions of the command that was run, or null if no command was run.</returns>
         public UndoCommand RunCommand(Point attacker_point, Point attacked_point, string command)
         {
             if (!NodeIsType<ProgramHeadNode>(attacker_point))
                 return null;
             ProgramHeadNode attacker_node = (ProgramHeadNode)GetNode(attacker_point);
-            if (!attacker_node.program.HasCommand(command))
+            if (attacker_node.Player != CurrentPlayer || !attacker_node.Program.HasCommand(command))
                 return null;
             Point distance = attacker_point.DistanceBetween(attacked_point);
-            Command attack = attacker_node.program.GetCommand(command);
+            Command attack = attacker_node.Program.GetCommand(command);
             if (distance.X + distance.Y > attack.Range)
                 return null;
-            UndoCommand undo_command = attacker_node.program.RunCommand(this, attacked_point, command);
+            UndoCommand undo_command = attacker_node.Program.RunCommand(this, attacked_point, command);
             if(undo_command != null)
             {
                 undo_command.OriginatingPoint = attacker_point;
@@ -459,30 +510,48 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return undo_command;
         }
 
+        /// <summary>
+        /// Runs an UndoCommand that was returned by the RunCommand function.
+        /// </summary>
+        /// <param name="command">The UndoCommand to run.</param>
+        /// <returns>Whether the UndoCommand was sucessfully ran.</returns>
         public bool RunUndoCommand(UndoCommand command)
         {
             if (command == null || !NodeIsType<ProgramHeadNode>(command.OriginatingPoint))
                 return false;
             ProgramHeadNode attacker_node = (ProgramHeadNode)GetNode(command.OriginatingPoint);
-            attacker_node.program.RunUndoCommand(this, command);
+            attacker_node.Program.RunUndoCommand(this, command);
             return true;
         }
 
+        /// <summary>
+        /// Adds a node to a program in order to increase its size, but doesn't go past the program's maximum size.
+        /// </summary>
+        /// <param name="program_point">The location of a node in the program.</param>
+        /// <param name="where_to_add">An available node where you want the node added.</param>
+        /// <returns>Whether the node was able to be added to the program.</returns>
         public bool AddNodeToProgram(Point program_point, Point where_to_add)
         {
             if (!NodeIsType<ProgramNode>(program_point) || !NodeIsType<AvailableNode>(where_to_add))
                 return false;
             ProgramNode program_node = (ProgramNode)GetNode(program_point);
+            if (program_node.Program.Size.IsMaxSize())
+                return false;
             while (program_node.Tail != null)
                 program_node = program_node.Tail;
-            ProgramTailNode new_tail = new ProgramTailNode(program_node.program, program_node.Head);
+            ProgramTailNode new_tail = new ProgramTailNode(program_node.Program, program_node.Head);
             map[where_to_add.X, where_to_add.Y] = new_tail;
             new_tail.Tail = program_node.Tail;
             program_node.Tail = new_tail;
-            program_node.program.Size.IncreaseCurrentSize(1);
+            program_node.Program.Size.IncreaseCurrentSize(1);
             return true;
         }
 
+        /// <summary>
+        /// Readds removed ProgramNodes to the map.
+        /// </summary>
+        /// <param name="nodes">The list of ProgramNodes that has been removed.</param>
+        /// <returns>Whether the nodes could be added to the map.</returns>
         public bool AddProgramNodes(IEnumerable<ProgramNode> nodes)
         {
             if (nodes.Count() == 0
@@ -527,13 +596,15 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// </summary>
         public void TurnDone()
         {
-            foreach(Point p in (new Point(0, 0)).IterateOverRange(new Point(XSize-1, YSize-1)))
-            {
-                if (NodeIsType<ProgramHeadNode>(p))
+            if(spawning_finished)
+                foreach(Point p in (new Point(0, 0)).IterateOverRange(new Point(XSize-1, YSize-1)))
                 {
-                    ((ProgramHeadNode)GetNode(p)).program.Reset();
+                    if (NodeIsType<ProgramHeadNode>(p))
+                    {
+                        ((ProgramHeadNode)GetNode(p)).Program.Reset();
+                    }
                 }
-            }
+            players.Enqueue(players.Dequeue()); // Rotate the queue
         }
     }
 }
