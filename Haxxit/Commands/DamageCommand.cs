@@ -23,7 +23,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
             if (!map.NodeIsType<ProgramNode>(attacked_point))
                 return null;
             ProgramNode attacked_node = (ProgramNode)map.GetNode(attacked_point);
-            if (attacked_node.Player == map.CurrentPlayer)
+            if (map.CurrentPlayer != null && attacked_node.Player == map.CurrentPlayer)
                 return null;
             Program attacked_program = attacked_node.Program;
             IEnumerable<ProgramNode> removed_nodes = DamageProgram(map, attacked_node, _strength);

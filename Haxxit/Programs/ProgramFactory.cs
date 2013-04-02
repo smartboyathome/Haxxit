@@ -6,7 +6,7 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Programs
 {
-    public abstract class ProgramFactory : IEquatable<ProgramFactory>
+    public abstract class ProgramFactory : IEquatable<ProgramFactory>, IFactory<Program>
     {
         public ushort Moves
         {
@@ -34,7 +34,7 @@ namespace SmartboyDevelopments.Haxxit.Programs
             return new Program(Moves, Size, TypeName, Commands);
         }
 
-        public bool Equals(ProgramFactory other)
+        public virtual bool Equals(ProgramFactory other)
         {
             if (Moves != other.Moves || Size != other.Size || TypeName != other.TypeName || Commands.Count() != other.Commands.Count())
                 return false;

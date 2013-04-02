@@ -8,15 +8,28 @@ using SmartboyDevelopments.Haxxit.Programs;
 namespace SmartboyDevelopments.Haxxit.Maps
 {
     /// <summary>
-    /// The abstract class for a playable map.
+    /// The class for a playable map.
     /// </summary>
-    public abstract partial class Map
+    public partial class Map
     {
         protected MapNode[,] map; // map[x,y]
         private bool spawning_finished; // Users have finished spawning
         protected bool has_been_hacked; // Whether this map has been completed already
         protected ushort earned_silicoins; // How many silicoins have been earned from this map
         protected Queue<Player> players; // The player queue
+
+        private void InitializeMap(int x_size, int y_size, ushort initial_silicoins)
+        {
+            map = new MapNode[x_size, y_size];
+            foreach (Point p in (new Point(0, 0)).IterateOverRange(new Point(x_size - 1, y_size - 1)))
+            {
+                map[p.X, p.Y] = new UnavailableNode();
+            }
+            players = new Queue<Player>();
+            spawning_finished = false;
+            has_been_hacked = false;
+            earned_silicoins = initial_silicoins;
+        }
 
         /// <summary>
         /// Whether this map has been hacked (completed) yet.
@@ -69,7 +82,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
         {
             get
             {
-                return players.Peek();
+                if (players.Count != 0)
+                    return players.Peek();
+                else
+                    return null;
             }
         }
 
@@ -152,6 +168,66 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <summary>
         /// Creates a MapNode at the point (x, y).
         /// </summary>
+        /// <param name="factory">The factory that creates the MapNode.</param>
+        /// <param name="x">The X-coordinate of where the node will be created.</param>
+        /// <param name="y">The Y-coordinate of where the node will be created.</param>
+        /// <returns>Whether the node was able to be created.</returns>
+        public bool CreateNode(IFactory<MapNode> factory, int x, int y)
+        {
+            return CreateNode(factory, new Point(x, y));
+        }
+
+        /// <summary>
+        /// Creates a MapNode at each point within the rectangle bounded by the two given points, (x1, y1) and (x2, y2).
+        /// </summary>
+        /// <typeparam name="T">The type of MapNode that is to be created.</typeparam>
+        /// <param name="x1">The X-coordinate of one corner of the rectangle.</param>
+        /// <param name="y1">The Y-coordinate of one corner of the rectangle.</param>
+        /// <param name="x2">The X-coordinate of the opposite corner of the rectangle.</param>
+        /// <param name="y2">The Y-coordinate of the opposite corner of the rectangle.</param>
+        /// <returns>Whether all the nodes could be created.</returns>
+        public bool CreateNodes(IFactory<MapNode> factory, int x1, int y1, int x2, int y2)
+        {
+            return CreateNodes(factory, new Point(x1, y1), new Point(x2, y2));
+        }
+
+        /// <summary>
+        /// Creates a MapNode at each point within the rectangle bounded by the two given points.
+        /// </summary>
+        /// <typeparam name="T">The type of MapNode that is to be created.</typeparam>
+        /// <param name="start">One corner of the rectangle.</param>
+        /// <param name="end">The opposite corner of the rectangle.</param>
+        /// <returns></returns>
+        public bool CreateNodes(IFactory<MapNode> factory, Point start, Point end)
+        {
+            if (!IsInBounds(start) || !IsInBounds(end))
+                return false;
+            Point direction = start.DirectionsTo(end);
+            foreach (Point p in start.IterateOverRange(end))
+            {
+                CreateNode(factory, p);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a MapNode at the given point.
+        /// </summary>
+        /// <param name="factory">The type of node that is to be created.</param>
+        /// <param name="p">The point at which the node will be created.</param>
+        /// <returns>Whether the node was able to be created.</returns>
+        public bool CreateNode(IFactory<MapNode> factory, Point p)
+        {
+            if (!IsInBounds(p) || factory == null)
+                return false;
+            map[p.X, p.Y] = factory.NewInstance();
+            map[p.X, p.Y].coordinate = p;
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a MapNode at the point (x, y).
+        /// </summary>
         /// <typeparam name="T">The type of MapNode that is to be created.</typeparam>
         /// <param name="x">The X-coordinate of where the node will be created.</param>
         /// <param name="y">The Y-coordinate of where the node will be created.</param>
@@ -209,6 +285,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return true;
         }
 
+        /// <summary>
+        /// Sets the owner of an OwnedNode to a player.
+        /// </summary>
+        /// <param name="p">The point at which an OwnedNode is located.</param>
+        /// <param name="player">The player which will own the OwnedNode.</param>
+        /// <returns></returns>
         public bool SetNodeOwner(Point p, Player player)
         {
             if (!IsInBounds(p) || !NodeIsType<OwnedNode>(p) || !players.Contains(player))
@@ -273,7 +355,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="x">The X-coordinate of the point where the Program will be spawned.</param>
         /// <param name="y">The Y-coordinate of the point where the Program will be spawned.</param>
         /// <returns>Whether the Program could be spawned at that point.</returns>
-        public bool SpawnProgram(ProgramFactory factory, int x, int y)
+        public bool SpawnProgram(IFactory<Program> factory, int x, int y)
         {
             return SpawnProgram(factory, new Point(x, y));
         }
@@ -284,7 +366,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="T">The factory that will create an instance of the program.</param>
         /// <param name="p">The point at which to spawn the Program.</param>
         /// <returns>Whether the Program could be spawned.</returns>
-        public bool SpawnProgram(ProgramFactory factory, Point p)
+        public bool SpawnProgram(IFactory<Program> factory, Point p)
         {
             if (!IsInBounds(p) || !NodeIsType<SpawnNode>(p))
                 return false;
@@ -607,7 +689,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
                         ((ProgramHeadNode)GetNode(p)).Program.Reset();
                     }
                 }
-            players.Enqueue(players.Dequeue()); // Rotate the queue
+            if(players.Count != 0)
+                players.Enqueue(players.Dequeue()); // Rotate the queue
         }
     }
 }

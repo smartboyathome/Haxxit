@@ -6,12 +6,34 @@ using SmartboyDevelopments.Haxxit.Maps;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
-    class BasicMap: Map
+    class BasicMapFactory : IFactory<Map>
     {
-        public BasicMap(int x_size, int y_size) : base()
+        private int _x_size, _y_size;
+        private IEnumerable<Point> _spawns;
+
+        public BasicMapFactory(int x_size, int y_size)
         {
-            map = new MapNode[x_size, y_size];
-            CreateNodes<AvailableNode>(0, 0, x_size-1, y_size-1);
+            _x_size = x_size;
+            _y_size = y_size;
+            _spawns = new List<Point>();
+        }
+
+        public BasicMapFactory(int x_size, int y_size, IEnumerable<Point> spawns)
+        {
+            _x_size = x_size;
+            _y_size = y_size;
+            _spawns = spawns;
+        }
+
+        public Map NewInstance()
+        {
+            Map map = new Map(_x_size, _y_size);
+            map.CreateNodes(new AvailableNodeFactory(), 0, 0, _x_size - 1, _y_size - 1);
+            foreach (Point p in _spawns)
+            {
+                map.CreateNode(new SpawnNodeFactory(), p);
+            }
+            return map;
         }
     }
 }

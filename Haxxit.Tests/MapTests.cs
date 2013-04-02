@@ -13,16 +13,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
     {
         static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
             BiggerFasterProgramFactory;
-
-        private BasicMap CreateMapWithSpawns()
-        {
-            BasicMap map = new BasicMap(10, 10);
-            map.CreateNode<SpawnNode>(0, 1);
-            map.CreateNode<SpawnNode>(1, 0);
-            map.CreateNode<SpawnNode>(9, 8);
-            map.CreateNode<SpawnNode>(8, 9);
-            return map;
-        }
+        static IFactory<Map> BasicMapFactory, SpawnMapFactory;
 
         [ClassInitialize]
         public static void InitializeClass(TestContext testContext)
@@ -32,12 +23,19 @@ namespace SmartboyDevelopments.Haxxit.Tests
             BasicProgramFactory = new DynamicProgramFactory(4, 4, commands);
             FasterProgramFactory = new DynamicProgramFactory(8, 4, commands);
             BiggerFasterProgramFactory = new DynamicProgramFactory(16, 8, commands);
+            List<Point> spawns = new List<Point>();
+            spawns.Add(new Point(0, 1));
+            spawns.Add(new Point(1, 0));
+            spawns.Add(new Point(9, 8));
+            spawns.Add(new Point(8, 9));
+            BasicMapFactory = new BasicMapFactory(10, 10);
+            SpawnMapFactory = new BasicMapFactory(10, 10, spawns);
         }
 
         [TestMethod]
         public void TestCreateMap()
         {
-            BasicMap map = new BasicMap(10, 10);
+            Map map = BasicMapFactory.NewInstance();
             for (int y = 0; y < 10; ++y)
             {
                 for (int x = 0; x < 10; ++x)
@@ -50,7 +48,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestAddSpawn()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             for (int y = 0; y < 10; ++y)
             {
                 for (int x = 0; x < 10; ++x)
@@ -66,7 +64,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestSpawnProgram()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             Assert.IsTrue(map.SpawnProgram(BasicProgramFactory, 0, 1));
             Assert.IsTrue(map.SpawnProgram(BasicProgramFactory, 1, 0));
             Assert.IsFalse(map.SpawnProgram(BasicProgramFactory, 5, 5));
@@ -76,7 +74,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestFinishedSpawning()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.SpawnProgram(BasicProgramFactory, 1, 0);
             map.FinishedSpawning();
@@ -89,7 +87,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestMoveProgram()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.FinishedSpawning();
             Assert.IsTrue(map.MoveProgram(new Point(0, 1), new Point(0, 1)));
@@ -106,7 +104,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestAttackProgram()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.SpawnProgram(BasicProgramFactory, 1, 0);
             map.FinishedSpawning();
@@ -125,7 +123,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestUndoAttackProgram()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.SpawnProgram(BasicProgramFactory, 1, 0);
             map.FinishedSpawning();
@@ -151,7 +149,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestUndoMove()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
@@ -168,7 +166,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestUndoMoveProgramNotResized()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(FasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
@@ -191,7 +189,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestTurnDone()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
@@ -221,7 +219,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestMoveOverTailNode()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(FasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
@@ -237,7 +235,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestUndoMoveOverTailNode()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(FasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
@@ -254,7 +252,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         [TestMethod]
         public void TestMoveOverMiddleTailNode()
         {
-            BasicMap map = CreateMapWithSpawns();
+            Map map = SpawnMapFactory.NewInstance();
             map.SpawnProgram(BiggerFasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));

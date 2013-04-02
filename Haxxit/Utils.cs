@@ -5,6 +5,11 @@ using System.Text;
 
 namespace SmartboyDevelopments.Haxxit
 {
+    public interface IFactory<T>
+    {
+        T NewInstance();
+    }
+
     /// <summary>
     /// A general interface for deep-clonable objects.
     /// </summary>

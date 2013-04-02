@@ -7,7 +7,7 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Maps
 {
-    public abstract partial class Map
+    public partial class Map
     {
         private MediatorManager _mediator_manager;
         public IMediator Mediator
@@ -22,11 +22,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
         }
 
-        public Map()
+        public Map(int x_size, int y_size, ushort initial_silicoins=0)
         {
             DefaultSubscribableManager subscribable_manager = new DefaultSubscribableManager();
             subscribable_manager.OnSubscribe += SubscribeAll;
             _mediator_manager = new MediatorManager(subscribable_manager);
+            InitializeMap(x_size, y_size, initial_silicoins);
         }
 
         private void SubscribeAll()

@@ -51,6 +51,7 @@
     <Compile Include="GameEngine\StateAction.cs" />
     <Compile Include="Maps\MapBase.cs" />
     <Compile Include="Maps\MapEventArgs.cs" />
+    <Compile Include="Maps\MapNodeFactories.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Game.cs" />
@@ -59,8 +60,10 @@
     <Compile Include="Maps\MapEvents.cs" />
     <Compile Include="Maps\MapNode.cs" />
     <Compile Include="Maps\Point.cs" />
+    <Compile Include="Programs\Movement.cs" />
     <Compile Include="Programs\Program.cs" />
     <Compile Include="Programs\ProgramFactory.cs" />
+    <Compile Include="Programs\ProgramSize.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UndoStack.cs" />
     <Compile Include="Utils.cs" />
