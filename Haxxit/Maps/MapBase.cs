@@ -7,6 +7,9 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.Maps
 {
+    /// <summary>
+    /// The abstract class for a playable map.
+    /// </summary>
     public abstract partial class Map
     {
         protected MapNode[,] map; // map[x,y]

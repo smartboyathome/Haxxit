@@ -11,6 +11,9 @@ namespace SmartboyDevelopments.Haxxit.Tests
     [TestClass]
     public class MapTests
     {
+        static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
+            BiggerFasterProgramFactory;
+
         private BasicMap CreateMapWithSpawns()
         {
             BasicMap map = new BasicMap(10, 10);
@@ -21,25 +24,14 @@ namespace SmartboyDevelopments.Haxxit.Tests
             return map;
         }
 
-        private DynamicProgramFactory CreateBasicProgramFactory()
+        [ClassInitialize]
+        public static void InitializeClass(TestContext testContext)
         {
             List<Command> commands = new List<Command>();
             commands.Add(new DynamicDamageCommand(2, 3));
-            return new DynamicProgramFactory(4, 4, commands);
-        }
-
-        private DynamicProgramFactory CreateFasterProgramFactory()
-        {
-            List<Command> commands = new List<Command>();
-            commands.Add(new DynamicDamageCommand(2, 3));
-            return new DynamicProgramFactory(8, 4, commands);
-        }
-
-        private DynamicProgramFactory CreateBiggerFasterProgramFactory()
-        {
-            List<Command> commands = new List<Command>();
-            commands.Add(new DynamicDamageCommand(3, 2));
-            return new DynamicProgramFactory(16, 8, commands);
+            BasicProgramFactory = new DynamicProgramFactory(4, 4, commands);
+            FasterProgramFactory = new DynamicProgramFactory(8, 4, commands);
+            BiggerFasterProgramFactory = new DynamicProgramFactory(16, 8, commands);
         }
 
         [TestMethod]
@@ -75,18 +67,18 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestSpawnProgram()
         {
             BasicMap map = CreateMapWithSpawns();
-            Assert.IsTrue(map.SpawnProgram(CreateBasicProgramFactory(), 0, 1));
-            Assert.IsTrue(map.SpawnProgram(CreateBasicProgramFactory(), 1, 0));
-            Assert.IsFalse(map.SpawnProgram(CreateBasicProgramFactory(), 5, 5));
-            Assert.IsFalse(map.SpawnProgram(CreateBasicProgramFactory(), - 1, -1));
+            Assert.IsTrue(map.SpawnProgram(BasicProgramFactory, 0, 1));
+            Assert.IsTrue(map.SpawnProgram(BasicProgramFactory, 1, 0));
+            Assert.IsFalse(map.SpawnProgram(BasicProgramFactory, 5, 5));
+            Assert.IsFalse(map.SpawnProgram(BasicProgramFactory, - 1, -1));
         }
 
         [TestMethod]
         public void TestFinishedSpawning()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBasicProgramFactory(), 0, 1);
-            map.SpawnProgram(CreateBasicProgramFactory(), 1, 0);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 1, 0);
             map.FinishedSpawning();
             Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(0, 1));
             Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(1, 0));
@@ -98,7 +90,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestMoveProgram()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBasicProgramFactory(), 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.FinishedSpawning();
             Assert.IsTrue(map.MoveProgram(new Point(0, 1), new Point(0, 1)));
             Assert.IsTrue(map.MoveProgram(new Point(0, 2), new Point(0, 1)));
@@ -115,8 +107,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestAttackProgram()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBasicProgramFactory(), 0, 1);
-            map.SpawnProgram(CreateBasicProgramFactory(), 1, 0);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 1, 0);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
@@ -134,8 +126,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestUndoAttackProgram()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBasicProgramFactory(), 0, 1);
-            map.SpawnProgram(CreateBasicProgramFactory(), 1, 0);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 1, 0);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
@@ -160,7 +152,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestUndoMove()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBasicProgramFactory(), 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
@@ -177,7 +169,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestUndoMoveProgramNotResized()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateFasterProgramFactory(), 0, 1);
+            map.SpawnProgram(FasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
@@ -200,7 +192,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestTurnDone()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBasicProgramFactory(), 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
@@ -230,7 +222,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestMoveOverTailNode()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateFasterProgramFactory(), 0, 1);
+            map.SpawnProgram(FasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(1, 0));
@@ -246,7 +238,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestUndoMoveOverTailNode()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateFasterProgramFactory(), 0, 1);
+            map.SpawnProgram(FasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(1, 0));
@@ -263,7 +255,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public void TestMoveOverMiddleTailNode()
         {
             BasicMap map = CreateMapWithSpawns();
-            map.SpawnProgram(CreateBiggerFasterProgramFactory(), 0, 1);
+            map.SpawnProgram(BiggerFasterProgramFactory, 0, 1);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
