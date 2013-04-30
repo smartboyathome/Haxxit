@@ -27,11 +27,11 @@ namespace SimplePubSub.Tests
             return ((x, y, z) => output.Add(id + " called by channel " + x));
         }
 
-        void AssertEnumerableEqual<T>(IEnumerable<T> a, IEnumerable<T> b)
+        void AssertListEqual<T>(IList<T> a, IList<T> b)
         {
-            Assert.AreEqual(output.Count, expected_output.Count);
-            for (int i = 0; i < output.Count; i++)
-                Assert.IsTrue(output[i] == expected_output[i]);
+            Assert.AreEqual(a.Count, b.Count);
+            for (int i = 0; i < a.Count; i++)
+                Assert.AreEqual(a[i], b[i]);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace SimplePubSub.Tests
             mediator.Subscribe("test", CreateSubscriber("Subscriber1"));
             mediator.Notify("test", null, new EventArgs());
             expected_output.Add("Subscriber1 called by channel test");
-            AssertEnumerableEqual<string>(output, expected_output);
+            AssertListEqual<string>(output, expected_output);
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace SimplePubSub.Tests
             expected_output.Add("Subscriber1 called by channel test");
             expected_output.Add("Subscriber2 called by channel test");
             expected_output.Add("Subscriber3 called by channel test");
-            AssertEnumerableEqual<string>(output, expected_output);
+            AssertListEqual<string>(output, expected_output);
         }
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace SimplePubSub.Tests
             expected_output.Add("Subscriber3 called by channel test");
             expected_output.Add("Subscriber1 called by channel test");
             expected_output.Add("Subscriber2 called by channel test");
-            AssertEnumerableEqual<string>(output, expected_output);
+            AssertListEqual<string>(output, expected_output);
         }
 
         [TestMethod]
@@ -87,7 +87,7 @@ namespace SimplePubSub.Tests
             expected_output.Add("Subscriber1 called by channel test1");
             expected_output.Add("Subscriber1 called by channel test9");
             expected_output.Add("Subscriber1 called by channel test2");
-            AssertEnumerableEqual<string>(output, expected_output);
+            AssertListEqual<string>(output, expected_output);
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace SimplePubSub.Tests
             expected_output.Add("Subscriber1 called by channel test");
             expected_output.Add("Subscriber1 called by channel test9");
             expected_output.Add("Subscriber1 called by channel test22");
-            AssertEnumerableEqual<string>(output, expected_output);
+            AssertListEqual<string>(output, expected_output);
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace SimplePubSub.Tests
             expected_output.Add("Subscriber1 called by channel test");
             expected_output.Add("Subscriber1 called by channel test9");
             expected_output.Add("Subscriber1 called by channel test22");
-            AssertEnumerableEqual<string>(output, expected_output);
+            AssertListEqual<string>(output, expected_output);
         }
     }
 }

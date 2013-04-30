@@ -19,6 +19,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
             set
             {
                 _mediator_manager.Mediator = value;
+                foreach (MapNode node in map)
+                {
+                    node.Notifiable = value;
+                }
             }
         }
 

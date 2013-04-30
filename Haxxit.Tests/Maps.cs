@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SmartboyDevelopments.Haxxit.Maps;
+using SmartboyDevelopments.SimplePubSub;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
@@ -28,6 +29,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         public Map NewInstance()
         {
             Map map = new Map(_x_size, _y_size);
+            map.Mediator = new SynchronousMediator();
             map.CreateNodes(new AvailableNodeFactory(), 0, 0, _x_size - 1, _y_size - 1);
             foreach (Point p in _spawns)
             {

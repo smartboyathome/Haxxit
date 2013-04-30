@@ -23,7 +23,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             map = new MapNode[x_size, y_size];
             foreach (Point p in (new Point(0, 0)).IterateOverRange(new Point(x_size - 1, y_size - 1)))
             {
-                map[p.X, p.Y] = new UnavailableNode();
+                CreateNode(new UnavailableNodeFactory(), p);
             }
             players = new Queue<Player>();
             spawning_finished = false;
@@ -222,6 +222,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             map[p.X, p.Y] = factory.NewInstance();
             map[p.X, p.Y].coordinate = p;
+            map[p.X, p.Y].Notifiable = Mediator;
             return true;
         }
 
@@ -249,6 +250,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             map[p.X, p.Y] = new T();
             map[p.X, p.Y].coordinate = p;
+            map[p.X, p.Y].Notifiable = Mediator;
             return true;
         }
 
@@ -392,13 +394,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     {
                         Program program = node.program;
                         ProgramHeadNode prognode = new ProgramHeadNode(program);
+                        prognode.Notifiable = Mediator;
                         prognode.coordinate = p;
                         prognode.Player = node.Player;
                         map[p.X, p.Y] = prognode;
                     }
                     else
                     {
-                        map[p.X, p.Y] = new AvailableNode();
+                        CreateNode(new AvailableNodeFactory(), p);
                     }
                 }
             }
@@ -446,7 +449,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
             ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
             if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand())
                 return false;
+            if(NodeIsType<AvailableNode>(end))
+                ((AvailableNode)map[end.X, end.Y]).MovedOnto();
             ProgramTailNode tail_node = new ProgramTailNode(head_node.Program, head_node, head_node.Tail);
+            tail_node.Notifiable = Mediator;
             if (head_node.Tail != null)
                 head_node.Tail.Head = tail_node;
             head_node.coordinate = end;

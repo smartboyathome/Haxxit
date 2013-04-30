@@ -3,20 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SmartboyDevelopments.Haxxit.Programs;
+using SmartboyDevelopments.SimplePubSub;
 
 namespace SmartboyDevelopments.Haxxit.Maps
 {
     public abstract class MapNode
     {
+        private NotifiableManager _notifiable_manager;
+        public INotifiable Notifiable
+        {
+            get
+            {
+                return _notifiable_manager.Notifiable;
+            }
+            set
+            {
+                _notifiable_manager.Notifiable = value;
+            }
+        }
+
         public abstract bool CanHoldProgram();
         public abstract bool IsTaken();
+
+        protected MapNode()
+        {
+            _notifiable_manager = new NotifiableManager();
+        }
 
         public Point coordinate;
     }
 
     public class UnavailableNode : MapNode
     {
-        public UnavailableNode()
+        public UnavailableNode() :
+            base()
         {
 
         }
@@ -34,7 +54,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class AvailableNode : MapNode
     {
-        public AvailableNode()
+        public AvailableNode() :
+            base()
         {
             
         }
@@ -47,6 +68,27 @@ namespace SmartboyDevelopments.Haxxit.Maps
         public override bool IsTaken()
         {
             return false;
+        }
+
+        public virtual void MovedOnto()
+        {
+
+        }
+    }
+
+    public class SilicoinNode : AvailableNode
+    {
+        ushort num_silicoins;
+
+        public SilicoinNode(ushort num_silicoins) :
+            base()
+        {
+            this.num_silicoins = num_silicoins;
+        }
+        
+        public override void MovedOnto()
+        {
+            Notifiable.Notify("haxxit.silicoins.add", null, new SilicoinEventArgs(num_silicoins));
         }
     }
 
@@ -82,7 +124,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class ProgramHeadNode : ProgramNode
     {
-        public ProgramHeadNode(Program p)
+        public ProgramHeadNode(Program p) :
+            base()
         {
             Program = p;
             Tail = null;
@@ -102,14 +145,16 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class ProgramTailNode : ProgramNode
     {
-        public ProgramTailNode(Program p, ProgramNode head)
+        public ProgramTailNode(Program p, ProgramNode head) :
+            base()
         {
             Program = p;
             Head = head;
             Tail = null;
         }
 
-        public ProgramTailNode(Program p, ProgramNode head, ProgramTailNode tail)
+        public ProgramTailNode(Program p, ProgramNode head, ProgramTailNode tail) :
+            base()
         {
             Program = p;
             Head = head;
@@ -131,12 +176,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
     {
         private Program p;
 
-        public SpawnNode()
+        public SpawnNode() :
+            base()
         {
             p = null;
         }
 
-        public SpawnNode(Program p)
+        public SpawnNode(Program p) :
+            base()
         {
             this.p = p;
         }

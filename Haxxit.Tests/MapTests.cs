@@ -3,8 +3,10 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SmartboyDevelopments.Haxxit;
 using SmartboyDevelopments.Haxxit.Maps;
 using SmartboyDevelopments.Haxxit.Commands;
+using SmartboyDevelopments.SimplePubSub;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
@@ -14,6 +16,13 @@ namespace SmartboyDevelopments.Haxxit.Tests
         static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
             BiggerFasterProgramFactory;
         static IFactory<Map> BasicMapFactory, SpawnMapFactory;
+
+        void AssertListEqual<T>(IList<T> a, IList<T> b)
+        {
+            Assert.AreEqual(a.Count, b.Count);
+            for (int i = 0; i < a.Count; i++)
+                Assert.AreEqual(a[i], b[i]);
+        }
 
         [ClassInitialize]
         public static void InitializeClass(TestContext testContext)
@@ -272,6 +281,77 @@ namespace SmartboyDevelopments.Haxxit.Tests
             Assert.IsTrue(map.NodeIsType<ProgramTailNode>(1, 2));
             Assert.IsTrue(map.NodeIsType<ProgramTailNode>(1, 3));
             Assert.IsTrue(map.NodeIsType<ProgramTailNode>(1, 4));
+        }
+
+        [TestMethod]
+        public void TestCreateSilicoinNodes()
+        {
+            SilicoinNodeFactory silicoin_node_factory = new SilicoinNodeFactory(100);
+            Map map = BasicMapFactory.NewInstance();
+            map.CreateNode(silicoin_node_factory, 0, 1);
+            map.CreateNode(silicoin_node_factory, 1, 0);
+            map.CreateNode(silicoin_node_factory, 9, 8);
+            map.CreateNode(silicoin_node_factory, 8, 9);
+            for (int y = 0; y < 10; ++y)
+            {
+                for (int x = 0; x < 10; ++x)
+                {
+                    if ((x == 0 && y == 1) || (x == 1 && y == 0) || (x == 9 && y == 8) || (x == 8 && y == 9))
+                        Assert.IsTrue(map.NodeIsType<SilicoinNode>(x, y));
+                    else
+                        Assert.IsTrue(!map.NodeIsType<SilicoinNode>(x, y) && map.NodeIsType<AvailableNode>(x, y));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestAddMediatorThenNodes()
+        {
+            Map map = SpawnMapFactory.NewInstance();
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
+            map.SpawnProgram(BasicProgramFactory, 1, 0);
+            map.CreateNode(new SilicoinNodeFactory(5), 0, 2);
+            map.CreateNode(new SilicoinNodeFactory(5), 2, 0);
+            for (int y = 0; y < 10; ++y)
+            {
+                for (int x = 0; x < 10; ++x)
+                {
+                    Assert.IsTrue(map.GetNode(x, y) != null);
+                }
+            }
+            map.FinishedSpawning();
+            map.MoveProgram(new Point(0, 1), new Point(0, 1));
+            map.MoveProgram(new Point(0, 2), new Point(0, 1));
+            map.MoveProgram(new Point(0, 3), new Point(0, 1));
+            map.MoveProgram(new Point(0, 4), new Point(0, 1));
+            map.MoveProgram(new Point(1, 0), new Point(0, 1));
+            map.MoveProgram(new Point(1, 1), new Point(0, 1));
+            map.MoveProgram(new Point(1, 2), new Point(0, 1));
+            map.MoveProgram(new Point(1, 3), new Point(0, 1));
+            for (int y = 0; y < 10; ++y)
+            {
+                for (int x = 0; x < 10; ++x)
+                {
+                    Assert.IsTrue(map.GetNode(x, y) != null);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestMoveOnSilicoinNode()
+        {
+            SilicoinNodeFactory silicoin_node_factory = new SilicoinNodeFactory(100);
+            Map map = SpawnMapFactory.NewInstance();
+            List<string> output = new List<string>();
+            Action<string, object, EventArgs> action = (x, y, z) => output.Add("Added " + ((SilicoinEventArgs)z).Silicoins + " silicoins");
+            map.Mediator.Subscribe("haxxit.silicoins.add", action);
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
+            map.CreateNode(silicoin_node_factory, 0, 2);
+            map.FinishedSpawning();
+            map.MoveProgram(new Point(0, 1), new Point(0, 1));
+            List<string> expected_output = new List<string>();
+            expected_output.Add("Added 100 silicoins");
+            AssertListEqual<string>(output, expected_output);
         }
     }
 }
