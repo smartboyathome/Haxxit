@@ -96,7 +96,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
     }
 
-    class CommandEventArgs : EventArgs
+    public class CommandEventArgs : EventArgs
     {
         public Point AttackedPoint { get; private set; }
         public Point AttackerPoint { get; private set; }
@@ -109,12 +109,26 @@ namespace SmartboyDevelopments.Haxxit.Maps
         }
     }
 
-    class UndoCommandEventArgs : EventArgs
+    public class UndoCommandEventArgs : EventArgs
     {
         public UndoCommand _undo_command { get; private set; }
         public UndoCommandEventArgs(UndoCommand undo_command)
         {
             _undo_command = undo_command;
+        }
+    }
+
+    public class HackedEventArgs : EventArgs
+    {
+        public Player WinningPlayer
+        {
+            get;
+            private set;
+        }
+
+        public HackedEventArgs(Player winning_player)
+        {
+            WinningPlayer = winning_player;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
     /// <summary>
     /// The class for a playable map.
     /// </summary>
-    public partial class Map
+    public abstract partial class Map
     {
         protected MapNode[,] map; // map[x,y]
         private bool spawning_finished; // Users have finished spawning
@@ -27,6 +27,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
             players = new Queue<Player>();
             spawning_finished = false;
+
             has_been_hacked = false;
             earned_silicoins = initial_silicoins;
         }
@@ -50,6 +51,22 @@ namespace SmartboyDevelopments.Haxxit.Maps
             get
             {
                 return earned_silicoins;
+            }
+        }
+
+        public Point Low
+        {
+            get
+            {
+                return new Point(0, 0);
+            }
+        }
+
+        public Point High
+        {
+            get
+            {
+                return new Point(XSize - 1, YSize - 1);
             }
         }
 
@@ -447,7 +464,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             bool end_is_tail_node = NodeIsType<ProgramTailNode>(end);
             ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
-            if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand())
+            if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand() || CurrentPlayer != head_node.Player)
                 return false;
             if(NodeIsType<AvailableNode>(end))
                 ((AvailableNode)map[end.X, end.Y]).MovedOnto();
@@ -598,6 +615,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 undo_command.OriginatingPoint = attacker_point;
                 undo_command.AttackedPoint = attacked_point;
             }
+            Mediator.Notify("haxxit.map.hacked.check", this, new EventArgs());
             return undo_command;
         }
 
@@ -698,5 +716,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             if(players.Count != 0)
                 players.Enqueue(players.Dequeue()); // Rotate the queue
         }
+
+        protected abstract Player CheckIfMapHacked();
     }
 }

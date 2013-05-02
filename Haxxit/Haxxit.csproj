@@ -44,7 +44,8 @@
     <Compile Include="Commands\DecreaseSpeedCommand.cs" />
     <Compile Include="Commands\IncreaseSpeedCommand.cs" />
     <Compile Include="Commands\UndoCommand.cs" />
-    <Compile Include="MiscEvents.cs" />
+    <Compile Include="Maps\MapImplementations.cs" />
+    <Compile Include="MiscEventArgs.cs" />
     <Compile Include="GameEngine\GameEngine.cs" />
     <Compile Include="GameEngine\GameState.cs" />
     <Compile Include="GameEngine\MapActions.cs" />

@@ -11,7 +11,7 @@ using SmartboyDevelopments.SimplePubSub;
 namespace SmartboyDevelopments.Haxxit.Tests
 {
     [TestClass]
-    public class MapTests
+    public class BasicMapTests
     {
         static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
             BiggerFasterProgramFactory;
@@ -21,7 +21,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             Assert.AreEqual(a.Count, b.Count);
             for (int i = 0; i < a.Count; i++)
-                Assert.AreEqual(a[i], b[i]);
+                Assert.AreEqual<T>(a[i], b[i]);
         }
 
         [ClassInitialize]
@@ -342,16 +342,16 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             SilicoinNodeFactory silicoin_node_factory = new SilicoinNodeFactory(100);
             Map map = SpawnMapFactory.NewInstance();
-            List<string> output = new List<string>();
-            Action<string, object, EventArgs> action = (x, y, z) => output.Add("Added " + ((SilicoinEventArgs)z).Silicoins + " silicoins");
+            List<ushort> output = new List<ushort>();
+            Action<string, object, EventArgs> action = (x, y, z) => output.Add(((SilicoinEventArgs)z).Silicoins);
             map.Mediator.Subscribe("haxxit.silicoins.add", action);
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.CreateNode(silicoin_node_factory, 0, 2);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
-            List<string> expected_output = new List<string>();
-            expected_output.Add("Added 100 silicoins");
-            AssertListEqual<string>(output, expected_output);
+            List<ushort> expected_output = new List<ushort>();
+            expected_output.Add(100);
+            AssertListEqual<ushort>(output, expected_output);
         }
     }
 }

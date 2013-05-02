@@ -7,7 +7,18 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Maps
 {
-    public partial class Map
+    /*
+     * Emitted signals:
+     *     haxxit.map.move
+     *     haxxit.map.move.undo
+     *     haxxit.map.turn_done
+     *     haxxit.map.command
+     *     haxxit.map.command.undo
+     *     haxxit.map.hacked.check
+     *     haxxit.map.hacked
+     *     haxxit.silicoins.add
+     */
+    public abstract partial class Map
     {
         private MediatorManager _mediator_manager;
         public IMediator Mediator
@@ -41,6 +52,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             _mediator_manager.Subscribe("haxxit.map.turn_done", TurnDoneListener);
             _mediator_manager.Subscribe("haxxit.map.command", CommandListener);
             _mediator_manager.Subscribe("haxxit.map.command.undo", UndoCommandListener);
+            _mediator_manager.Subscribe("haxxit.map.hacked.check", CheckHackedListener);
         }
 
         public void TurnDoneListener(string channel, object sender, EventArgs args)
@@ -96,6 +108,13 @@ namespace SmartboyDevelopments.Haxxit.Maps
         {
             UndoCommandEventArgs undo_command_args = (UndoCommandEventArgs)args;
             RunUndoCommand(undo_command_args._undo_command);
+        }
+
+        public void CheckHackedListener(string channel, object sender, EventArgs args)
+        {
+            Player winner = CheckIfMapHacked();
+            if (has_been_hacked)
+                Mediator.Notify("haxxit.map.hacked", this, new HackedEventArgs(winner));
         }
     }
 }

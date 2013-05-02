@@ -58,7 +58,7 @@ namespace SmartboyDevelopments.Haxxit
         /// <summary>
         /// The Guid for the player, which is different for each instance of the player. This allows for handling name collisions.
         /// </summary>
-        private Guid _guid;
+        //private Guid _guid;
 
         /// <summary>
         /// Creates a new player, with an optional name.
@@ -70,7 +70,7 @@ namespace SmartboyDevelopments.Haxxit
             TotalSilicoins = 0;
             _notifiable_manager = new NotifiableManager();
             Name = name;
-            _guid = Guid.NewGuid();
+            //_guid = Guid.NewGuid();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace SmartboyDevelopments.Haxxit
             }
             duplicate.TotalSilicoins = TotalSilicoins;
             duplicate.Notifiable = Notifiable;
-            duplicate._guid = _guid;
+            //duplicate._guid = _guid;
             return duplicate;
         }
 
@@ -169,7 +169,44 @@ namespace SmartboyDevelopments.Haxxit
         /// <returns></returns>
         public bool Equals(Player other)
         {
-            return Name == other.Name && _guid == other._guid;
+            bool retval = Name == other.Name;
+            return Name == other.Name;
+        }
+
+        public override bool Equals(System.Object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            Player p = obj as Player;
+            if ((System.Object)p == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return Equals(p);
+        }
+
+        public static bool operator ==(Player a, Player b)
+        {
+            return ((System.Object)a == null && (System.Object)b == null) || ((System.Object)a != null && a.Equals(b));
+        }
+
+        public static bool operator !=(Player a, Player b)
+        {
+            return ((System.Object)a == null && (System.Object)b != null) ||
+                ((System.Object)a != null && (System.Object)b == null) ||
+                ((System.Object)a != null && !a.Equals(b));
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }
