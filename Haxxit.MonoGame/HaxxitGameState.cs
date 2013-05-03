@@ -30,9 +30,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             _mediator_manager = new MediatorManager(subscribable_manager);
         }
 
-        public abstract void Init(GraphicsDeviceManager graphics, SpriteBatch sprite_batch);
+        public abstract void Init();
+        public abstract void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch);
         public abstract void SubscribeAll();
         public abstract void Update();
-        public abstract void Draw(GraphicsDeviceManager graphics, SpriteBatch sprite_batch);
+        public abstract void Draw(GraphicsDevice graphics, SpriteBatch sprite_batch);
     }
 }

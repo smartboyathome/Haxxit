@@ -71,14 +71,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             state_stack.Clear();
             state_stack.Push(state);
             state.Mediator = mediator;
-            state.Init(graphics, spriteBatch);
+            state.Init();
         }
 
         public void PushState(HaxxitGameState state)
         {
             state_stack.Push(state);
             state.Mediator = mediator;
-            state.Init(graphics, spriteBatch);
+            state.Init();
         }
 
         public void PopState()
@@ -99,7 +99,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             base.Initialize();
             foreach (HaxxitGameState state in state_stack)
             {
-                state.Init(graphics, spriteBatch);
+                state.Init();
             }
         }
 
@@ -111,7 +111,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
+            foreach (HaxxitGameState state in state_stack)
+            {
+                state.LoadContent(GraphicsDevice, spriteBatch);
+            }
             // TODO: use this.Content to load your game content here
         }
 
@@ -157,7 +160,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             spriteBatch.Draw(test_texture, new Rectangle(10, 10, 10, 10), Color.Red);
             spriteBatch.End();*/
 
-            state_stack.Peek().Draw(graphics, spriteBatch);
+            state_stack.Peek().Draw(GraphicsDevice, spriteBatch);
         }
     }
 }

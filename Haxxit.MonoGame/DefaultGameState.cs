@@ -17,9 +17,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         }
 
-        public override void Init(GraphicsDeviceManager graphics, SpriteBatch sprite_batch)
+        public override void Init()
         {
-            test_texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            
+        }
+
+        public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch)
+        {
+            test_texture = new Texture2D(graphics, 1, 1);
             test_texture.SetData(new Color[] { Color.White });
         }
 
@@ -33,7 +38,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             
         }
 
-        public override void Draw(GraphicsDeviceManager graphics, SpriteBatch sprite_batch)
+        public override void Draw(GraphicsDevice graphics, SpriteBatch sprite_batch)
         {
             sprite_batch.Begin();
             sprite_batch.Draw(test_texture, new Rectangle(10, 10, 10, 10), Color.Red);
