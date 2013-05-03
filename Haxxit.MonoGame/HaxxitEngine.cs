@@ -68,14 +68,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public void ChangeState(HaxxitGameState state)
         {
+            state_stack.Peek().Mediator = null;
             state_stack.Clear();
             state_stack.Push(state);
-            state.Mediator = mediator;
-            state.Init();
+            state_stack.Peek().Mediator = mediator;
+            state_stack.Peek().Init();
         }
 
         public void PushState(HaxxitGameState state)
         {
+            state_stack.Peek().Mediator = null;
             state_stack.Push(state);
             state.Mediator = mediator;
             state.Init();
@@ -83,7 +85,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public void PopState()
         {
+            state_stack.Peek().Mediator = null;
             state_stack.Pop();
+            state_stack.Peek().Mediator = mediator;
         }
 
         /// <summary>
