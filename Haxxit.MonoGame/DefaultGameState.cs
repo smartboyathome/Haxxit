@@ -30,7 +30,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void SubscribeAll()
         {
-            
+            // Add any channels you are subscribing to here by doing the following:
+            // Mediator.Subscribe("haxxit.xxx.yyy.zzz", NameOfListener);
+            //
+            // You must also have a function in this class with the following structure:
+            // public void NameOfListener(string channel, object sender, EventArgs args)
+            // With channel being the channel the notification is sent through, sender
+            // being the object that sent the notification, and EventArgs being the
+            // arguments for the listener. If you need arguments, create a subclass of
+            // EventArgs with the arguments as properties.
         }
 
         public override void Update()

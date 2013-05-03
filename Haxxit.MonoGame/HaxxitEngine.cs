@@ -12,8 +12,15 @@ using SmartboyDevelopments.SimplePubSub;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
+    /// <summary>
+    /// The EventArgs subclass for pushing or changing a state (used with
+    /// haxxit.engine.state.change and haxxit.engine.state.push).
+    /// </summary>
     public class ChangeStateEventArgs : EventArgs
     {
+        /// <summary>
+        /// The game state to be pushed onto the stack.
+        /// </summary>
         public HaxxitGameState State
         {
             get;
@@ -49,23 +56,45 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             PushState(new DefaultGameState());
         }
 
+        /// <summary>
+        /// A listener for notifications to change states sent through haxxit.engine.state.change.
+        /// </summary>
+        /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.change).</param>
+        /// <param name="sender">The sender object of this notification.</param>
+        /// <param name="args">The arguments for this notification (only takes ChangeStateEventArgs).</param>
         public void ChangeStateListener(string channel, object sender, EventArgs args)
         {
             ChangeStateEventArgs event_args = (ChangeStateEventArgs)args;
             ChangeState(event_args.State);
         }
 
+        /// <summary>
+        /// A listener for notifications to push states sent through haxxit.engine.state.push.
+        /// </summary>
+        /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.push).</param>
+        /// <param name="sender">The sender object of this notification.</param>
+        /// <param name="args">The arguments for this notification (only takes ChangeStateEventArgs).</param>
         public void PushStateListener(string channel, object sender, EventArgs args)
         {
             ChangeStateEventArgs event_args = (ChangeStateEventArgs)args;
             PushState(event_args.State);
         }
 
+        /// <summary>
+        /// A listener for notifications to pop states sent through haxxit.engine.state.pop.
+        /// </summary>
+        /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.pop).</param>
+        /// <param name="sender">The sender object of this notification.</param>
+        /// <param name="args">The arguments for this notification (requires no arguments).</param>
         public void PopStateListener(string channel, object sender, EventArgs args)
         {
             PopState();
         }
 
+        /// <summary>
+        /// Removes all states currently on the stack then adds passed in state to the stack.
+        /// </summary>
+        /// <param name="state">The state to add to the stack after all other states are dropped.</param>
         public void ChangeState(HaxxitGameState state)
         {
             state_stack.Peek().Mediator = null;
@@ -75,6 +104,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             state_stack.Peek().Init();
         }
 
+        /// <summary>
+        /// Pushes a state onto the stack.
+        /// </summary>
+        /// <param name="state">The state to push onto the top of the stack.</param>
         public void PushState(HaxxitGameState state)
         {
             state_stack.Peek().Mediator = null;
@@ -83,6 +116,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             state.Init();
         }
 
+        /// <summary>
+        /// Pops a state from the stack.
+        /// </summary>
         public void PopState()
         {
             state_stack.Peek().Mediator = null;
