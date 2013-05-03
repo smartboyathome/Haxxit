@@ -35,7 +35,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Update()
         {
-            
+            // To change a scene, just call one of these:
+            // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
+            // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
+            // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
         }
 
         public override void Draw(GraphicsDevice graphics, SpriteBatch sprite_batch)
