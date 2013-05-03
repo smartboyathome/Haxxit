@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Maps
 {
@@ -13,9 +14,9 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
         }
 
-        protected override Player CheckIfMapHacked()
+        public override void CheckIfHackedListener(string channel, object sender, EventArgs args)
         {
-            return null;
+            
         }
     }
 
@@ -27,7 +28,21 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
         }
 
-        protected override Player CheckIfMapHacked()
+        public override UndoCommand RunCommand(Point attacker_point, Point attacked_point, string command)
+        {
+            UndoCommand retval = base.RunCommand(attacker_point, attacked_point, command);
+            Mediator.Notify("haxxit.map.hacked.check", this, new EventArgs());
+            return retval;
+        }
+
+        public override void CheckIfHackedListener(string channel, object sender, EventArgs args)
+        {
+            Player winner = CheckIfMapHacked();
+            if (has_been_hacked)
+                Mediator.Notify("haxxit.map.hacked", this, new HackedEventArgs(winner, EarnedSilicoins));
+        }
+
+        protected Player CheckIfMapHacked()
         {
             List<Player> active_players = new List<Player>();
             foreach (Point p in Low.IterateOverRange(High))
@@ -55,6 +70,43 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 has_been_hacked = true;
                 if (active_players.Count == 1)
                     return active_players[0];
+            }
+            return null;
+        }
+    }
+
+    public class DataMap : Map
+    {
+        public DataMap(int x_size, int y_size, ushort initial_silicoins=0) :
+            base(x_size, y_size, initial_silicoins)
+        {
+
+        }
+
+        public override void CheckIfHackedListener(string channel, object sender, EventArgs args)
+        {
+            if (sender.GetType() != typeof(DataNode))
+                return;
+            Player winner = CheckIfMapHacked((DataNode)sender);
+            if (has_been_hacked)
+                Mediator.Notify("haxxit.map.hacked", this, new HackedEventArgs(winner, EarnedSilicoins));
+        }
+
+        protected Player CheckIfMapHacked(DataNode sender)
+        {
+            bool has_data_nodes = false;
+            foreach (Point p in Low.IterateOverRange(High))
+            {
+                if (NodeIsType<DataNode>(p) && p != sender.coordinate)
+                {
+                    has_data_nodes = true;
+                    break;
+                }
+            }
+            if (!has_data_nodes)
+            {
+                has_been_hacked = true;
+                return CurrentPlayer;
             }
             return null;
         }

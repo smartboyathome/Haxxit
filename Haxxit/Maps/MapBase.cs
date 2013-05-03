@@ -598,7 +598,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="attacked_point">The point the Program is attacking.</param>
         /// <param name="command">The name of the command that the Program is using.</param>
         /// <returns>An UndoCommand that will undo the actions of the command that was run, or null if no command was run.</returns>
-        public UndoCommand RunCommand(Point attacker_point, Point attacked_point, string command)
+        public virtual UndoCommand RunCommand(Point attacker_point, Point attacked_point, string command)
         {
             if (!NodeIsType<ProgramHeadNode>(attacker_point))
                 return null;
@@ -615,7 +615,6 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 undo_command.OriginatingPoint = attacker_point;
                 undo_command.AttackedPoint = attacked_point;
             }
-            Mediator.Notify("haxxit.map.hacked.check", this, new EventArgs());
             return undo_command;
         }
 
@@ -717,6 +716,6 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 players.Enqueue(players.Dequeue()); // Rotate the queue
         }
 
-        protected abstract Player CheckIfMapHacked();
+        //protected abstract Player CheckIfMapHacked();
     }
 }

@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePubSub", "SimplePubSu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePubSub.Tests", "SimplePubSub.Tests\SimplePubSub.Tests.csproj", "{10E730E3-F5A7-402F-A3B2-7479E149E884}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Haxxit.MonoGame", "Haxxit.MonoGame\Haxxit.MonoGame.csproj", "{85DCC313-9BE8-485F-AAF2-96B80FCD2854}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Haxxit.vsmdi
@@ -69,6 +71,16 @@ Global
 		{10E730E3-F5A7-402F-A3B2-7479E149E884}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{10E730E3-F5A7-402F-A3B2-7479E149E884}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{10E730E3-F5A7-402F-A3B2-7479E149E884}.Release|x86.ActiveCfg = Release|Any CPU
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Debug|x86.ActiveCfg = Debug|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Debug|x86.Build.0 = Debug|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Release|Any CPU.ActiveCfg = Release|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Release|Mixed Platforms.Build.0 = Release|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Release|x86.ActiveCfg = Release|x86
+		{85DCC313-9BE8-485F-AAF2-96B80FCD2854}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

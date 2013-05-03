@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
             BiggerFasterProgramFactory;
         static AbstractPlayerMapFactory PlayerMapFactory, PreloadedMapFactory,
-            WinnableMapFactory;
+            WinnableEnemyMapFactory, WinnableDataMapFactory;
 
         private static void InitializePlayerMapFactory()
         {
@@ -39,7 +39,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
             PreloadedMapFactory = new PlayerMapFactory(10, 10, player1_spawns, player2_spawns);
         }
 
-        private static void InitializeWinnableMapFactory()
+        private static void InitializeWinnableEnemyMapFactory()
         {
             List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
             List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
@@ -47,7 +47,18 @@ namespace SmartboyDevelopments.Haxxit.Tests
             player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
             player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(9, 8), FasterProgramFactory));
             player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(8, 9), FasterProgramFactory));
-            WinnableMapFactory = new WinnableMapFactory(10, 10, player1_spawns, player2_spawns);
+            WinnableEnemyMapFactory = new WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns);
+        }
+
+        private static void InitializeWinnableDataMapFactory()
+        {
+            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
+            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
+            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(9, 8), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(8, 9), FasterProgramFactory));
+            WinnableDataMapFactory = new WinnableDataMapFactory(10, 10, player1_spawns, player2_spawns);
         }
 
         [ClassInitialize]
@@ -60,7 +71,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
             BiggerFasterProgramFactory = new DynamicProgramFactory(16, 8, commands);
             InitializePlayerMapFactory();
             InitializePreloadedMapFactory();
-            InitializeWinnableMapFactory();
+            InitializeWinnableEnemyMapFactory();
+            InitializeWinnableDataMapFactory();
         }
 
         [TestMethod]
@@ -150,11 +162,11 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
 
         [TestMethod]
-        public void PlayersCanWinGame()
+        public void PlayersCanWinEnemyMap()
         {
-            Map map = WinnableMapFactory.NewInstance();
-            List<Player> winners = new List<Player>();
-            Action<string, object, EventArgs> action = (x, y, z) => winners.Add(((HackedEventArgs)z).WinningPlayer);
+            Map map = WinnableEnemyMapFactory.NewInstance();
+            List<HackedEventArgs> winners = new List<HackedEventArgs>();
+            Action<string, object, EventArgs> action = (x, y, z) => winners.Add((HackedEventArgs)z);
             map.Mediator.Subscribe("haxxit.map.hacked", action);
             List<Point> moves = new List<Point>();
             moves.Add(new Point(0, 1));
@@ -192,8 +204,25 @@ namespace SmartboyDevelopments.Haxxit.Tests
             map.TurnDone();
             Assert.IsNotNull(map.RunCommand(p3_start, p2_start, "Damage"));
             Assert.IsNotNull(map.RunCommand(p4_start, p2_start, "Damage"));
-            Assert.AreEqual(1, winners.Count);
-            Assert.AreEqual<Player>(WinnableMapFactory.Player2, winners[0]);
+            Assert.IsTrue(map.HasBeenHacked);
+            Assert.AreEqual<int>(1, winners.Count);
+            Assert.AreEqual<Player>(WinnableEnemyMapFactory.Player2, winners[0].WinningPlayer);
+            Assert.AreEqual<ushort>(0, winners[0].EarnedSilicoins);
+        }
+
+        [TestMethod]
+        public void PlayersCanWinDataMap()
+        {
+            Map map = WinnableDataMapFactory.NewInstance();
+            map.CreateNode(new DataNodeFactory(), 0, 2);
+            List<HackedEventArgs> winners = new List<HackedEventArgs>();
+            Action<string, object, EventArgs> action = (x, y, z) => winners.Add((HackedEventArgs)z);
+            map.Mediator.Subscribe("haxxit.map.hacked", action);
+            Assert.IsTrue(map.MoveProgram(new Point(0, 1), new Point(0, 1)));
+            Assert.IsTrue(map.HasBeenHacked);
+            Assert.AreEqual<int>(1, winners.Count);
+            Assert.AreEqual<Player>(WinnableEnemyMapFactory.Player1, winners[0].WinningPlayer);
+            Assert.AreEqual<ushort>(0, winners[0].EarnedSilicoins);
         }
     }
 }

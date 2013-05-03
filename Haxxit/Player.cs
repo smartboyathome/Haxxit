@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit
         /// <summary>
         /// The dictionary containing the number of copies of each program that is owned.
         /// </summary>
-        private Dictionary<ProgramFactory, ushort> owned_programs;
+        private List<ProgramFactory> owned_programs;
         
         /// <summary>
         /// The total number of silicoins the player has earned so far.
@@ -66,8 +66,7 @@ namespace SmartboyDevelopments.Haxxit
         /// <param name="name">The name of the player, optional.</param>
         public Player(string name="")
         {
-            owned_programs = new Dictionary<ProgramFactory, ushort>();
-            TotalSilicoins = 0;
+            owned_programs = new List<ProgramFactory>();
             _notifiable_manager = new NotifiableManager();
             Name = name;
             //_guid = Guid.NewGuid();
@@ -80,9 +79,9 @@ namespace SmartboyDevelopments.Haxxit
         public Player DeepClone()
         {
             Player duplicate = new Player(string.Copy(Name));
-            foreach (KeyValuePair<ProgramFactory, ushort> pair in owned_programs)
+            foreach (ProgramFactory program in owned_programs)
             {
-                duplicate.owned_programs.Add(pair.Key, pair.Value);
+                duplicate.owned_programs.Add(program);
             }
             duplicate.TotalSilicoins = TotalSilicoins;
             duplicate.Notifiable = Notifiable;
@@ -91,45 +90,45 @@ namespace SmartboyDevelopments.Haxxit
         }
 
         /// <summary>
-        /// Adds count number of copies of the program specified by the passed-in ProgramFactory to the dictionary.
+        /// Adds a program specified by the passed-in ProgramFactory to the dictionary.
         /// </summary>
         /// <param name="factory">The factory representing the program which is being added.</param>
         /// <param name="count">The number of copies of the program being added.</param>
         /// <returns>Whether adding the copies are successful.</returns>
-        public bool AddProgramCopies(ProgramFactory factory, ushort count)
+        public bool AddProgram(ProgramFactory factory)
         {
-            if (owned_programs.ContainsKey(factory) && owned_programs[factory] + count > owned_programs[factory])
+            if (!owned_programs.Contains(factory))
             {
-                owned_programs[factory] += count;
-                return true;
-            }
-            else if (!owned_programs.ContainsKey(factory))
-            {
-                owned_programs.Add(factory, count);
+                owned_programs.Add(factory);
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Removes copies of a program specified by the passed-in ProgramFactory from the dictionary.
+        /// Removes a program specified by the passed-in ProgramFactory from the dictionary.
         /// </summary>
         /// <param name="factory">The factory representing the program which is being removed.</param>
         /// <param name="count">The number of copies of the program being removed.</param>
         /// <returns>Whether removing the copies are successful.</returns>
-        public bool RemoveProgramCopies(ProgramFactory factory, ushort count)
+        public bool RemoveProgram(ProgramFactory factory)
         {
-            if (owned_programs.ContainsKey(factory) && owned_programs[factory] - count < owned_programs[factory])
-            {
-                owned_programs[factory] -= count;
-                return true;
-            }
-            else if (owned_programs.ContainsKey(factory))
+            if (owned_programs.Contains(factory))
             {
                 owned_programs.Remove(factory);
                 return true;
             }
             return false;
+        }
+
+        public bool OwnsProgrm(ProgramFactory factory)
+        {
+            return owned_programs.Contains(factory);
+        }
+
+        public IEnumerable<ProgramFactory> GetPrograms()
+        {
+            return owned_programs.AsReadOnly();
         }
 
         /// <summary>

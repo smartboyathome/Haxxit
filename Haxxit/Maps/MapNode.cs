@@ -88,7 +88,20 @@ namespace SmartboyDevelopments.Haxxit.Maps
         
         public override void MovedOnto()
         {
-            Notifiable.Notify("haxxit.silicoins.add", null, new SilicoinEventArgs(num_silicoins));
+            Notifiable.Notify("haxxit.map.silicoins.add", this, new SilicoinEventArgs(num_silicoins));
+        }
+    }
+
+    public class DataNode : AvailableNode
+    {
+        public DataNode() : base()
+        {
+
+        }
+
+        public override void MovedOnto()
+        {
+            Notifiable.Notify("haxxit.map.hacked.check", this, new EventArgs());
         }
     }
 

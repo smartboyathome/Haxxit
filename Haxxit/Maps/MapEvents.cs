@@ -14,8 +14,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
      *     haxxit.map.turn_done
      *     haxxit.map.command
      *     haxxit.map.command.undo
-     *     haxxit.map.hacked.check
      *     haxxit.map.hacked
+     *     haxxit.map.hacked.check
      *     haxxit.silicoins.add
      */
     public abstract partial class Map
@@ -52,7 +52,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
             _mediator_manager.Subscribe("haxxit.map.turn_done", TurnDoneListener);
             _mediator_manager.Subscribe("haxxit.map.command", CommandListener);
             _mediator_manager.Subscribe("haxxit.map.command.undo", UndoCommandListener);
-            _mediator_manager.Subscribe("haxxit.map.hacked.check", CheckHackedListener);
+            _mediator_manager.Subscribe("haxxit.map.silicoins.add", AddSilicoinListener);
+            _mediator_manager.Subscribe("haxxit.map.hacked.check", CheckIfHackedListener);
         }
 
         public void TurnDoneListener(string channel, object sender, EventArgs args)
@@ -110,11 +111,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
             RunUndoCommand(undo_command_args._undo_command);
         }
 
-        public void CheckHackedListener(string channel, object sender, EventArgs args)
+        public void AddSilicoinListener(string channel, object sender, EventArgs args)
         {
-            Player winner = CheckIfMapHacked();
-            if (has_been_hacked)
-                Mediator.Notify("haxxit.map.hacked", this, new HackedEventArgs(winner));
+            SilicoinEventArgs event_args = (SilicoinEventArgs)args;
+            IncreraseEarnedSilicoins(event_args.Silicoins);
         }
+
+        public abstract void CheckIfHackedListener(string channel, object sender, EventArgs args);
     }
 }

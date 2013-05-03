@@ -125,10 +125,16 @@ namespace SmartboyDevelopments.Haxxit.Maps
             get;
             private set;
         }
+        public ushort EarnedSilicoins
+        {
+            get;
+            private set;
+        }
 
-        public HackedEventArgs(Player winning_player)
+        public HackedEventArgs(Player winning_player, ushort earned_silicoins)
         {
             WinningPlayer = winning_player;
+            EarnedSilicoins = earned_silicoins;
         }
     }
 }

@@ -44,4 +44,17 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return new SilicoinNode(num_silicoins);
         }
     }
+
+    public class DataNodeFactory : IFactory<MapNode>
+    {
+        public DataNodeFactory()
+        {
+
+        }
+
+        public MapNode NewInstance()
+        {
+            return new DataNode();
+        }
+    }
 }

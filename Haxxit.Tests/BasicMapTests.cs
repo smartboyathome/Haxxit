@@ -342,16 +342,17 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             SilicoinNodeFactory silicoin_node_factory = new SilicoinNodeFactory(100);
             Map map = SpawnMapFactory.NewInstance();
-            List<ushort> output = new List<ushort>();
-            Action<string, object, EventArgs> action = (x, y, z) => output.Add(((SilicoinEventArgs)z).Silicoins);
-            map.Mediator.Subscribe("haxxit.silicoins.add", action);
+            //List<ushort> output = new List<ushort>();
+            //Action<string, object, EventArgs> action = (x, y, z) => output.Add(((SilicoinEventArgs)z).Silicoins);
+            //map.Mediator.Subscribe("haxxit.silicoins.add", action);
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.CreateNode(silicoin_node_factory, 0, 2);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
-            List<ushort> expected_output = new List<ushort>();
-            expected_output.Add(100);
-            AssertListEqual<ushort>(output, expected_output);
+            Assert.AreEqual<ushort>(100, map.EarnedSilicoins);
+            //List<ushort> expected_output = new List<ushort>();
+            //expected_output.Add(100);
+            //AssertListEqual<ushort>(output, expected_output);
         }
     }
 }

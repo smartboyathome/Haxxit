@@ -151,15 +151,15 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
     }
 
-    class WinnableMapFactory : AbstractPlayerMapFactory
+    class WinnableEnemyMapFactory : AbstractPlayerMapFactory
     {
-        public WinnableMapFactory(int x_size, int y_size, IEnumerable<Point> player1_spawns, IEnumerable<Point> player2_spawns) :
+        public WinnableEnemyMapFactory(int x_size, int y_size, IEnumerable<Point> player1_spawns, IEnumerable<Point> player2_spawns) :
             base(x_size, y_size, player1_spawns, player2_spawns)
         {
 
         }
 
-        public WinnableMapFactory(int x_size, int y_size,
+        public WinnableEnemyMapFactory(int x_size, int y_size,
             IEnumerable<Tuple<Point, IFactory<Program>>> player1_spawns_programs,
             IEnumerable<Tuple<Point, IFactory<Program>>> player2_spawns_programs) :
             base(x_size, y_size, player1_spawns_programs, player2_spawns_programs)
@@ -170,6 +170,28 @@ namespace SmartboyDevelopments.Haxxit.Tests
         protected override Map CreateMap(int x_size, int y_size)
         {
             return new EnemyMap(x_size, y_size);
+        }
+    }
+
+    class WinnableDataMapFactory : AbstractPlayerMapFactory
+    {
+        public WinnableDataMapFactory(int x_size, int y_size, IEnumerable<Point> player1_spawns, IEnumerable<Point> player2_spawns) :
+            base(x_size, y_size, player1_spawns, player2_spawns)
+        {
+
+        }
+
+        public WinnableDataMapFactory(int x_size, int y_size,
+            IEnumerable<Tuple<Point, IFactory<Program>>> player1_spawns_programs,
+            IEnumerable<Tuple<Point, IFactory<Program>>> player2_spawns_programs) :
+            base(x_size, y_size, player1_spawns_programs, player2_spawns_programs)
+        {
+
+        }
+
+        protected override Map CreateMap(int x_size, int y_size)
+        {
+            return new DataMap(x_size, y_size);
         }
     }
 }
