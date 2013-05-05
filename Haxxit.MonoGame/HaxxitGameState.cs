@@ -35,6 +35,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         public abstract void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content);
         public abstract void SubscribeAll();
         public abstract void Update();
-        public abstract void Draw(GraphicsDevice graphics, SpriteBatch sprite_batch);
+        public abstract void Draw(SpriteBatch sprite_batch);
     }
 }

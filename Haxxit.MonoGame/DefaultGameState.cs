@@ -5,12 +5,15 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
     public class DefaultGameState : HaxxitGameState
     {
-        Texture2D test_texture;
+        Texture2D rectangle_texture;
+        Color rectangle_color;
+        Rectangle rectangle;
         SpriteFont test_font;
 
         public DefaultGameState() :
@@ -26,8 +29,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
-            test_texture = new Texture2D(graphics, 1, 1);
-            test_texture.SetData(new Color[] { Color.White });
+            rectangle_texture = new Texture2D(graphics, 1, 1);
+            rectangle_texture.SetData(new Color[] { Color.White });
+            rectangle_color = Color.Red;
+            rectangle = new Rectangle(50, 50, 50, 50);
             test_font = content.Load<SpriteFont>("Arial");
         }
 
@@ -50,14 +55,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
+            MouseState mouse_state = Mouse.GetState(); // Gets the mouse state object
+            Point mouse_position = new Point(mouse_state.X, mouse_state.Y); // creates a point for the mouse's position
+            // if clicking within rectangle
+            if (rectangle.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+            {
+                rectangle_color = Color.Purple;
+            }
+            // if hovering over rectangle
+            else if (rectangle.Contains(mouse_position))
+            {
+                rectangle_color = Color.Yellow;
+            }
+            else // neither clicking nor hovering over rectangle
+            {
+                rectangle_color = Color.Red;
+            }
         }
 
-        public override void Draw(GraphicsDevice graphics, SpriteBatch sprite_batch)
+        public override void Draw(SpriteBatch sprite_batch)
         {
-            sprite_batch.Begin();
-            sprite_batch.Draw(test_texture, new Rectangle(10, 10, 10, 10), Color.Red);
-            sprite_batch.DrawString(test_font, "TEST", new Vector2(25, 25), Color.Orange);
-            sprite_batch.End();
+            sprite_batch.Draw(rectangle_texture, rectangle, rectangle_color);
+            sprite_batch.DrawString(test_font, "TEST", new Vector2(125, 125), Color.Orange);
         }
     }
 }

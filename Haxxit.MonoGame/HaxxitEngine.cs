@@ -205,10 +205,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             base.Draw(gameTime);
 
             /*spriteBatch.Begin();
-            spriteBatch.Draw(test_texture, new Rectangle(10, 10, 10, 10), Color.Red);
+            spriteBatch.Draw(rectangle_texture, new Rectangle(10, 10, 10, 10), Color.Red);
             spriteBatch.End();*/
 
-            state_stack.Peek().Draw(GraphicsDevice, spriteBatch);
+            spriteBatch.Begin();
+            state_stack.Peek().Draw(spriteBatch);
+            spriteBatch.End();
         }
     }
 }
