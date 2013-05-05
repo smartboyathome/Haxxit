@@ -97,8 +97,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="state">The state to add to the stack after all other states are dropped.</param>
         public void ChangeState(HaxxitGameState state)
         {
-            state_stack.Peek().Mediator = null;
-            state_stack.Clear();
+            if (state_stack.Count != 0)
+            {
+                state_stack.Peek().Mediator = null;
+                state_stack.Clear();
+            }
             state_stack.Push(state);
             state_stack.Peek().Mediator = mediator;
             state_stack.Peek().Init();
@@ -110,7 +113,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="state">The state to push onto the top of the stack.</param>
         public void PushState(HaxxitGameState state)
         {
-            state_stack.Peek().Mediator = null;
+            if(state_stack.Count != 0)
+                state_stack.Peek().Mediator = null;
             state_stack.Push(state);
             state.Mediator = mediator;
             state.Init();
@@ -121,9 +125,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// </summary>
         public void PopState()
         {
-            state_stack.Peek().Mediator = null;
-            state_stack.Pop();
-            state_stack.Peek().Mediator = mediator;
+            if (state_stack.Count != 0)
+            {
+                state_stack.Peek().Mediator = null;
+                state_stack.Pop();
+                if(state_stack.Count != 0)
+                    state_stack.Peek().Mediator = mediator;
+            }
         }
 
         /// <summary>
@@ -153,7 +161,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
             foreach (HaxxitGameState state in state_stack)
             {
-                state.LoadContent(GraphicsDevice, spriteBatch);
+                state.LoadContent(GraphicsDevice, spriteBatch, Content);
             }
             // TODO: use this.Content to load your game content here
         }

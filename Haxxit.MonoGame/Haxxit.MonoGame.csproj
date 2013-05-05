@@ -64,10 +64,12 @@
     </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Content\" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\Haxxit.MonoGame.Content\Haxxit.MonoGame.ContentBuilder\Haxxit.MonoGame.ContentBuilder.csproj">
+      <Project>{729F371C-58A3-43C3-967A-AC912F98E65C}</Project>
+      <Name>Haxxit.MonoGame.ContentBuilder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Haxxit\Haxxit.csproj">
       <Project>{B01910C1-6F35-4467-ACF4-3E4832C49840}</Project>
       <Name>Haxxit</Name>

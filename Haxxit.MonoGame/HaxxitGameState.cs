@@ -5,6 +5,7 @@ using System.Text;
 using SmartboyDevelopments.SimplePubSub;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
@@ -31,7 +32,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         }
 
         public abstract void Init();
-        public abstract void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch);
+        public abstract void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content);
         public abstract void SubscribeAll();
         public abstract void Update();
         public abstract void Draw(GraphicsDevice graphics, SpriteBatch sprite_batch);

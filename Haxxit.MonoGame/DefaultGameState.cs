@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
     public class DefaultGameState : HaxxitGameState
     {
         Texture2D test_texture;
+        SpriteFont test_font;
 
         public DefaultGameState() :
             base()
@@ -22,10 +24,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             
         }
 
-        public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch)
+        public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
             test_texture = new Texture2D(graphics, 1, 1);
             test_texture.SetData(new Color[] { Color.White });
+            test_font = content.Load<SpriteFont>("Arial");
         }
 
         public override void SubscribeAll()
@@ -53,6 +56,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             sprite_batch.Begin();
             sprite_batch.Draw(test_texture, new Rectangle(10, 10, 10, 10), Color.Red);
+            sprite_batch.DrawString(test_font, "TEST", new Vector2(25, 25), Color.Orange);
             sprite_batch.End();
         }
     }
