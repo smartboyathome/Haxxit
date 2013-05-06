@@ -34,6 +34,7 @@ namespace SmartboyDevelopments.Haxxit.Programs
         {
             Moves = new Movement(moves);
             Size = new ProgramSize(size);
+            this.TypeName = TypeName;
             _commands = new Dictionary<string, Command>();
             foreach (Command command in commands)
             {

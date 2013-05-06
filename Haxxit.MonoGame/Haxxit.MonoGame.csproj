@@ -35,6 +35,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="MonoGameUtils.cs" />
+    <Compile Include="UserMapGameState.cs" />
     <Compile Include="DefaultGameState.cs" />
     <Compile Include="HaxxitEngine.cs" />
     <Compile Include="HaxxitGameState.cs" />
@@ -69,6 +72,10 @@
     <ProjectReference Include="..\Haxxit.MonoGame.Content\Haxxit.MonoGame.ContentBuilder\Haxxit.MonoGame.ContentBuilder.csproj">
       <Project>{729F371C-58A3-43C3-967A-AC912F98E65C}</Project>
       <Name>Haxxit.MonoGame.ContentBuilder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Haxxit.Tests\Haxxit.Tests.csproj">
+      <Project>{19C517C2-ED2E-4B41-B486-4430869723AB}</Project>
+      <Name>Haxxit.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Haxxit\Haxxit.csproj">
       <Project>{B01910C1-6F35-4467-ACF4-3E4832C49840}</Project>

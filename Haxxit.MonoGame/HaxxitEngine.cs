@@ -8,6 +8,10 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
 using SmartboyDevelopments.SimplePubSub;
+using HaxxitCom = SmartboyDevelopments.Haxxit.Commands;
+using HaxxitProg = SmartboyDevelopments.Haxxit.Programs;
+using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
+using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
 #endregion
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
@@ -43,6 +47,23 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Stack<HaxxitGameState> state_stack;
         IMediator mediator;
 
+        public HaxxitMap.Map GenerateMap()
+        {
+            List<HaxxitCom.Command> commands = new List<HaxxitCom.Command>();
+            commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
+            commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
+            HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
+            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 1), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(9, 8), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(8, 9), program_factory));
+            return (new HaxxitTest.WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns)).NewInstance();
+        }
+
         public HaxxitEngine()
             : base()
         {
@@ -53,7 +74,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.change", ChangeStateListener);
             mediator.Subscribe("haxxit.engine.state.push", PushStateListener);
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
-            PushState(new DefaultGameState());
+
+            PushState(new UserMapGameState(GenerateMap()));
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
-    class DynamicDamageCommand : DamageCommand
+    public class DynamicDamageCommand : DamageCommand
     {
         public DynamicDamageCommand(ushort strength, ushort range, string name="Damage")
         {

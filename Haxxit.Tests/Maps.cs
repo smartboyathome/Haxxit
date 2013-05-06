@@ -8,7 +8,7 @@ using SmartboyDevelopments.SimplePubSub;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
-    class BasicMapFactory : IFactory<Map>
+    public class BasicMapFactory : IFactory<Map>
     {
         private int _x_size, _y_size;
         private IEnumerable<Point> _spawns;
@@ -39,7 +39,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
     }
 
-    abstract class AbstractPlayerMapFactory : IFactory<Map>
+    public abstract class AbstractPlayerMapFactory : IFactory<Map>
     {
         public Player Player1
         {
@@ -129,7 +129,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         protected abstract Map CreateMap(int x_size, int y_size);
     }
 
-    class PlayerMapFactory : AbstractPlayerMapFactory
+    public class PlayerMapFactory : AbstractPlayerMapFactory
     {
         public PlayerMapFactory(int x_size, int y_size, IEnumerable<Point> player1_spawns, IEnumerable<Point> player2_spawns) :
             base(x_size, y_size, player1_spawns, player2_spawns)
@@ -151,7 +151,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
     }
 
-    class WinnableEnemyMapFactory : AbstractPlayerMapFactory
+    public class WinnableEnemyMapFactory : AbstractPlayerMapFactory
     {
         public WinnableEnemyMapFactory(int x_size, int y_size, IEnumerable<Point> player1_spawns, IEnumerable<Point> player2_spawns) :
             base(x_size, y_size, player1_spawns, player2_spawns)
@@ -173,7 +173,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
     }
 
-    class WinnableDataMapFactory : AbstractPlayerMapFactory
+    public class WinnableDataMapFactory : AbstractPlayerMapFactory
     {
         public WinnableDataMapFactory(int x_size, int y_size, IEnumerable<Point> player1_spawns, IEnumerable<Point> player2_spawns) :
             base(x_size, y_size, player1_spawns, player2_spawns)

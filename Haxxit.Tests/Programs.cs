@@ -7,7 +7,7 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.Tests
 {
-    class DynamicProgramFactory : ProgramFactory
+    public class DynamicProgramFactory : ProgramFactory
     {
         public DynamicProgramFactory(ushort moves, ushort size, IEnumerable<Command> commands)
         {

@@ -106,6 +106,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
         }
 
+        public IEnumerable<Player> AllPlayers
+        {
+            get
+            {
+                return players.ToList().AsReadOnly();
+            }
+        }
+
         /// <summary>
         /// Add a player to the player queue.
         /// </summary>
