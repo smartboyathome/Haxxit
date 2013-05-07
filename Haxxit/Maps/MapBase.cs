@@ -374,6 +374,19 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return null;
             return map[p.X, p.Y];
         }
+        
+        /// <summary>
+        /// Gets the MapNode at the given location of the specified type then returns it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public T GetNode<T>(Point p) where T: MapNode
+        {
+            if (!NodeIsType<T>(p))
+                return null;
+            return GetNode(p) as T;
+        }
 
         /// <summary>
         /// Spawns a Program at the point (x,y).

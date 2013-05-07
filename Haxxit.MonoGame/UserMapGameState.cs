@@ -20,6 +20,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         //Dictionary<Haxxit.Maps.MapNode, DrawableRectangle> map_squares;
         Dictionary<Haxxit.Maps.Point, Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>>> map_squares;
         List<DrawableRectangle> extra;
+        DrawableRectangle turn_done_button;
+        List<Tuple<DrawableRectangle, string>> attacks;
         List<Tuple<Haxxit.Maps.Point, string>> head_nodes;
         SpriteFont arial_16px_regular;
         Haxxit.Maps.Map map;
@@ -52,13 +54,36 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             map_squares = new Dictionary<Haxxit.Maps.Point, Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>>>();
             head_nodes = new List<Tuple<Maps.Point, string>>();
             extra = new List<DrawableRectangle>();
+            attacks = new List<Tuple<DrawableRectangle, string>>();
             selected_node = new Maps.Point(-1, -1);
+        }
+
+        private void DrawMovement(Maps.Point head_location)
+        {
+            if (!map.NodeIsType<Maps.ProgramHeadNode>(head_location))
+                return;
+            Maps.ProgramHeadNode node = map.GetNode<Maps.ProgramHeadNode>(head_location);
+            extra.Clear();
+            if (node.Program.Moves.CanMove())
+            {
+                List<Maps.Point> points = head_location.GetOrthologicalNeighbors().ToList();
+                foreach (Maps.Point p in points)
+                {
+                    if (map.NodeIsType<Maps.AvailableNode>(p) ||
+                        (map.NodeIsType<Maps.ProgramNode>(p) && map.GetNode<Maps.ProgramNode>(p).Program == node.Program))
+                    {
+                        extra.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size),
+                            Color.White * 0.375f));
+                    }
+                }
+            }
         }
 
         public void OnRectangleClick(DrawableRectangle rectangle)
         {
             Haxxit.Maps.Point haxxit_location = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
-            if (map.NodeIsType<Maps.ProgramHeadNode>(haxxit_location))
+            if (map.NodeIsType<Maps.ProgramHeadNode>(haxxit_location)
+                && map.GetNode<Maps.ProgramHeadNode>(haxxit_location).Player == map.CurrentPlayer)
             {
                 if (map_squares.ContainsKey(selected_node) && map_squares[selected_node].Item2.Count() > 0)
                 {
@@ -67,16 +92,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (map_squares.ContainsKey(haxxit_location) && map_squares[haxxit_location].Item2.Count() > 0)
                 {
                     map_squares[haxxit_location].Item2.First().BorderSize = 2;
-                    extra.Clear();
-                    List<Maps.Point> points = haxxit_location.GetOrthologicalNeighbors().ToList();
-                    foreach (Maps.Point p in points)
-                    {
-                        if (map.NodeIsType<Maps.AvailableNode>(p))
-                        {
-                            extra.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size),
-                                new Color(Color.White, 0.375f)));
-                        }
-                    }
+                    DrawMovement(haxxit_location);
                 }
                 selected_node = haxxit_location;
             }
@@ -87,16 +103,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (can_move)
                 {
                     map.MoveProgram(selected_node, difference);
-                    extra.Clear();
-                    List<Maps.Point> points = haxxit_location.GetOrthologicalNeighbors().ToList();
-                    foreach (Maps.Point p in points)
-                    {
-                        if (map.NodeIsType<Maps.AvailableNode>(p))
-                        {
-                            extra.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size),
-                                new Color(Color.White, 0.375f)));
-                        }
-                    }
+                    DrawMovement(haxxit_location);
                     selected_node = haxxit_location;
                 }
                 else
@@ -121,11 +128,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             rectangle.BorderSize = 0;
         }
 
+        public void OnTurnDoneClick(DrawableRectangle rectangle)
+        {
+            map.TurnDone();
+            extra.Clear();
+        }
+
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             arial_16px_regular = content.Load<SpriteFont>("Arial");
+            turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
+            turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
         }
 
         public override void SubscribeAll()
@@ -170,6 +185,36 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     string Name = head_node.Program.TypeName[0].ToString();
                     head_nodes.Add(new Tuple<Haxxit.Maps.Point, string>(p, Name));
                 }
+                else if (map.NodeIsType<Maps.ProgramTailNode>(p))
+                {
+                    /* NOT FINISHED! Used for drawing connectors between nodes.
+                    Maps.ProgramTailNode this_node = map.GetNode<Maps.ProgramTailNode>(p);
+                    foreach (Maps.ProgramNode node in this_node.GetAllNodes())
+                    {
+                        Maps.Point difference = node.coordinate - this_node.coordinate;
+                        Point center = rectangles.First().Area.Center;
+                        int width = rectangles.First().Area.Width;
+                        int height = rectangles.First().Area.Height;
+                        if (!difference.IsDirectional())
+                            continue;
+                        else if (difference == new Maps.Point(0, 1)) // Down
+                        {
+                            width /= 4;
+                        }
+                        else if (difference == new Maps.Point(0, -1)) // Up
+                        {
+
+                        }
+                        else if (difference == new Maps.Point(1, 0)) // Right
+                        {
+
+                        }
+                        else // Left
+                        {
+
+                        }
+                    }*/
+                }
             }
             if (rectangles.Count() > 0)
             {
@@ -211,10 +256,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     rectangle.Update();
                 }
             }
+            foreach (DrawableRectangle rectangle in extra)
+            {
+                rectangle.Update();
+            }
+            turn_done_button.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)
         {
+            turn_done_button.Draw(sprite_batch);
+            Vector2 turn_done_size = arial_16px_regular.MeasureString("Turn Done");
+            Vector2 turn_done_position = new Vector2(turn_done_button.Area.X + (turn_done_button.Area.Width - turn_done_size.X),
+                turn_done_button.Area.Y + (turn_done_button.Area.Height - turn_done_size.Y));
+            sprite_batch.DrawString(arial_16px_regular, "Turn Done", turn_done_position, Color.White);
             foreach (Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>> tuple in map_squares.Values)
             {
                 foreach (DrawableRectangle rectangle in tuple.Item2)

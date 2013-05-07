@@ -158,6 +158,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class ProgramTailNode : ProgramNode
     {
+
         public ProgramTailNode(Program p, ProgramNode head) :
             base()
         {
