@@ -166,7 +166,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
 
-            extra.Clear();
+            head_nodes.Clear();
             foreach (SmartboyDevelopments.Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
             {
                 Haxxit.Maps.MapNode node = map.GetNode(p);
