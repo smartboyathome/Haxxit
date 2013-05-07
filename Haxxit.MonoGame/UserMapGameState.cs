@@ -67,6 +67,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (map_squares.ContainsKey(haxxit_location) && map_squares[haxxit_location].Item2.Count() > 0)
                 {
                     map_squares[haxxit_location].Item2.First().BorderSize = 2;
+                    extra.Clear();
                     List<Maps.Point> points = haxxit_location.GetOrthologicalNeighbors().ToList();
                     foreach (Maps.Point p in points)
                     {
@@ -81,12 +82,32 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
             else
             {
-                if (map_squares.ContainsKey(selected_node) && map_squares[selected_node].Item2.Count() > 0)
+                Maps.Point difference = haxxit_location - selected_node;
+                bool can_move = map.CanMoveProgram(selected_node, difference);
+                if (can_move)
                 {
-                    map_squares[selected_node].Item2.First().BorderSize = 0;
+                    map.MoveProgram(selected_node, difference);
+                    extra.Clear();
+                    List<Maps.Point> points = haxxit_location.GetOrthologicalNeighbors().ToList();
+                    foreach (Maps.Point p in points)
+                    {
+                        if (map.NodeIsType<Maps.AvailableNode>(p))
+                        {
+                            extra.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size),
+                                new Color(Color.White, 0.375f)));
+                        }
+                    }
+                    selected_node = haxxit_location;
                 }
-                extra.Clear();
-                selected_node = new Maps.Point(-1, -1);
+                else
+                {
+                    if (map_squares.ContainsKey(selected_node) && map_squares[selected_node].Item2.Count() > 0)
+                    {
+                        map_squares[selected_node].Item2.First().BorderSize = 0;
+                    }
+                    extra.Clear();
+                    selected_node = new Maps.Point(-1, -1);
+                }
             }
         }
 
