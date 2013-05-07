@@ -456,6 +456,19 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return MoveProgram(new Point(start_x, start_y), new Point(dir_x, dir_y));
         }
 
+        public bool CanMoveProgram(Point start, Point direction)
+        {
+            Point end = start + direction;
+            if (!IsSpawningFinished() || !IsInBounds(start) || !IsInBounds(end) || !NodeIsType<ProgramHeadNode>(start)
+                || !(NodeIsType<AvailableNode>(end) || NodeIsType<ProgramTailNode>(end)) || !direction.IsDirectional())
+                return false;
+            bool end_is_tail_node = NodeIsType<ProgramTailNode>(end);
+            ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
+            if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand() || CurrentPlayer != head_node.Player)
+                return false;
+            return true;
+        }
+
         /// <summary>
         /// Moves a Program from the starting point in the direction of the direction point. The direction point must
         /// move the Program only one square, whih means either X must be {+|-}1 and Y must be 0, or Y must be {+|-}1
@@ -467,13 +480,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
         public bool MoveProgram(Point start, Point direction)
         {
             Point end = start + direction;
-            if (!IsSpawningFinished() || !IsInBounds(start) || !IsInBounds(end) || !NodeIsType<ProgramHeadNode>(start)
-                || !(NodeIsType<AvailableNode>(end) || NodeIsType<ProgramTailNode>(end)) || !direction.IsDirectional())
+            if (!CanMoveProgram(start, direction))
                 return false;
             bool end_is_tail_node = NodeIsType<ProgramTailNode>(end);
             ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
-            if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand() || CurrentPlayer != head_node.Player)
-                return false;
             if(NodeIsType<AvailableNode>(end))
                 ((AvailableNode)map[end.X, end.Y]).MovedOnto();
             ProgramTailNode tail_node = new ProgramTailNode(head_node.Program, head_node, head_node.Tail);

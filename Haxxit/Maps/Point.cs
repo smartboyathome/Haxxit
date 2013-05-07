@@ -74,6 +74,30 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
         }
 
+        public IEnumerable<Point> GetOrthologicalNeighbors()
+        {
+            return GetPointsWithinDistance(1);
+        }
+
+        public IEnumerable<Point> GetPointsWithinDistance(int distance)
+        {
+            for (int i = 0; i <= distance; i++)
+            {
+                for (int j = 0; j <= distance; j++)
+                {
+                    if (i == 0 && j == 0)
+                        continue;
+                    if (i + j <= distance)
+                    {
+                        yield return new Point(X - i, Y - j);
+                        yield return new Point(X + i, Y + j);
+                        yield return new Point(X - i, Y + j);
+                        yield return new Point(X + i, Y - j);
+                    }
+                }
+            }
+        }
+
         public bool IsDirectional()
         {
             return (Math.Abs(X) == 1 && Y == 0) || (Math.Abs(Y) == 1 && X == 0);

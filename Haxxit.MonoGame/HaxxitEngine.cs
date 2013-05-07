@@ -211,7 +211,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             base.Update(gameTime);
 
-            state_stack.Peek().Update();
+            if(state_stack.Count > 0)
+                state_stack.Peek().Update();
         }
 
         /// <summary>
@@ -230,9 +231,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             spriteBatch.Draw(rectangle_texture, new Rectangle(10, 10, 10, 10), Color.Red);
             spriteBatch.End();*/
 
-            spriteBatch.Begin();
-            state_stack.Peek().Draw(spriteBatch);
-            spriteBatch.End();
+            if (state_stack.Count > 0)
+            {
+                spriteBatch.Begin();
+                state_stack.Peek().Draw(spriteBatch);
+                spriteBatch.End();
+            }
         }
     }
 }
