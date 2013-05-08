@@ -65,11 +65,11 @@ namespace SmartboyDevelopments.Haxxit.Maps
         public void MoveListener(string channel, object sender, EventArgs args)
         {
             MoveEventArgs move_args = (MoveEventArgs)args;
-            bool program_resized = this.NodeIsType<ProgramHeadNode>(move_args.Start) &&
-                !((ProgramHeadNode)this.GetNode(move_args.Start)).Program.Size.IsMaxSize();
+            bool program_resized = NodeIsType<ProgramHeadNode>(move_args.Start) &&
+                !GetNode<ProgramHeadNode>(move_args.Start).Program.Size.IsMaxSize();
             bool end_was_tailnode = this.NodeIsType<ProgramTailNode>(move_args.Start + move_args.Direction);
             Point tail_location = new Point(-1, -1);
-            if(program_resized)
+            if(!program_resized)
             {
                 ProgramNode program_node = (ProgramNode)GetNode(move_args.Start);
                 while (program_node.Tail != null)
@@ -87,8 +87,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
         public void UndoMoveListener(string channel, object sender, EventArgs args)
         {
             UndoMoveEventArgs undo_move_args = (UndoMoveEventArgs)args;
-            UndoMoveProgram(undo_move_args.Start, undo_move_args.Direction, undo_move_args.ProgramSizeIncreased,
-                undo_move_args.EndWasTailNode);
+            bool result = UndoMoveProgram(undo_move_args.Start, undo_move_args.Direction, undo_move_args.ProgramSizeIncreased,
+                undo_move_args.EndWasTailNode, undo_move_args.TailNodeLocation);
         }
 
         public void CommandListener(string channel, object sender, EventArgs args)

@@ -603,6 +603,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 {
                     map[tail_location.X, tail_location.Y] = new ProgramTailNode(head_node.Program, head_node);
                     map[tail_location.X, tail_location.Y].coordinate = tail_location;
+                    map[tail_location.X, tail_location.Y].Notifiable = Mediator;
+
                     ProgramTailNode end_node = head_node.Tail;
                     while (end_node.Tail != null)
                     {
@@ -610,6 +612,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     }
                     end_node.Tail = (ProgramTailNode)map[tail_location.X, tail_location.Y];
                     ((ProgramTailNode)map[tail_location.X, tail_location.Y]).Head = end_node;
+                    ((ProgramTailNode)map[tail_location.X, tail_location.Y]).Player = head_node.Player;
                 }
             }
             else // The Program was resized and didn't move over a tail node

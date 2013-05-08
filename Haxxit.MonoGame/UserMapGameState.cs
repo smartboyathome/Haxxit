@@ -20,11 +20,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         //Dictionary<Haxxit.Maps.MapNode, DrawableRectangle> map_squares;
         Dictionary<Haxxit.Maps.Point, Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>>> map_squares;
         List<DrawableRectangle> extra;
-        DrawableRectangle turn_done_button;
+        DrawableRectangle turn_done_button, undo_button;
         List<Tuple<DrawableRectangle, string>> attacks;
         List<Tuple<Haxxit.Maps.Point, string>> head_nodes;
         SpriteFont arial_16px_regular;
         Haxxit.Maps.Map map;
+        Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Color> players;
         Maps.Point selected_node;
         string selected_attack;
@@ -33,6 +34,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             base()
         {
             this.map = map;
+            undo_stack = new UndoStack(256);
+        }
+
+        public override void NewMediator(SimplePubSub.IMediator mediator)
+        {
+            map.Mediator = mediator;
+            undo_stack.Mediator = mediator;
         }
 
         public override void Init()
@@ -120,14 +128,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (selected_attack != "")
                 {
                     Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
-                    map.RunCommand(selected_node, attacked_point, selected_attack);
+                    _mediator_manager.Notify("haxxit.map.command", this,
+                        new Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
+                    //map.RunCommand(selected_node, attacked_point, selected_attack);
                     selected_attack = "";
                     extra.Clear();
                     attacks.Clear();
                 }
                 if (can_move)
                 {
-                    map.MoveProgram(selected_node, difference);
+                    _mediator_manager.Notify("haxxit.map.move", this, new Maps.MoveEventArgs(selected_node, difference));
+                    //map.MoveProgram(selected_node, difference);
                     DrawProgramExtras(haxxit_location);
                     selected_node = haxxit_location;
                 }
@@ -142,6 +153,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     selected_node = new Maps.Point(-1, -1);
                 }
             }
+        }
+
+        public void OnUndoClick(DrawableRectangle rectangle)
+        {
+            _mediator_manager.Notify("haxxit.undo_stack.trigger", this, new EventArgs());
         }
 
         public void OnRectangleInside(DrawableRectangle rectangle)
@@ -194,13 +210,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             arial_16px_regular = content.Load<SpriteFont>("Arial");
             turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
             turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
+            undo_button = new DrawableRectangle(rectangle_texture, new Rectangle(580, 440, 100, 30), Color.Orange);
+            undo_button.OnMouseLeftClick += OnUndoClick;
         }
 
         private void MapHackedListener(string channel, object sender, EventArgs args)
         {
             Maps.HackedEventArgs event_args = args as Maps.HackedEventArgs;
             WinGameState new_state = new WinGameState(event_args.EarnedSilicoins);
-            Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+            _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
         public override void SubscribeAll()
@@ -336,15 +354,23 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 attack.Item1.Update();
             }
             turn_done_button.Update();
+            undo_button.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)
         {
             turn_done_button.Draw(sprite_batch);
             Vector2 turn_done_size = arial_16px_regular.MeasureString("Turn Done");
-            Vector2 turn_done_position = new Vector2(turn_done_button.Area.X + (turn_done_button.Area.Width - turn_done_size.X),
-                turn_done_button.Area.Y + (turn_done_button.Area.Height - turn_done_size.Y));
+            Vector2 turn_done_position = new Vector2(turn_done_button.Area.X + (turn_done_button.Area.Width - turn_done_size.X)/2,
+                turn_done_button.Area.Y + (turn_done_button.Area.Height - turn_done_size.Y)/2);
             sprite_batch.DrawString(arial_16px_regular, "Turn Done", turn_done_position, Color.White);
+
+            undo_button.Draw(sprite_batch);
+            Vector2 undo_text_size = arial_16px_regular.MeasureString("Undo");
+            Vector2 undo_text_position = new Vector2(undo_button.Area.X + (undo_button.Area.Width - undo_text_size.X)/2,
+                undo_button.Area.Y + (undo_button.Area.Height - undo_text_size.Y)/2);
+            sprite_batch.DrawString(arial_16px_regular, "Undo", undo_text_position, Color.White);
+
             foreach (Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>> tuple in map_squares.Values)
             {
                 foreach (DrawableRectangle rectangle in tuple.Item2)

@@ -21,6 +21,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             set
             {
                 _mediator_manager.Mediator = value;
+                NewMediator(value);
             }
         }
 
@@ -36,5 +37,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         public abstract void SubscribeAll();
         public abstract void Update();
         public abstract void Draw(SpriteBatch sprite_batch);
+        public virtual void NewMediator(IMediator mediator)
+        {
+
+        }
     }
 }

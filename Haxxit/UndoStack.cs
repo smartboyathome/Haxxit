@@ -6,7 +6,7 @@ using SmartboyDevelopments.SimplePubSub;
 
 namespace SmartboyDevelopments.Haxxit
 {
-    class UndoEventArgs : EventArgs
+    public class UndoEventArgs : EventArgs
     {
         public string Channel { get; private set; }
         public EventArgs Args { get; private set; }
@@ -17,7 +17,7 @@ namespace SmartboyDevelopments.Haxxit
         }
     }
 
-    class UndoStack
+    public class UndoStack
     {
         private Stack<UndoEventArgs> undo_stack;
         private int _max_size;
@@ -61,8 +61,11 @@ namespace SmartboyDevelopments.Haxxit
 
         public void TriggerUndoListener(string channel, object sender, EventArgs args)
         {
-            UndoEventArgs undo = undo_stack.Pop();
-            _mediator_manager.Notify(undo.Channel, this, undo.Args);
+            if (undo_stack.Count != 0)
+            {
+                UndoEventArgs undo = undo_stack.Pop();
+                _mediator_manager.Notify(undo.Channel, this, undo.Args);
+            }
         }
 
         public void ClearUndoListener(string channel, object sender, EventArgs args)
