@@ -111,6 +111,38 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
 
         [TestMethod]
+        public void TestDontSplitProgramFourRightFourLeft()
+        {
+            Map map = SpawnMapFactory.NewInstance();
+            map.SpawnProgram(BasicProgramFactory, 0, 1);
+            map.FinishedSpawning();
+
+            // Move four right
+            Assert.IsTrue(map.MoveProgram(new Point(0, 1), new Point(0, 1)));
+            Assert.IsTrue(map.MoveProgram(new Point(0, 2), new Point(0, 1)));
+            Assert.IsTrue(map.MoveProgram(new Point(0, 3), new Point(0, 1)));
+            Assert.IsTrue(map.MoveProgram(new Point(0, 4), new Point(0, 1)));
+
+            // Cycle back to player 1's turn
+            map.TurnDone();
+            map.TurnDone();
+
+            // Move four left
+            Assert.IsTrue(map.MoveProgram(new Point(0, 5), new Point(0, -1)));
+            Assert.IsTrue(map.MoveProgram(new Point(0, 4), new Point(0, -1)));
+            Assert.IsTrue(map.MoveProgram(new Point(0, 3), new Point(0, -1)));
+            Assert.IsTrue(map.MoveProgram(new Point(0, 2), new Point(0, -1)));
+
+            // Check program location
+            Assert.IsTrue(map.NodeIsType<AvailableNode>(0, 5));
+            Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 4));
+            Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 3));
+            Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 2));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(0, 1));
+            Assert.IsTrue(map.NodeIsType<AvailableNode>(0, 0));
+        }
+
+        [TestMethod]
         public void TestAttackProgram()
         {
             Map map = SpawnMapFactory.NewInstance();
@@ -205,7 +237,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
             map.MoveProgram(new Point(0, 2), new Point(0, 1));
             map.MoveProgram(new Point(0, 3), new Point(0, 1));
             map.MoveProgram(new Point(0, 4), new Point(0, 1));
-            map.MoveProgram(new Point(0, 5), new Point(0, 1)); //shoudln't work now
+            map.MoveProgram(new Point(0, 5), new Point(0, 1)); //shouldn't work now
             Assert.IsTrue(map.NodeIsType<AvailableNode>(0, 1));
             Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 2));
             Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 3));
