@@ -26,7 +26,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         SpriteFont arial_16px_regular, arial_12px_regular;
         Haxxit.Maps.Map map;
         Haxxit.UndoStack undo_stack;
-        Dictionary<Haxxit.Player, Color> players;
+        Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
         Maps.Point selected_node;
         string selected_attack;
 
@@ -45,19 +45,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Init()
         {
-            players = new Dictionary<Player, Color>();
+            players = new Dictionary<Player, Tuple<Color, Color>>();
             Random rand = new Random();
             int count = 0;
             foreach (Player p in map.AllPlayers)
             {
-                Color player_color;
+                Color player_tail_color, player_head_color;
                 if (count == 0)
-                    player_color = Color.Gold;
+                {
+                    player_tail_color = Color.Gold;
+                    player_head_color = Color.OrangeRed;
+                }
                 else if (count == 1)
-                    player_color = Color.SandyBrown;
+                {
+                    player_tail_color = Color.SandyBrown;
+                    player_head_color = Color.Lerp(Color.SandyBrown, Color.Red, 0.25f);
+                }
                 else
-                    player_color = Color.Peru;
-                players.Add(p, player_color);
+                {
+                    player_tail_color = Color.Peru;
+                    player_head_color = Color.Orchid;
+                }
+                players.Add(p, new Tuple<Color, Color>(player_head_color, player_tail_color));
                 count++;
             }
             map_squares = new Dictionary<Haxxit.Maps.Point, Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>>>();
@@ -256,13 +265,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             else if (map.NodeIsType<Haxxit.Maps.ProgramNode>(p))
             {
                 Haxxit.Maps.ProgramNode program_node = (Haxxit.Maps.ProgramNode)map.GetNode(p);
-                Color player_color;
+                Tuple<Color, Color> player_color;
                 if (!players.TryGetValue(program_node.Player, out player_color))
-                    player_color = Color.Transparent;
+                    player_color = new Tuple<Color,Color>(Color.Transparent, Color.Transparent);
+                Color node_color = player_color.Item2;
+                if (map.NodeIsType<Maps.ProgramHeadNode>(p))
+                    node_color = player_color.Item1;
                 if (p == selected_node)
-                    rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), player_color, 2, Color.White));
+                    rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), node_color, 2, Color.White));
                 else
-                    rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), player_color));
+                    rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), node_color));
                 if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
                     Haxxit.Maps.ProgramHeadNode head_node = (Haxxit.Maps.ProgramHeadNode)map.GetNode(p);
