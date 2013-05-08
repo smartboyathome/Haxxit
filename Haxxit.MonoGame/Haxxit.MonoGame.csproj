@@ -38,6 +38,7 @@
     <Compile Include="WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
+    <Compile Include="PlayerAI.cs" />
     <Compile Include="UserMapGameState.cs" />
     <Compile Include="DefaultGameState.cs" />
     <Compile Include="HaxxitEngine.cs" />

@@ -10,7 +10,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     /// <summary>
     /// The main class.
     /// </summary>
-    public static class Program
+    public static class HaxxitEngineRunner
     {
         /// <summary>
         /// The main entry point for the application.

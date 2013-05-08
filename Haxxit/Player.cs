@@ -29,7 +29,7 @@ namespace SmartboyDevelopments.Haxxit
         /// <summary>
         /// The NotifiableManager to be used for mediating notifications between parts of the game.
         /// </summary>
-        private NotifiableManager _notifiable_manager;
+        protected NotifiableManager _notifiable_manager;
 
         /// <summary>
         /// The underlying Notifiable object that the NotifiableManager is mediating.
