@@ -23,7 +23,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         DrawableRectangle turn_done_button, undo_button;
         List<Tuple<DrawableRectangle, string>> attacks;
         List<Tuple<Haxxit.Maps.Point, string>> head_nodes;
-        SpriteFont arial_16px_regular;
+        SpriteFont arial_16px_regular, arial_12px_regular;
         Haxxit.Maps.Map map;
         Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Color> players;
@@ -208,6 +208,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             arial_16px_regular = content.Load<SpriteFont>("Arial");
+            arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
             turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
             turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
             undo_button = new DrawableRectangle(rectangle_texture, new Rectangle(580, 440, 100, 30), Color.Orange);
@@ -408,6 +409,27 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 Vector2 text_size = arial_16px_regular.MeasureString(tuple.Item2);
                 sprite_batch.DrawString(arial_16px_regular, tuple.Item2,
                     new Vector2(position.X + (position.Width - text_size.X)/2, position.Y + (position.Height - text_size.Y)/2), Color.White);
+            }
+
+            List<string> bottom_status = new List<string>();
+            bottom_status.Add(map.CurrentPlayer.Name + "'s turn.");
+            if (map.IsInBounds(selected_node) && map.NodeIsType<Maps.ProgramHeadNode>(selected_node))
+            {
+                Maps.ProgramHeadNode node = map.GetNode<Maps.ProgramHeadNode>(selected_node);
+                //bottom_status += " " + node.Program.TypeName + " has " + node.Program.Moves.MovesLeft + " moves left.";
+                string extra_status = bottom_status.First() + " " + node.Program.TypeName + " has " + node.Program.Moves.MovesLeft + " moves left.";
+                bottom_status.Remove(bottom_status.First());
+                bottom_status.Add(extra_status);
+                if (selected_attack != "")
+                {
+                    Commands.Command command = node.Program.GetCommand(selected_attack);
+                    bottom_status.Add(selected_attack + ": " + command.Description);
+                }
+            }
+            for (int i = 0; i < bottom_status.Count; i++)
+            {
+                Vector2 bottom_status_position = new Vector2(10, 450 - 18 * (bottom_status.Count - i - 1));
+                sprite_batch.DrawString(arial_12px_regular, bottom_status[i], bottom_status_position, Color.White);
             }
         }
     }
