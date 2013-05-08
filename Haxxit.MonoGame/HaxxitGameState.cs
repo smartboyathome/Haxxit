@@ -11,7 +11,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 {
     public abstract class HaxxitGameState
     {
-        private MediatorManager _mediator_manager;
+        protected MediatorManager _mediator_manager;
         public IMediator Mediator
         {
             get

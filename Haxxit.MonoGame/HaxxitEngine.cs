@@ -127,6 +127,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             state_stack.Push(state);
             state_stack.Peek().Mediator = mediator;
             state_stack.Peek().Init();
+            state_stack.Peek().LoadContent(GraphicsDevice, spriteBatch, Content);
         }
 
         /// <summary>
@@ -140,6 +141,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             state_stack.Push(state);
             state.Mediator = mediator;
             state.Init();
+            state_stack.Peek().LoadContent(GraphicsDevice, spriteBatch, Content);
         }
 
         /// <summary>

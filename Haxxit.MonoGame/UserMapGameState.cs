@@ -196,6 +196,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
         }
 
+        private void MapHackedListener(string channel, object sender, EventArgs args)
+        {
+            Maps.HackedEventArgs event_args = args as Maps.HackedEventArgs;
+            WinGameState new_state = new WinGameState(event_args.EarnedSilicoins);
+            Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+        }
+
         public override void SubscribeAll()
         {
             // Add any channels you are subscribing to here by doing the following:
@@ -207,6 +214,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // being the object that sent the notification, and EventArgs being the
             // arguments for the listener. If you need arguments, create a subclass of
             // EventArgs with the arguments as properties.
+
+            _mediator_manager.Subscribe("haxxit.maps.hacked", MapHackedListener);
         }
 
         private IEnumerable<DrawableRectangle> MapNodeToRectangle(Haxxit.Maps.Point p)
@@ -287,6 +296,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
+
+            if (map.HasBeenHacked)
+            {
+                WinGameState new_state = new WinGameState(map.EarnedSilicoins);
+                Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+            }
 
             head_nodes.Clear();
             foreach (SmartboyDevelopments.Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
