@@ -322,20 +322,32 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                         map_squares[p] = new Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>>(map.GetNode(p), rectangles);
                     }
                 }
-                foreach (DrawableRectangle rectangle in map_squares[p].Item2)
+
+                if (map.CurrentPlayer.GetType() != typeof(Haxxit.MonoGame.PlayerAI))
+                {
+                    foreach (DrawableRectangle rectangle in map_squares[p].Item2)
+                    {
+                        rectangle.Update();
+                    }
+                }
+            }
+
+            if (map.CurrentPlayer.GetType() != typeof(Haxxit.MonoGame.PlayerAI))
+            {
+                foreach (DrawableRectangle rectangle in extra)
                 {
                     rectangle.Update();
                 }
+                foreach (Tuple<DrawableRectangle, string> attack in attacks)
+                {
+                    attack.Item1.Update();
+                }
+                turn_done_button.Update();
             }
-            foreach (DrawableRectangle rectangle in extra)
+            else // AI is in charge
             {
-                rectangle.Update();
+                ((Haxxit.MonoGame.PlayerAI)map.CurrentPlayer).HandleAITurn(map);
             }
-            foreach (Tuple<DrawableRectangle, string> attack in attacks)
-            {
-                attack.Item1.Update();
-            }
-            turn_done_button.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)
