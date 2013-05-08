@@ -64,6 +64,37 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             return (new HaxxitTest.WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns)).NewInstance();
         }
 
+        public HaxxitMap.Map GenerateTinyMap()
+        {
+            List<HaxxitCom.Command> commands = new List<HaxxitCom.Command>();
+            commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
+            commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
+            HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
+            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 0), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 1), program_factory));
+            return (new HaxxitTest.PlayerMapFactory(2, 2, player1_spawns, player2_spawns)).NewInstance();
+        }
+
+        public HaxxitMap.Map GenerateTinyEnemyMap()
+        {
+            List<HaxxitCom.Command> commands = new List<HaxxitCom.Command>();
+            commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
+            commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
+            HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
+            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 0), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
+            return (new HaxxitTest.WinnableEnemyMapFactory(2, 2, player1_spawns, player2_spawns)).NewInstance();
+        }
+
         public HaxxitEngine()
             : base()
         {
@@ -76,6 +107,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
 
             PushState(new UserMapGameState(GenerateMap()));
+            //PushState(new UserMapGameState(GenerateTinyMap())); // For 2x2 testing
+            //PushState(new UserMapGameState(GenerateTinyEnemyMap())); // For 2x2 testing with enemy
         }
 
         /// <summary>

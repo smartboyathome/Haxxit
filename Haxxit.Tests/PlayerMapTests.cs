@@ -14,8 +14,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
     {
         static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
             BiggerFasterProgramFactory;
-        static AbstractPlayerMapFactory PlayerMapFactory, PreloadedMapFactory,
-            WinnableEnemyMapFactory, WinnableDataMapFactory;
+        static AbstractPlayerMapFactory PlayerMapFactory, PreloadedMapFactory, TinyPreloadedMapFactory,
+            WinnableEnemyMapFactory, WinnableDataMapFactory, TinyWinnableEnemyMapFactory;
 
         private static void InitializePlayerMapFactory()
         {
@@ -39,6 +39,16 @@ namespace SmartboyDevelopments.Haxxit.Tests
             PreloadedMapFactory = new PlayerMapFactory(10, 10, player1_spawns, player2_spawns);
         }
 
+        private static void InitializeTinyPreloadedMapFactory()
+        {
+            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
+            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
+            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 1), FasterProgramFactory));
+            TinyPreloadedMapFactory = new PlayerMapFactory(2, 2, player1_spawns, player2_spawns);
+        }
+
         private static void InitializeWinnableEnemyMapFactory()
         {
             List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
@@ -48,6 +58,15 @@ namespace SmartboyDevelopments.Haxxit.Tests
             player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(9, 8), FasterProgramFactory));
             player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(8, 9), FasterProgramFactory));
             WinnableEnemyMapFactory = new WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns);
+        }
+
+        private static void InitializeTinyWinnableEnemyMapFactory()
+        {
+            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
+            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
+            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
+            TinyWinnableEnemyMapFactory = new WinnableEnemyMapFactory(2, 2, player1_spawns, player2_spawns);
         }
 
         private static void InitializeWinnableDataMapFactory()
@@ -70,7 +89,9 @@ namespace SmartboyDevelopments.Haxxit.Tests
             FasterProgramFactory = new DynamicProgramFactory(8, 4, commands);
             BiggerFasterProgramFactory = new DynamicProgramFactory(16, 8, commands);
             InitializePlayerMapFactory();
+            InitializeTinyWinnableEnemyMapFactory();
             InitializePreloadedMapFactory();
+            InitializeTinyPreloadedMapFactory();
             InitializeWinnableEnemyMapFactory();
             InitializeWinnableDataMapFactory();
         }
@@ -121,6 +142,29 @@ namespace SmartboyDevelopments.Haxxit.Tests
             Assert.IsTrue(map.MoveProgram(new Point(8, 9), new Point(0, -1)));
             Assert.IsFalse(map.MoveProgram(new Point(1, 1), new Point(0, 1)));
             Assert.IsFalse(map.MoveProgram(new Point(0, 2), new Point(0, 1)));
+        }
+
+        [TestMethod]
+        public void TestDontMoveOverOwnSecondProgramTail()
+        {
+            Map map = TinyPreloadedMapFactory.NewInstance();
+            Assert.IsTrue(map.MoveProgram(new Point(0, 0), new Point(0, 1))); // Player moves left program down
+            Assert.IsFalse(map.MoveProgram(new Point(1, 0), new Point(-1, 0))); // Player attempts to move right program left onto left program tail node
+            Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 0));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(1, 0));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(0, 1));
+        }
+
+        [TestMethod]
+        public void TestDontMoveOverEnemyProgramTail()
+        {
+            Map map = TinyPreloadedMapFactory.NewInstance();
+            Assert.IsTrue(map.MoveProgram(new Point(0, 0), new Point(0, 1))); // Player1 moves left program down
+            map.TurnDone();
+            Assert.IsFalse(map.MoveProgram(new Point(1, 0), new Point(-1, 0))); // Player2 attempts to move right program left onto left program tail node
+            Assert.IsTrue(map.NodeIsType<ProgramTailNode>(0, 0));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(1, 0));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(0, 1));
         }
 
         [TestMethod]
