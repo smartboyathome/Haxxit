@@ -181,7 +181,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public void OnTurnDoneClick(DrawableRectangle rectangle)
         {
-            map.TurnDone();
+            _mediator_manager.Notify("haxxit.map.turn_done", this, new EventArgs());
             extra.Clear();
             attacks.Clear();
             if (map_squares.ContainsKey(selected_node))
