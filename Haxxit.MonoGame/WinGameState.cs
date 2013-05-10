@@ -13,15 +13,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     {
         Texture2D rectangle_texture;
         Color rectangle_color;
-        Rectangle rectangle;
+        DrawableRectangle overlay;
         SpriteFont win_font;
         SpriteFont sub_font;
         ushort earned_silicoins;
+        HaxxitGameState background_state;
 
-        public WinGameState(ushort earned_silicoins) :
+        public WinGameState(ushort earned_silicoins, HaxxitGameState background_state) :
             base()
         {
             this.earned_silicoins = earned_silicoins;
+            this.background_state = background_state;
         }
 
         public override void Init()
@@ -33,8 +35,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
-            rectangle_color = Color.Red;
-            rectangle = new Rectangle(50, 50, 50, 50);
+            overlay = new DrawableRectangle(rectangle_texture, new Rectangle(0, 0, 800, 480), Color.Black * 0.5f);
             win_font = content.Load<SpriteFont>("WinText");
             sub_font = content.Load<SpriteFont>("Arial");
             
@@ -59,27 +60,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
-            /*MouseState mouse_state = Mouse.GetState(); // Gets the mouse state object
-            Point mouse_position = new Point(mouse_state.X, mouse_state.Y); // creates a point for the mouse's position
-            // if clicking within rectangle
-            if (rectangle.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
-            {
-                rectangle_color = Color.Purple;
-            }
-            // if hovering over rectangle
-            else if (rectangle.Contains(mouse_position))
-            {
-                rectangle_color = Color.Yellow;
-            }
-            else // neither clicking nor hovering over rectangle
-            {
-                rectangle_color = Color.Red;
-            }*/
+            
+
         }
 
         public override void Draw(SpriteBatch sprite_batch)
         {
             //sprite_batch.Draw(rectangle_texture, rectangle, rectangle_color);
+            background_state.Draw(sprite_batch);
+            overlay.Draw(sprite_batch);
             sprite_batch.DrawString(win_font, "YOU WIN!", new Vector2(125, 125), Color.Orange);
             sprite_batch.DrawString(sub_font, "You earned " + earned_silicoins.ToString() + " silicoins.", new Vector2(125, 175), Color.Orange);
         }

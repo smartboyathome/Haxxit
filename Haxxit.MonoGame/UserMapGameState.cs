@@ -227,7 +227,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         private void MapHackedListener(string channel, object sender, EventArgs args)
         {
             Maps.HackedEventArgs event_args = args as Maps.HackedEventArgs;
-            WinGameState new_state = new WinGameState(event_args.EarnedSilicoins);
+            WinGameState new_state = new WinGameState(event_args.EarnedSilicoins, this);
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
@@ -330,7 +330,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             if (map.HasBeenHacked)
             {
-                WinGameState new_state = new WinGameState(map.EarnedSilicoins);
+                WinGameState new_state = new WinGameState(map.EarnedSilicoins, this);
                 Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
             }
 
