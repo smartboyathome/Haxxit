@@ -61,7 +61,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
             player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(9, 8), program_factory));
             player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(8, 9), program_factory));
-            return (new HaxxitTest.WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns)).NewInstance();
+            return (new Haxxit.MonoGame.WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns)).NewInstance();
         }
 
         public HaxxitMap.Map GenerateTinyMap()

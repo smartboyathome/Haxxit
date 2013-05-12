@@ -35,6 +35,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MonoGameMaps.cs" />
+    <Compile Include="TurnActions.cs" />
     <Compile Include="WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
