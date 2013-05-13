@@ -16,8 +16,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         const int map_border_size = 6;
 
         Texture2D rectangle_texture;
-        //List<DrawableRectangle> map_squares;
-        //Dictionary<Haxxit.Maps.MapNode, DrawableRectangle> map_squares;
         Dictionary<Haxxit.Maps.Point, Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>>> map_squares;
         List<DrawableRectangle> extra;
         DrawableRectangle turn_done_button, undo_button;
@@ -130,6 +128,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 selected_node = haxxit_location;
             }
+            else if (map.NodeIsType<Haxxit.Maps.SpawnNode>(haxxit_location)
+                && map.GetNode<Haxxit.Maps.SpawnNode>(haxxit_location).Player == map.CurrentPlayer)
+            {
+                SpawnDialogGameState new_state = new SpawnDialogGameState(this, map, haxxit_location);
+                _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+            }
             else
             {
                 Haxxit.Maps.Point difference = haxxit_location - selected_node;
@@ -216,7 +220,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
-            arial_16px_regular = content.Load<SpriteFont>("Arial");
+            arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
             turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
             turn_done_button.OnMouseLeftClick += OnTurnDoneClick;

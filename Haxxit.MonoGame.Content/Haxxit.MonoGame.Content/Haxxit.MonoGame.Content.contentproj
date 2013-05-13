@@ -48,15 +48,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arial.spritefont">
-      <Name>Arial</Name>
+    <Compile Include="Arial-16px-Regular.spritefont">
+      <Name>Arial-16px-Regular</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>MGSpriteFontDescriptionProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WinText.spritefont">
-      <Name>WinText</Name>
+    <Compile Include="Arial-36px-Bold.spritefont">
+      <Name>Arial-36px-Bold</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
@@ -64,6 +64,20 @@
   <ItemGroup>
     <Compile Include="Arial-12px-Regular.spritefont">
       <Name>Arial-12px-Regular</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arial-14px-Regular.spritefont">
+      <Name>Arial-14px-Regular</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arial-10px-Regular.spritefont">
+      <Name>Arial-10px-Regular</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>

@@ -35,6 +35,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="SpawnDialogGameState.cs" />
     <Compile Include="Maps\SpawnMap.cs" />
     <Compile Include="MonoGameMaps.cs" />
     <Compile Include="Programs\Bug.cs" />

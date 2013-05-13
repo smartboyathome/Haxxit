@@ -36,8 +36,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             overlay = new DrawableRectangle(rectangle_texture, new Rectangle(0, 0, 800, 480), Color.Black * 0.5f);
-            win_font = content.Load<SpriteFont>("WinText");
-            sub_font = content.Load<SpriteFont>("Arial");
+            win_font = content.Load<SpriteFont>("Arial-36px-Bold");
+            sub_font = content.Load<SpriteFont>("Arial-16px-Regular");
             
         }
 
