@@ -35,12 +35,13 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\AINodeData.cs" />
+    <Compile Include="AI\NotifyArgs.cs" />
     <Compile Include="MonoGameMaps.cs" />
-    <Compile Include="TurnActions.cs" />
     <Compile Include="WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
-    <Compile Include="PlayerAI.cs" />
+    <Compile Include="AI\PlayerAI.cs" />
     <Compile Include="UserMapGameState.cs" />
     <Compile Include="DefaultGameState.cs" />
     <Compile Include="HaxxitEngine.cs" />

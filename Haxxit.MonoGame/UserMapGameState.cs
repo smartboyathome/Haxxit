@@ -29,7 +29,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
         Maps.Point selected_node;
         string selected_attack;
-        bool AIturnTriggered;
 
         public UserMapGameState(Haxxit.Maps.Map map) :
             base()
@@ -78,7 +77,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             attacks = new List<Tuple<DrawableRectangle, string>>();
             selected_node = new Maps.Point(-1, -1);
             selected_attack = "";
-            AIturnTriggered = false;
         }
 
         private void DrawProgramExtras(Maps.Point head_location)
@@ -379,15 +377,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 turn_done_button.Update();
                 undo_button.Update();
-                AIturnTriggered = false;
             }
             else // AI is in charge
             {
-                if (!AIturnTriggered)
-                {
-                    AIturnTriggered = true;
-                    ((Haxxit.MonoGame.PlayerAI)map.CurrentPlayer).HandleAITurn(map);
-                }
+                ((Haxxit.MonoGame.PlayerAI)map.CurrentPlayer).HandleAITurn(map);
             }
         }
 
