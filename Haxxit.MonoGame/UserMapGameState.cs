@@ -27,7 +27,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Haxxit.Maps.Map map;
         Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
-        Maps.Point selected_node;
+        Haxxit.Maps.Point selected_node;
         string selected_attack;
 
         public UserMapGameState(Haxxit.Maps.Map map) :
@@ -69,28 +69,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 players.Add(p, new Tuple<Color, Color>(player_head_color, player_tail_color));
                 count++;
             }
-            map_squares = new Dictionary<Haxxit.Maps.Point, Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>>>();
-            head_nodes = new List<Tuple<Maps.Point, string>>();
+            map_squares = new Dictionary<Haxxit.Maps.Point, Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>>>();
+            head_nodes = new List<Tuple<Haxxit.Maps.Point, string>>();
             extra = new List<DrawableRectangle>();
             attacks = new List<Tuple<DrawableRectangle, string>>();
-            selected_node = new Maps.Point(-1, -1);
+            selected_node = new Haxxit.Maps.Point(-1, -1);
             selected_attack = "";
         }
 
-        private void DrawProgramExtras(Maps.Point head_location)
+        private void DrawProgramExtras(Haxxit.Maps.Point head_location)
         {
-            if (!map.NodeIsType<Maps.ProgramHeadNode>(head_location))
+            if (!map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(head_location))
                 return;
-            Maps.ProgramHeadNode node = map.GetNode<Maps.ProgramHeadNode>(head_location);
+            Haxxit.Maps.ProgramHeadNode node = map.GetNode<Haxxit.Maps.ProgramHeadNode>(head_location);
             extra.Clear();
             attacks.Clear();
             if (node.Program.Moves.CanMove())
             {
-                List<Maps.Point> points = head_location.GetOrthologicalNeighbors().ToList();
-                foreach (Maps.Point p in points)
+                List<Haxxit.Maps.Point> points = head_location.GetOrthologicalNeighbors().ToList();
+                foreach (Haxxit.Maps.Point p in points)
                 {
-                    if (map.NodeIsType<Maps.AvailableNode>(p) ||
-                        (map.NodeIsType<Maps.ProgramNode>(p) && map.GetNode<Maps.ProgramNode>(p).Program == node.Program))
+                    if (map.NodeIsType<Haxxit.Maps.AvailableNode>(p) ||
+                        (map.NodeIsType<Haxxit.Maps.ProgramNode>(p) && map.GetNode<Haxxit.Maps.ProgramNode>(p).Program == node.Program))
                     {
                         extra.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size),
                             Color.White * 0.375f));
@@ -115,8 +115,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         public void OnRectangleClick(DrawableRectangle rectangle)
         {
             Haxxit.Maps.Point haxxit_location = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
-            if (map.NodeIsType<Maps.ProgramHeadNode>(haxxit_location)
-                && map.GetNode<Maps.ProgramHeadNode>(haxxit_location).Player == map.CurrentPlayer)
+            if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(haxxit_location)
+                && map.GetNode<Haxxit.Maps.ProgramHeadNode>(haxxit_location).Player == map.CurrentPlayer)
             {
                 if (map_squares.ContainsKey(selected_node) && map_squares[selected_node].Item2.Count() > 0)
                 {
@@ -132,13 +132,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
             else
             {
-                Maps.Point difference = haxxit_location - selected_node;
+                Haxxit.Maps.Point difference = haxxit_location - selected_node;
                 bool can_move = map.CanMoveProgram(selected_node, difference);
                 if (selected_attack != "")
                 {
-                    Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
+                    Haxxit.Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
                     _mediator_manager.Notify("haxxit.map.command", this,
-                        new Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
+                        new Haxxit.Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
                     //map.RunCommand(selected_node, attacked_point, selected_attack);
                     selected_attack = "";
                     extra.Clear();
@@ -146,7 +146,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 if (can_move)
                 {
-                    _mediator_manager.Notify("haxxit.map.move", this, new Maps.MoveEventArgs(selected_node, difference));
+                    _mediator_manager.Notify("haxxit.map.move", this, new Haxxit.Maps.MoveEventArgs(selected_node, difference));
                     //map.MoveProgram(selected_node, difference);
                     DrawProgramExtras(haxxit_location);
                     selected_node = haxxit_location;
@@ -159,7 +159,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     }
                     extra.Clear();
                     attacks.Clear();
-                    selected_node = new Maps.Point(-1, -1);
+                    selected_node = new Haxxit.Maps.Point(-1, -1);
                 }
             }
         }
@@ -187,7 +187,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             if (map_squares.ContainsKey(selected_node))
             {
                 map_squares[selected_node].Item2.First().BorderSize = 0;
-                selected_node = new Maps.Point(-1, -1);
+                selected_node = new Haxxit.Maps.Point(-1, -1);
             }
         }
 
@@ -198,8 +198,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 if (attack.Item1 == rectangle)
                 {
-                    Commands.Command command = map.GetNode<Maps.ProgramHeadNode>(selected_node).Program.GetCommand(attack.Item2);
-                    foreach (Maps.Point p in selected_node.GetPointsWithinDistance(command.Range))
+                    Commands.Command command = map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_node).Program.GetCommand(attack.Item2);
+                    foreach (Haxxit.Maps.Point p in selected_node.GetPointsWithinDistance(command.Range))
                     {
                         if (map.IsInBounds(p))
                         {
@@ -226,8 +226,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         private void MapHackedListener(string channel, object sender, EventArgs args)
         {
-            Maps.HackedEventArgs event_args = args as Maps.HackedEventArgs;
-            WinGameState new_state = new WinGameState(event_args.EarnedSilicoins, this);
+            Haxxit.Maps.HackedEventArgs event_args = args as Haxxit.Maps.HackedEventArgs;
+            //WinGameState new_state = new WinGameState(event_args.EarnedSilicoins, this);
+            WinGameState new_state = new WinGameState(500, this);
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
@@ -243,7 +244,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // arguments for the listener. If you need arguments, create a subclass of
             // EventArgs with the arguments as properties.
 
-            _mediator_manager.Subscribe("haxxit.maps.hacked", MapHackedListener);
+            _mediator_manager.Subscribe("haxxit.map.hacked", MapHackedListener);
         }
 
         private IEnumerable<DrawableRectangle> MapNodeToRectangle(Haxxit.Maps.Point p)
@@ -269,7 +270,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (!players.TryGetValue(program_node.Player, out player_color))
                     player_color = new Tuple<Color,Color>(Color.Transparent, Color.Transparent);
                 Color node_color = player_color.Item2;
-                if (map.NodeIsType<Maps.ProgramHeadNode>(p))
+                if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                     node_color = player_color.Item1;
                 if (p == selected_node)
                     rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), node_color, 2, Color.White));
@@ -281,7 +282,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     string Name = head_node.Program.TypeName[0].ToString();
                     head_nodes.Add(new Tuple<Haxxit.Maps.Point, string>(p, Name));
                 }
-                else if (map.NodeIsType<Maps.ProgramTailNode>(p))
+                else if (map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
                 {
                     /* NOT FINISHED! Used for drawing connectors between nodes.
                     Maps.ProgramTailNode this_node = map.GetNode<Maps.ProgramTailNode>(p);
@@ -328,12 +329,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
 
-            if (map.HasBeenHacked)
-            {
-                WinGameState new_state = new WinGameState(map.EarnedSilicoins, this);
-                Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
-            }
-
             head_nodes.Clear();
             foreach (SmartboyDevelopments.Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
             {
@@ -342,15 +337,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     IEnumerable<DrawableRectangle> rectangles = MapNodeToRectangle(p);
                     map_squares.Add(p,
-                        new Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>>(node, rectangles));
+                        new Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>>(node, rectangles));
                 }
                 else
                 {
-                    Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>> old = map_squares[p];
+                    Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>> old = map_squares[p];
                     if (!Object.ReferenceEquals(old.Item1, map.GetNode(p)))
                     {
                         IEnumerable<DrawableRectangle> rectangles = MapNodeToRectangle(p);
-                        map_squares[p] = new Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>>(map.GetNode(p), rectangles);
+                        map_squares[p] = new Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>>(map.GetNode(p), rectangles);
                     }
                 }
 
@@ -396,7 +391,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 undo_button.Area.Y + (undo_button.Area.Height - undo_text_size.Y)/2);
             sprite_batch.DrawString(arial_16px_regular, "Undo", undo_text_position, Color.White);
 
-            foreach (Tuple<Maps.MapNode, IEnumerable<DrawableRectangle>> tuple in map_squares.Values)
+            foreach (Tuple<Haxxit.Maps.MapNode, IEnumerable<DrawableRectangle>> tuple in map_squares.Values)
             {
                 foreach (DrawableRectangle rectangle in tuple.Item2)
                 {
@@ -425,9 +420,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             List<string> bottom_status = new List<string>();
             bottom_status.Add(map.CurrentPlayer.Name + "'s turn.");
-            if (map.IsInBounds(selected_node) && map.NodeIsType<Maps.ProgramHeadNode>(selected_node))
+            if (map.IsInBounds(selected_node) && map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_node))
             {
-                Maps.ProgramHeadNode node = map.GetNode<Maps.ProgramHeadNode>(selected_node);
+                Haxxit.Maps.ProgramHeadNode node = map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_node);
                 //bottom_status += " " + node.Program.TypeName + " has " + node.Program.Moves.MovesLeft + " moves left.";
                 string extra_status = bottom_status.First() + " " + node.Program.TypeName + " has " + node.Program.Moves.MovesLeft + " moves left.";
                 bottom_status.Remove(bottom_status.First());

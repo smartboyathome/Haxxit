@@ -57,4 +57,40 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return new DataNode();
         }
     }
+
+    public class ProgramHeadNodeFactory : IFactory<MapNode>
+    {
+        ProgramFactory program;
+        Player player;
+
+        public ProgramHeadNodeFactory(ProgramFactory program, Player player)
+        {
+            this.program = program;
+            this.player = player;
+        }
+
+        public MapNode NewInstance()
+        {
+            ProgramHeadNode node = new ProgramHeadNode(program.NewInstance());
+            node.Player = player;
+            return node;
+        }
+    }
+
+    public class ProgramTailNodeFactory : IFactory<MapNode>
+    {
+        ProgramHeadNode head;
+
+        public ProgramTailNodeFactory(ProgramHeadNode head)
+        {
+            this.head = head;
+        }
+
+        public MapNode NewInstance()
+        {
+            ProgramTailNode node = new ProgramTailNode(head);
+            node.Player = head.Player;
+            return node;
+        }
+    }
 }

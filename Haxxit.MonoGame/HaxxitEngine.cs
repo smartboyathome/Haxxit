@@ -12,6 +12,8 @@ using HaxxitCom = SmartboyDevelopments.Haxxit.Commands;
 using HaxxitProg = SmartboyDevelopments.Haxxit.Programs;
 using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
 using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
+using SmartboyDevelopments.Haxxit.MonoGame.Programs;
+using SmartboyDevelopments.Haxxit.MonoGame.Maps;
 #endregion
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
@@ -106,7 +108,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.push", PushStateListener);
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
 
-            PushState(new UserMapGameState(GenerateMap()));
+            PushState(new UserMapGameState((new SpawnMapFactory()).NewInstance()));
             //PushState(new UserMapGameState(GenerateTinyMap())); // For 2x2 testing
             //PushState(new UserMapGameState(GenerateTinyEnemyMap())); // For 2x2 testing with enemy
         }

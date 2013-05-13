@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictExtensions.cs" />
+    <Compile Include="ListExtensions.cs" />
     <Compile Include="Subscribable.cs" />
     <Compile Include="Mediator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

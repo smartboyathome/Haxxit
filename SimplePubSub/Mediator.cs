@@ -122,7 +122,7 @@ namespace SmartboyDevelopments.SimplePubSub
 
         public void Notify(string channel, object sender, EventArgs args)
         {
-            foreach (Action<string, object, EventArgs> subscriber in channels.GetValueOrDefault(channel, DefaultChannelValue))
+            foreach (Action<string, object, EventArgs> subscriber in channels.GetValueOrDefault(channel, DefaultChannelValue).ShallowCopy())
             {
                 subscriber.Invoke(channel, sender, args);
             }
@@ -130,9 +130,9 @@ namespace SmartboyDevelopments.SimplePubSub
 
         public void PatternNotify(string channel_pattern, object sender, EventArgs args)
         {
-            foreach (KeyValuePair<string, List<Action<string, object, EventArgs>>> channel in channels.GetAllMatchingRegex(channel_pattern))
+            foreach (KeyValuePair<string, List<Action<string, object, EventArgs>>> channel in channels.GetAllMatchingRegex(channel_pattern).ShallowCopy())
             {
-                foreach (Action<string, object, EventArgs> subscriber in channel.Value)
+                foreach (Action<string, object, EventArgs> subscriber in channel.Value.ShallowCopy())
                 {
                     subscriber.Invoke(channel.Key, sender, args);
                 }

@@ -10,11 +10,11 @@ namespace SmartboyDevelopments.Haxxit.Tests
     {
         public DynamicDamageCommand(ushort strength, ushort range, string name="Damage")
         {
-            _strength = strength;
+            Strength = strength;
             Range = range;
             Name = name;
-            string type = _strength == 1 ? " node" : " nodes";
-            Description = "Removes " + _strength.ToString() + type + " from target.";
+            string type = Strength == 1 ? " node" : " nodes";
+            Description = "Removes " + Strength.ToString() + type + " from target.";
         }
     }
 }

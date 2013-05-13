@@ -7,15 +7,28 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.Commands
 {
-    public abstract class DamageCommand : Command
+    public class DamageCommand : Command
     {
-        protected ushort _strength;
         public ushort Strength
         {
-            get
-            {
-                return _strength;
-            }
+            get;
+            protected set;
+        }
+
+        public DamageCommand()
+        {
+            Name = "";
+            Description = "";
+            Strength = 0;
+            Range = 0;
+        }
+
+        public DamageCommand(string name, string description, ushort strength, ushort range)
+        {
+            Name = name;
+            Description = description;
+            Strength = strength;
+            Range = range;
         }
 
         public override UndoCommand Run(Map map, Point attacked_point)
@@ -26,7 +39,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
             if (map.CurrentPlayer != null && attacked_node.Player == map.CurrentPlayer)
                 return null;
             Program attacked_program = attacked_node.Program;
-            IEnumerable<ProgramNode> removed_nodes = DamageProgram(map, attacked_node, _strength);
+            IEnumerable<ProgramNode> removed_nodes = DamageProgram(map, attacked_node, Strength);
             return new UndoDamageCommand(removed_nodes);
         }
     }
