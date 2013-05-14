@@ -109,7 +109,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.push", PushStateListener);
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
 
-            PushState(new UserMapGameState((new SpawnMapFactory()).NewInstance()));
+            PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
             //PushState(new UserMapGameState(GenerateTinyMap())); // For 2x2 testing
             //PushState(new UserMapGameState(GenerateTinyEnemyMap())); // For 2x2 testing with enemy
         }
@@ -157,8 +157,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             if (state_stack.Count != 0)
             {
-                state_stack.Peek().Mediator = null;
-                state_stack.Clear();
+                state_stack.Pop().Mediator = null;
             }
             state_stack.Push(state);
             state_stack.Peek().Mediator = mediator;

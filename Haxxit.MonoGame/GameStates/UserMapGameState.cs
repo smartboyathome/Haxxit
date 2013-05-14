@@ -44,7 +44,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public override void Init()
         {
             players = new Dictionary<Player, Tuple<Color, Color>>();
-            Random rand = new Random();
             int count = 0;
             foreach (Player p in map.AllPlayers)
             {

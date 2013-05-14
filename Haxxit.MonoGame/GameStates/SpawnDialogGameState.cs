@@ -70,7 +70,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     break;
                 }
             }
-            map.FinishedSpawning();
             _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
         }
 
