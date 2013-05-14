@@ -159,7 +159,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         protected override Player CreatePlayer2()
         {
-            return new Player("Player2");
+            return new PlayerAI("Player2");
         }
     }
 

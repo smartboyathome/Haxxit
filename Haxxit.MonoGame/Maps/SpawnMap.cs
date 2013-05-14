@@ -24,7 +24,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             initial_silicoins = 500;
             total_spawn_weight = 30;
             player1 = new Player("Bob");
-            player2 = new Player("Jane");
+            player2 = new PlayerAI("Jane");
             player1_spawns = new List<Point>();
             player2_programs = new List<Tuple<ProgramFactory, Point, IEnumerable<Point>>>();
             player1_spawns.Add(new Point(2, 2));

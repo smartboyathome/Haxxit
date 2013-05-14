@@ -104,46 +104,46 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
             commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
             HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
             
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 2), program_factory));
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 3), program_factory));
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 6), program_factory));
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 7), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(19, 1), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(19, 2), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(19, 4), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(19, 5), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(19, 7), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(19, 8), program_factory));
-            Maps.Map map = (new Haxxit.MonoGame.WinnableEnemyMapFactory(20, 10, player1_spawns, player2_spawns)).NewInstance();
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(3, 3));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(3, 4));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(3, 5));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(3, 6));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(7, 2));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(6, 1));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(5, 0));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(5, 9));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(6, 8));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(7, 7));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(9, 4));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(9, 5));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(10, 4));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(10, 5));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(16, 3));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(16, 4));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(16, 5));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(16, 6));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(12, 2));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(13, 1));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(14, 0));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(12, 7));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(13, 8));
-            map.CreateNode(new Maps.UnavailableNodeFactory(), new Maps.Point(14, 9));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 2), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 3), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 6), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 7), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(19, 1), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(19, 2), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(19, 4), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(19, 5), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(19, 7), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(19, 8), program_factory));
+            Haxxit.Maps.Map map = (new Haxxit.MonoGame.WinnableEnemyMapFactory(20, 10, player1_spawns, player2_spawns)).NewInstance();
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(3, 3));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(3, 4));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(3, 5));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(3, 6));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(7, 2));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(6, 1));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(5, 0));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(5, 9));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(6, 8));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(7, 7));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(9, 4));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(9, 5));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(10, 4));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(10, 5));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(16, 3));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(16, 4));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(16, 5));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(16, 6));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(12, 2));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(13, 1));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(14, 0));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(12, 7));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(13, 8));
+            map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(14, 9));
             return map;
         }
 
@@ -158,14 +158,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.push", PushStateListener);
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
 
-<<<<<<< HEAD
             PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
-=======
-            //PushState(new UserMapGameState(GenerateMap()));
->>>>>>> 6c08ff2... Added more detailed map
             //PushState(new UserMapGameState(GenerateTinyMap())); // For 2x2 testing
             //PushState(new UserMapGameState(GenerateTinyEnemyMap())); // For 2x2 testing with enemy
-            PushState(new UserMapGameState(GenerateAwesomeMap()));
+            //PushState(new UserMapGameState(GenerateAwesomeMap()));
         }
 
         /// <summary>

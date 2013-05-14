@@ -46,9 +46,13 @@
     <Compile Include="GameStates\WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
-    <Compile Include="PlayerAI.cs" />
     <Compile Include="GameStates\UserMapGameState.cs" />
     <Compile Include="GameStates\DefaultGameState.cs" />
+    <Compile Include="AI\AINodeData.cs" />
+    <Compile Include="AI\CommandInfo.cs" />
+    <Compile Include="AI\NotifyArgs.cs" />
+    <Compile Include="AI\PrioritizedCommand.cs" />
+    <Compile Include="AI\PlayerAI.cs" />
     <Compile Include="HaxxitEngine.cs" />
     <Compile Include="HaxxitGameState.cs" />
     <Compile Include="Program.cs" />
