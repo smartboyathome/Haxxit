@@ -35,15 +35,16 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AI\AINodeData.cs" />
-    <Compile Include="AI\CommandInfo.cs" />
-    <Compile Include="AI\NotifyArgs.cs" />
-    <Compile Include="AI\PrioritizedCommand.cs" />
-    <Compile Include="MonoGameMaps.cs" />
+    <Compile Include="CreditsGameState.cs" />
+    <Compile Include="GlobalAccessors.cs" />
+    <Compile Include="MainMenuGameState.cs" />
+    <Compile Include="OverWorldState.cs" />
+    <Compile Include="ServerOverworldState.cs" />
+    <Compile Include="ShopState.cs" />
     <Compile Include="WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
-    <Compile Include="AI\PlayerAI.cs" />
+    <Compile Include="PlayerAI.cs" />
     <Compile Include="UserMapGameState.cs" />
     <Compile Include="DefaultGameState.cs" />
     <Compile Include="HaxxitEngine.cs" />
