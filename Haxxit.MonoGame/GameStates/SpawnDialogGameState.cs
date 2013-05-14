@@ -13,7 +13,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class SpawnDialogGameState : HaxxitGameState
     {
         Texture2D rectangle_texture;
-        Color rectangle_color;
         DrawableRectangle overlay, popup_window;
         SpriteFont arial_16px_regular, arial_14px_regular, arial_12px_regular, arial_10px_regular;
         HaxxitGameState background_state;

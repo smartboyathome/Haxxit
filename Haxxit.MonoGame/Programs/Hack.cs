@@ -14,6 +14,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             Moves = 2;
             Size = 2;
             SpawnWeight = 20;
+            ProgramCost = 500;
             TypeName = "Slingshot";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Fling", "Deletes 1 cell from target.", 1, 2));

@@ -12,7 +12,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class WinGameState : HaxxitGameState
     {
         Texture2D rectangle_texture;
-        Color rectangle_color;
         DrawableRectangle overlay;
         SpriteFont win_font;
         SpriteFont sub_font;

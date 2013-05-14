@@ -158,7 +158,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.push", PushStateListener);
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
 
-            PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
+            GlobalAccessors.mGame = this;
+            GlobalAccessors.mPlayer1 = new Player("Bob");
+            GlobalAccessors.mPlayer1.AddSilicoins(1400);
+
+            PushState(new MainMenuGameState());
+            //PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
             //PushState(new UserMapGameState(GenerateTinyMap())); // For 2x2 testing
             //PushState(new UserMapGameState(GenerateTinyEnemyMap())); // For 2x2 testing with enemy
             //PushState(new UserMapGameState(GenerateAwesomeMap()));

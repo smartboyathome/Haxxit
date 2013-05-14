@@ -23,6 +23,11 @@ namespace SmartboyDevelopments.Haxxit.Programs
             get;
             protected set;
         }
+        public ushort ProgramCost
+        {
+            get;
+            protected set;
+        }
         public string TypeName
         {
             get;
