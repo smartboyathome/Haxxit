@@ -16,9 +16,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         private Queue<NotifyArgs> turnActions; // Queue of planned actions
         private bool waitingToSend;
         private int departureTime; // Time to send next action
-        private List<Maps.ProgramNode> friendlyPrograms;
-        private List<Maps.ProgramNode> enemyPrograms;
+        private List<Maps.ProgramHeadNode> friendlyPrograms;
+        private List<Maps.ProgramHeadNode> enemyPrograms;
         private AINodeData[,] mapData; // A restructured grid of map data pulled from Haxxit.Maps
+
+        private enum MoveCode
+        {
+            NoMovesSpecified,
+            InsufficientMoves,
+            MoveWasOutOfBounds,
+            MoveWasNotAdjacent,
+            MoveWasBlocked,
+            Success
+        }
 
         // Overall status for waiting/planning/sending loop in HandleAITurn
         private enum AIState
@@ -47,8 +57,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             turnActions = new Queue<NotifyArgs>();
             waitingToSend = false;
             departureTime = 0;
-            friendlyPrograms = new List<Maps.ProgramNode>();
-            enemyPrograms = new List<Maps.ProgramNode>();
+            friendlyPrograms = new List<Maps.ProgramHeadNode>();
+            enemyPrograms = new List<Maps.ProgramHeadNode>();
             mapData = null;
         }
 
@@ -186,24 +196,97 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         // Currently passes through to AStar algorithm for movement to test point
         private void BehaviorAttackNearest(Maps.ProgramHeadNode program)
         {
+            PrioritizedCommand prioritizedCommandHead = null;
+            List<Commands.Command> commands = GetActualCommands(program);
+            foreach(Commands.Command command in commands)
+            {
+                PrioritizedCommand newPrioritizedCommand = FindCommandOptions(program, command);
+                if (prioritizedCommandHead == null)
+                {
+                    prioritizedCommandHead = newPrioritizedCommand;
+                }
+                else if(newPrioritizedCommand.Damage > prioritizedCommandHead.Damage)
+                {
+                    // If the damage of the new command is greater than the head then we prioritize it
+                    newPrioritizedCommand.Next = prioritizedCommandHead;
+                    prioritizedCommandHead = newPrioritizedCommand;
+                }
+                else if(newPrioritizedCommand.Damage == prioritizedCommandHead.Damage && newPrioritizedCommand.Range > prioritizedCommandHead.Range)
+                {
+                    // If the damage of the new command is equal but the range is greater than the head then we prioritize it
+                    newPrioritizedCommand.Next = prioritizedCommandHead;
+                    prioritizedCommandHead = newPrioritizedCommand;
+                }
+                else // The new command has less priority than the head so we must determine its position in the priority list
+                {
+                    PrioritizedCommand prioritizedCommandIndex = prioritizedCommandHead;
+                    PrioritizedCommand prioritizedCommandNextIndex = prioritizedCommandHead.Next;
+                    bool inserted = false;
+                    while (prioritizedCommandNextIndex != null && inserted == false)
+                    {
+                        if (prioritizedCommandHead == null)
+                        {
+                            // This new command is the first on record, so it has priority
+                            prioritizedCommandHead = newPrioritizedCommand;
+                            inserted = true;
+                        }
+                        else if (newPrioritizedCommand.Damage > prioritizedCommandNextIndex.Damage)
+                        {
+                            // If the damage of the new command is greater than the next one then we prioritize it
+                            prioritizedCommandIndex.Next = newPrioritizedCommand;
+                            newPrioritizedCommand.Next = prioritizedCommandNextIndex;
+                            inserted = true;
+                        }
+                        else if (newPrioritizedCommand.Damage == prioritizedCommandHead.Damage && newPrioritizedCommand.Range > prioritizedCommandHead.Range)
+                        {
+                            // If the damage of the new command is equal but the range is greater than the next one then we prioritize it
+                            prioritizedCommandIndex.Next = newPrioritizedCommand;
+                            newPrioritizedCommand.Next = prioritizedCommandNextIndex;
+                            inserted = true;
+                        }
+                        else
+                        {
+                            // The new command has less priority than the next command, so we'll check further down the list
+                            prioritizedCommandIndex = prioritizedCommandNextIndex;
+                            prioritizedCommandNextIndex = prioritizedCommandNextIndex.Next;
+                        }
+                    }
+                    if (!inserted)
+                    {
+                        // The new command has less priority than any of the existing commands so it's placed at the end of the list
+                        prioritizedCommandIndex.Next = newPrioritizedCommand;
+                    }
+                }
+            }
+            // All of the valid command options for this program's current turn should now be accessible in a prioritized
+            // list which is accessible from prioritizedCommandHead.
+
             Stack<Maps.Point> shortestPath = AStar(program, new Maps.Point(4, 4));
             if (shortestPath == null)
             {
                 return;
             }
-            Maps.Point movedHead = program.coordinate;
-            int moves = program.Program.Moves.MovesLeft;
-            foreach (Maps.Point point in shortestPath)
+            Queue<Maps.Point> path = new Queue<Maps.Point>();
+            if (shortestPath.Count < program.Program.Moves.MovesLeft)
             {
-                if (moves <= 0)
+                for (int i = shortestPath.Count; i > 0; i--)
                 {
-                    break;
+                    path.Enqueue(shortestPath.Pop());
                 }
-                Maps.Point direction = point - movedHead;
-                Maps.MoveEventArgs nextMove = new Maps.MoveEventArgs(movedHead, direction);
-                turnActions.Enqueue(new NotifyArgs("haxxit.map.move", this, nextMove));
-                movedHead += direction;
-                moves--;
+            }
+            else
+            {
+                for (int i = program.Program.Moves.MovesLeft; i > 0; i--)
+                {
+                    path.Enqueue(shortestPath.Pop());
+                }
+            }
+            MoveCode moveCode = PerformMoves(program, path);
+            if (moveCode != MoveCode.Success)
+            {
+                #if DEBUG
+                throw new Exception();
+                #endif
             }
         }
 
@@ -240,16 +323,126 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
         }
 
+        // Retrieve's a program's actual command objects from the list of strings returned by
+        // Haxxit.Programs.Program's GetAllCommands function.  (PS: I wish this weren't necessary)
+        private List<Commands.Command> GetActualCommands(Maps.ProgramHeadNode program)
+        {
+            List<string> commandStrings = program.Program.GetAllCommands();
+            List<Commands.Command> commands = new List<Commands.Command>();
+            foreach (string lookup in commandStrings)
+            {
+                commands.Add(program.Program.GetCommand(lookup));
+            }
+            return commands;
+        }
+
+        // Fills a PrioritizeCommand object with a list of all the valid nodes from which a program can execute the
+        // associated command.  This list will be used by the AI in conjunction with AStar pathfinding to determine
+        // the best node to move to and issue a command from this turn.
+        private PrioritizedCommand FindCommandOptions(Maps.ProgramHeadNode program, Commands.Command command)
+        {
+            PrioritizedCommand newPrioritizedCommand = new PrioritizedCommand(command);
+            foreach (Maps.ProgramHeadNode enemyProgram in enemyPrograms)
+            {
+                foreach (Maps.ProgramNode node in enemyProgram.GetAllNodes())
+                {
+                    List<Maps.Point> commandPoints = FindNodesInRange(program, node.coordinate, newPrioritizedCommand.Range);
+                    foreach (Maps.Point point in commandPoints)
+                    {
+                        PrioritizedCommand.CommandInfo newCommandInfo = new PrioritizedCommand.CommandInfo();
+                        newCommandInfo.source = point;
+                        newCommandInfo.destination = node.coordinate;
+                        newCommandInfo.target = enemyProgram;
+                        newPrioritizedCommand.TargetOptions.Add(newCommandInfo);
+                    }
+                }
+            }
+            return newPrioritizedCommand;
+        }
+
+        // This is a recursive helper function for finding all of the valid nodes which are within a specified range
+        // of the target node.  Since programs can traverse their own nodes a program object is passed for this
+        // validity check.
+        private List<Maps.Point> FindNodesInRange(Maps.ProgramHeadNode program, Maps.Point target, int range)
+        {
+            List<Maps.Point> nodesInRange;
+            if (range == 0) // Base case instantiates the actual list object
+            {
+                nodesInRange = new List<Maps.Point>();
+                return nodesInRange;
+            }
+            else // Find all of the valid nodes in the current range ring (each recursive call handles a smaller ring)
+            {
+                nodesInRange = FindNodesInRange(program, target, range - 1);
+                for (int negativeX = range * -1; negativeX < 0; negativeX++) // Find options in upper left quadrant
+                {
+                    Maps.Point checkPoint = new Maps.Point(target.X + negativeX, target.Y + range + negativeX);
+                    if (IsInBounds(checkPoint))
+                    {
+                        if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                        {
+                            nodesInRange.Add(checkPoint);
+                        }
+                    }
+                }
+                for (int positiveY = range; positiveY > 0; positiveY--) // Find options in upper right quadrant
+                {
+                    Maps.Point checkPoint = new Maps.Point(target.X + range - positiveY, target.Y + positiveY);
+                    if (IsInBounds(checkPoint))
+                    {
+                        if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                        {
+                            nodesInRange.Add(checkPoint);
+                        }
+                    }
+                }
+                for (int positiveX = range; positiveX > 0; positiveX--) // Find options in lower right quadrant
+                {
+                    Maps.Point checkPoint = new Maps.Point(target.X + positiveX, target.Y - range + positiveX);
+                    if (IsInBounds(checkPoint))
+                    {
+                        if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                        {
+                            nodesInRange.Add(checkPoint);
+                        }
+                    }
+                }
+                for (int negativeY = range * -1; negativeY < 0; negativeY++) // Find options in lower left quadrant
+                {
+                    Maps.Point checkPoint = new Maps.Point(target.X - range - negativeY, target.Y + negativeY);
+                    if (IsInBounds(checkPoint))
+                    {
+                        if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                        {
+                            nodesInRange.Add(checkPoint);
+                        }
+                    }
+                }
+            }
+            return nodesInRange;
+        }
+
+        // A simple function to determine if a specified point is within the map bounds.
+        // Used to prevent null reference exceptions when dereferencing the mapData array.
+        public bool IsInBounds(Maps.Point point)
+        {
+            if (point.X < 0 || point.X >= map.XSize || point.Y < 0 || point.Y >= map.YSize)
+            {
+                return false;
+            }
+            return true;
+        }
+
         // Super awesome fancy-pants AStar algorithm for efficient path-finding around obstacles!
         // See http://www.policyalmanac.org/games/aStarTutorial.htm for abstract theory.
         private Stack<Maps.Point> AStar(Maps.ProgramHeadNode program, Maps.Point destination)
         {
+            Stack<Maps.Point> path = new Stack<Maps.Point>();
             int checkSourceH = Math.Abs(destination.X - program.coordinate.X) + Math.Abs(destination.Y - program.coordinate.Y);
             if (checkSourceH == 0) // If we're already at the destination then there's no work to do below
             {
-                return null;
+                return path; // Empty path (already at destination)
             }
-            Stack<Maps.Point> path = new Stack<Maps.Point>();
             List<AINodeData> openList = new List<AINodeData>();
             List<AINodeData> closeList = new List<AINodeData>();
             AINodeData source = mapData[program.coordinate.X, program.coordinate.Y];
@@ -264,7 +457,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 if (!openList.Any())
                 {
-                    return null;
+                    return null; // No path to destination
                 }
                 currentNode = openList.First();
                 foreach (AINodeData node in openList)
@@ -281,34 +474,36 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     break;
                 }
-                if (currentNode.Coordinate.X != 0)
+                if (currentNode.Coordinate.X != 0) // Check node to left
                 {
                     checkNode = mapData[currentNode.Coordinate.X - 1, currentNode.Coordinate.Y];
                     AStarHelp(currentNode, checkNode, openList, closeList, program, destination);
                 }
-                if (currentNode.Coordinate.Y != 0)
+                if (currentNode.Coordinate.Y != 0) // Check node above
                 {
                     checkNode = mapData[currentNode.Coordinate.X, currentNode.Coordinate.Y - 1];
                     AStarHelp(currentNode, checkNode, openList, closeList, program, destination);
                 }
-                if (currentNode.Coordinate.X != map.XSize - 1)
+                if (currentNode.Coordinate.X != map.XSize - 1) // Check node to right
                 {
                     checkNode = mapData[currentNode.Coordinate.X + 1, currentNode.Coordinate.Y];
                     AStarHelp(currentNode, checkNode, openList, closeList, program, destination);
                 }
-                if (currentNode.Coordinate.Y != map.YSize - 1)
+                if (currentNode.Coordinate.Y != map.YSize - 1) // Check node below
                 {
                     checkNode = mapData[currentNode.Coordinate.X, currentNode.Coordinate.Y + 1];
                     AStarHelp(currentNode, checkNode, openList, closeList, program, destination);
                 }
             }
+
+            // Trace the discovered path and push the points onto a stack
             while (currentNode != source)
             {
                 path.Push(currentNode.Coordinate);
                 currentNode = currentNode.Parent;
             }
             ClearAStarData(openList, closeList);
-            return path;
+            return path; // Populated path to destination
         }
 
         // Non-recursive helper function for AStar algorithm.  Implemented to prevent code duplication for each direction above.
@@ -358,6 +553,83 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 node.H = int.MaxValue;
                 node.AStarTrackStatus = AINodeData.AStarStatus.Unlisted;
             }
+        }
+
+        // This function accepts a queue of intended moves for the specified program.  It first performs error
+        // checking to ensure that the moves are possible, then updates the associated AINodeData to reflect
+        // game changes as a result of these moves, and finally submits the moves to the turnActions queue for
+        // sending during subsequent calls to HandleAITurn.
+        private MoveCode PerformMoves(Maps.ProgramHeadNode program, Queue<Maps.Point> path)
+        {
+            if (path == null)
+            {
+                return MoveCode.NoMovesSpecified;
+            }
+
+            // Will hold all nodes touched by program both before and after move
+            List<Maps.Point> programPoints = new List<Maps.Point>();
+
+            // Get all the nodes currently associated with the program
+            foreach (Maps.MapNode node in program.GetAllNodes())
+            {
+                programPoints.Insert(0, node.coordinate);
+            }
+
+            int movesLeft = program.Program.Moves.MovesLeft;
+            Maps.Point currentHead = program.coordinate;
+            foreach (Maps.Point destination in path)
+            {
+                Maps.Point direction = destination - currentHead;
+                if (!IsInBounds(destination))
+                {
+                    return MoveCode.MoveWasOutOfBounds;
+                }
+                else if (Math.Abs(direction.X) != 1 && Math.Abs(direction.X) != 0)
+                {
+                    return MoveCode.MoveWasNotAdjacent;
+                }
+                else if (Math.Abs(direction.Y) != 1 && Math.Abs(direction.Y) != 0)
+                {
+                    return MoveCode.MoveWasNotAdjacent;
+                }
+                else if (Math.Abs(direction.X) == 0 && Math.Abs(direction.Y) == 0)
+                {
+                    return MoveCode.MoveWasNotAdjacent;
+                }
+                else if (Math.Abs(direction.X) == 1 && Math.Abs(direction.Y) == 1)
+                {
+                    return MoveCode.MoveWasNotAdjacent;
+                }
+                else if (!mapData[destination.X, destination.Y].canHoldCurrentProgram(program))
+                {
+                    return MoveCode.MoveWasBlocked;
+                }
+                else if (movesLeft <= 0)
+                {
+                    return MoveCode.InsufficientMoves;
+                }
+                movesLeft--;
+                programPoints.Add(destination);
+                Maps.MoveEventArgs nextMove = new Maps.MoveEventArgs(currentHead, direction);
+                turnActions.Enqueue(new NotifyArgs("haxxit.map.move", this, nextMove));
+                currentHead = destination;
+            }
+            int index = 0;
+            foreach (Maps.Point point in programPoints)
+            {
+                if (index < programPoints.Count - program.Program.Size.MaxSize)
+                {
+                    mapData[point.X, point.Y].IsAvailable = true;
+                    mapData[point.X, point.Y].OccupiedBy = null;
+                }
+                else
+                {
+                    mapData[point.X, point.Y].IsAvailable = false;
+                    mapData[point.X, point.Y].OccupiedBy = program.Program;
+                }
+                index++;
+            }
+            return MoveCode.Success;
         }
 
         // Sends all of the planned AI actions to the engine
