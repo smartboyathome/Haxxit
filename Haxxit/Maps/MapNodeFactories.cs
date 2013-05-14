@@ -80,15 +80,29 @@ namespace SmartboyDevelopments.Haxxit.Maps
     public class ProgramTailNodeFactory : IFactory<MapNode>
     {
         ProgramHeadNode head;
+        ProgramNode previous;
+        ProgramTailNode next;
 
-        public ProgramTailNodeFactory(ProgramHeadNode head)
+        public ProgramTailNodeFactory(ProgramHeadNode head, ProgramNode previous, ProgramTailNode next=null)
         {
             this.head = head;
+            this.previous = previous;
+            this.next = next;
         }
 
         public MapNode NewInstance()
         {
             ProgramTailNode node = new ProgramTailNode(head);
+            if (previous != null)
+            {
+                node.Head = previous;
+                previous.Tail = node;
+            }
+            if (next != null)
+            {
+                node.Tail = next;
+                next.Head = node;
+            }
             node.Player = head.Player;
             return node;
         }

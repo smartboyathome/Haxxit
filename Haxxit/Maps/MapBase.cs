@@ -16,9 +16,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
         private bool spawning_finished; // Users have finished spawning
         protected bool has_been_hacked; // Whether this map has been completed already
         protected ushort earned_silicoins; // How many silicoins have been earned from this map
+        protected ushort total_spawn_weights; // How many (and how large) programs can this map support?
         protected Queue<Player> players; // The player queue
 
-        private void InitializeMap(int x_size, int y_size, ushort initial_silicoins)
+        private void InitializeMap(int x_size, int y_size, ushort initial_silicoins, ushort total_spawn_weights)
         {
             map = new MapNode[x_size, y_size];
             foreach (Point p in (new Point(0, 0)).IterateOverRange(new Point(x_size - 1, y_size - 1)))
@@ -30,6 +31,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
             has_been_hacked = false;
             earned_silicoins = initial_silicoins;
+            this.total_spawn_weights = total_spawn_weights;
         }
 
         /// <summary>
@@ -51,6 +53,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
             get
             {
                 return earned_silicoins;
+            }
+        }
+
+        public ushort TotalSpawnWeights
+        {
+            get
+            {
+                return total_spawn_weights;
             }
         }
 
@@ -395,7 +405,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="x">The X-coordinate of the point where the Program will be spawned.</param>
         /// <param name="y">The Y-coordinate of the point where the Program will be spawned.</param>
         /// <returns>Whether the Program could be spawned at that point.</returns>
-        public bool SpawnProgram(IFactory<Program> factory, int x, int y)
+        public bool SpawnProgram(ProgramFactory factory, int x, int y)
         {
             return SpawnProgram(factory, new Point(x, y));
         }
@@ -406,12 +416,21 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="T">The factory that will create an instance of the program.</param>
         /// <param name="p">The point at which to spawn the Program.</param>
         /// <returns>Whether the Program could be spawned.</returns>
-        public bool SpawnProgram(IFactory<Program> factory, Point p)
+        public bool SpawnProgram(ProgramFactory factory, Point p)
         {
             if (!IsInBounds(p) || !NodeIsType<SpawnNode>(p))
                 return false;
+            if (total_spawn_weights != 0)
+            {
+                ushort spawn_weight_sum = 0;
+                foreach (Point point in Low.IterateOverRange(High))
+                    if (p != point && NodeIsType<SpawnNode>(point) && GetNode<SpawnNode>(point).program != null)
+                        spawn_weight_sum += GetNode<SpawnNode>(point).program.SpawnWeight;
+                if (spawn_weight_sum + factory.SpawnWeight > total_spawn_weights)
+                    return false;
+            }
             SpawnNode spawn = (SpawnNode)map[p.X, p.Y];
-            spawn.program = factory.NewInstance();
+            spawn.program = factory;
             return true;
         }
 
@@ -430,7 +449,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     SpawnNode node = (SpawnNode)map[p.X, p.Y];
                     if (node.IsTaken())
                     {
-                        Program program = node.program;
+                        Program program = node.program.NewInstance();
                         ProgramHeadNode prognode = new ProgramHeadNode(program);
                         prognode.Notifiable = Mediator;
                         prognode.coordinate = p;

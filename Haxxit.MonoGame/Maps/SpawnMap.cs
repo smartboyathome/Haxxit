@@ -12,7 +12,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
 {
     class SpawnMapFactory : IFactory<Map>
     {
-        ushort width, height;
+        ushort width, height, initial_silicoins, total_spawn_weight;
         List<Point> player1_spawns;
         List<Tuple<ProgramFactory, Point, IEnumerable<Point>>> player2_programs;
         Player player1, player2;
@@ -21,6 +21,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
         {
             width = 10;
             height = 7;
+            initial_silicoins = 500;
+            total_spawn_weight = 30;
             player1 = new Player("Bob");
             player2 = new Player("Jane");
             player1_spawns = new List<Point>();
@@ -46,7 +48,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
 
         public Map NewInstance()
         {
-            Map map = new EnemyMap(width, height);
+            Map map = new EnemyMap(width, height, initial_silicoins, total_spawn_weight);
             map.AddPlayer(player1);
             map.AddPlayer(player2);
             map.CreateNodes(new AvailableNodeFactory(), 0, 0, width - 1, height - 1);
@@ -59,9 +61,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             {
                 map.CreateNode(new ProgramHeadNodeFactory(tuple.Item1, player2), tuple.Item2);
                 ProgramHeadNode head = map.GetNode<ProgramHeadNode>(tuple.Item2);
+                ProgramNode previous = head;
                 foreach (Point p in tuple.Item3)
                 {
-                    map.CreateNode(new ProgramTailNodeFactory(head), p);
+                    map.CreateNode(new ProgramTailNodeFactory(head, previous), p);
+                    previous = map.GetNode<ProgramNode>(p);
                 }
             }
             return map;

@@ -14,6 +14,7 @@ using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
 using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 using SmartboyDevelopments.Haxxit.MonoGame.Maps;
+using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
 #endregion
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
@@ -55,14 +56,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
             commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
             HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 1), program_factory));
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(9, 8), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(8, 9), program_factory));
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 1), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(1, 0), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(9, 8), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(8, 9), program_factory));
             return (new HaxxitTest.WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns)).NewInstance();
         }
 
@@ -72,13 +73,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
             commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
             HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 0), program_factory));
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 1), program_factory));
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 0), program_factory));
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(1, 0), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(1, 1), program_factory));
             return (new HaxxitTest.PlayerMapFactory(2, 2, player1_spawns, player2_spawns)).NewInstance();
         }
 
@@ -88,12 +89,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
             commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
             HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player1_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>> player2_spawns =
-                new List<Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>>();
-            player1_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(0, 0), program_factory));
-            player2_spawns.Add(new Tuple<HaxxitMap.Point, IFactory<HaxxitProg.Program>>(new HaxxitMap.Point(1, 0), program_factory));
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player1_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player2_spawns =
+                new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
+            player1_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(0, 0), program_factory));
+            player2_spawns.Add(new Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>(new HaxxitMap.Point(1, 0), program_factory));
             return (new HaxxitTest.WinnableEnemyMapFactory(2, 2, player1_spawns, player2_spawns)).NewInstance();
         }
 

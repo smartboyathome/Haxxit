@@ -30,53 +30,53 @@ namespace SmartboyDevelopments.Haxxit.Tests
 
         private static void InitializePreloadedMapFactory()
         {
-            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 1), FasterProgramFactory));
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(9, 8), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(8, 9), FasterProgramFactory));
+            List<Tuple<Point, ProgramFactory>> player1_spawns = new List<Tuple<Point, ProgramFactory>>();
+            List<Tuple<Point, ProgramFactory>> player2_spawns = new List<Tuple<Point, ProgramFactory>>();
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(9, 8), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(8, 9), FasterProgramFactory));
             PreloadedMapFactory = new PlayerMapFactory(10, 10, player1_spawns, player2_spawns);
         }
 
         private static void InitializeTinyPreloadedMapFactory()
         {
-            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 1), FasterProgramFactory));
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 1), FasterProgramFactory));
+            List<Tuple<Point, ProgramFactory>> player1_spawns = new List<Tuple<Point, ProgramFactory>>();
+            List<Tuple<Point, ProgramFactory>> player2_spawns = new List<Tuple<Point, ProgramFactory>>();
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 1), FasterProgramFactory));
             TinyPreloadedMapFactory = new PlayerMapFactory(2, 2, player1_spawns, player2_spawns);
         }
 
         private static void InitializeWinnableEnemyMapFactory()
         {
-            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 1), FasterProgramFactory));
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(9, 8), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(8, 9), FasterProgramFactory));
+            List<Tuple<Point, ProgramFactory>> player1_spawns = new List<Tuple<Point, ProgramFactory>>();
+            List<Tuple<Point, ProgramFactory>> player2_spawns = new List<Tuple<Point, ProgramFactory>>();
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(9, 8), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(8, 9), FasterProgramFactory));
             WinnableEnemyMapFactory = new WinnableEnemyMapFactory(10, 10, player1_spawns, player2_spawns);
         }
 
         private static void InitializeTinyWinnableEnemyMapFactory()
         {
-            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 0), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
+            List<Tuple<Point, ProgramFactory>> player1_spawns = new List<Tuple<Point, ProgramFactory>>();
+            List<Tuple<Point, ProgramFactory>> player2_spawns = new List<Tuple<Point, ProgramFactory>>();
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 0), FasterProgramFactory));
             TinyWinnableEnemyMapFactory = new WinnableEnemyMapFactory(2, 2, player1_spawns, player2_spawns);
         }
 
         private static void InitializeWinnableDataMapFactory()
         {
-            List<Tuple<Point, IFactory<Program>>> player1_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            List<Tuple<Point, IFactory<Program>>> player2_spawns = new List<Tuple<Point, IFactory<Program>>>();
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(0, 1), FasterProgramFactory));
-            player1_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(1, 0), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(9, 8), FasterProgramFactory));
-            player2_spawns.Add(new Tuple<Point, IFactory<Program>>(new Point(8, 9), FasterProgramFactory));
+            List<Tuple<Point, ProgramFactory>> player1_spawns = new List<Tuple<Point, ProgramFactory>>();
+            List<Tuple<Point, ProgramFactory>> player2_spawns = new List<Tuple<Point, ProgramFactory>>();
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 0), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(9, 8), FasterProgramFactory));
+            player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(8, 9), FasterProgramFactory));
             WinnableDataMapFactory = new WinnableDataMapFactory(10, 10, player1_spawns, player2_spawns);
         }
 

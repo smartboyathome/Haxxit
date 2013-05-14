@@ -13,6 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
         {
             Moves = 5;
             Size = 1;
+            SpawnWeight = 20;
             TypeName = "Bug";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Glitch", "Deletes 2 cells from target.", 2, 1));

@@ -35,19 +35,20 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="SpawnDialogGameState.cs" />
+    <Compile Include="GameStates\MapSpawnGameState.cs" />
+    <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="Maps\SpawnMap.cs" />
     <Compile Include="MonoGameMaps.cs" />
     <Compile Include="Programs\Bug.cs" />
     <Compile Include="Programs\Sentinel.cs" />
     <Compile Include="Programs\Slingshot.cs" />
     <Compile Include="Programs\Hack.cs" />
-    <Compile Include="WinGameState.cs" />
+    <Compile Include="GameStates\WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
     <Compile Include="PlayerAI.cs" />
-    <Compile Include="UserMapGameState.cs" />
-    <Compile Include="DefaultGameState.cs" />
+    <Compile Include="GameStates\UserMapGameState.cs" />
+    <Compile Include="GameStates\DefaultGameState.cs" />
     <Compile Include="HaxxitEngine.cs" />
     <Compile Include="HaxxitGameState.cs" />
     <Compile Include="Program.cs" />

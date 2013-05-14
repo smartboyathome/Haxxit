@@ -18,6 +18,11 @@ namespace SmartboyDevelopments.Haxxit.Programs
             get;
             protected set;
         }
+        public ushort SpawnWeight
+        {
+            get;
+            protected set;
+        }
         public string TypeName
         {
             get;
@@ -53,6 +58,8 @@ namespace SmartboyDevelopments.Haxxit.Programs
                 hash = hash * primes.Current + Moves.GetHashCode();
                 primes.MoveNext();
                 hash = hash * primes.Current + Size.GetHashCode();
+                primes.MoveNext();
+                hash = hash * primes.Current + SpawnWeight.GetHashCode();
                 primes.MoveNext();
                 foreach (Command command in Commands)
                 {

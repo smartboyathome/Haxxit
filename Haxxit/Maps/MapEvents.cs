@@ -37,12 +37,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
         }
 
-        public Map(int x_size, int y_size, ushort initial_silicoins=0)
+        public Map(int x_size, int y_size, ushort initial_silicoins=0, ushort total_spawn_weights=0)
         {
             DefaultSubscribableManager subscribable_manager = new DefaultSubscribableManager();
             subscribable_manager.OnSubscribe += SubscribeAll;
             _mediator_manager = new MediatorManager(subscribable_manager);
-            InitializeMap(x_size, y_size, initial_silicoins);
+            InitializeMap(x_size, y_size, initial_silicoins, total_spawn_weights);
         }
 
         private void SubscribeAll()

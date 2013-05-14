@@ -55,7 +55,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
 
         private int _x_size, _y_size;
         private IEnumerable<Point> _player1_spawns, _player2_spawns;
-        private IEnumerable<Tuple<Point, IFactory<Program>>> _player1_spawns_programs, _player2_spawns_programs;
+        private IEnumerable<Tuple<Point, ProgramFactory>> _player1_spawns_programs, _player2_spawns_programs;
 
         private AbstractPlayerMapFactory(int x_size, int y_size)
         {
@@ -70,13 +70,13 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             _player1_spawns = player1_spawns;
             _player2_spawns = player2_spawns;
-            _player1_spawns_programs = new List<Tuple<Point, IFactory<Program>>>();
-            _player2_spawns_programs = new List<Tuple<Point, IFactory<Program>>>();
+            _player1_spawns_programs = new List<Tuple<Point, ProgramFactory>>();
+            _player2_spawns_programs = new List<Tuple<Point, ProgramFactory>>();
         }
 
         public AbstractPlayerMapFactory(int x_size, int y_size,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player1_spawns_programs,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player2_spawns_programs) :
+            IEnumerable<Tuple<Point, ProgramFactory>> player1_spawns_programs,
+            IEnumerable<Tuple<Point, ProgramFactory>> player2_spawns_programs) :
             this(x_size, y_size)
         {
             _player1_spawns = new List<Point>();
@@ -107,14 +107,14 @@ namespace SmartboyDevelopments.Haxxit.Tests
             }
             else if (_player1_spawns_programs.Count() > 0 && _player2_spawns_programs.Count() > 0)
             {
-                foreach (Tuple<Point, IFactory<Program>> tuple in _player1_spawns_programs)
+                foreach (Tuple<Point, ProgramFactory> tuple in _player1_spawns_programs)
                 {
                     map.CreateNode(new SpawnNodeFactory(), tuple.Item1);
                     map.SetNodeOwner(tuple.Item1, Player1);
                     map.SpawnProgram(tuple.Item2, tuple.Item1);
                 }
                 map.TurnDone();
-                foreach (Tuple<Point, IFactory<Program>> tuple in _player2_spawns_programs)
+                foreach (Tuple<Point, ProgramFactory> tuple in _player2_spawns_programs)
                 {
                     map.CreateNode(new SpawnNodeFactory(), tuple.Item1);
                     map.SetNodeOwner(tuple.Item1, Player2);
@@ -138,8 +138,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
 
         public PlayerMapFactory(int x_size, int y_size,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player1_spawns_programs,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player2_spawns_programs) :
+            IEnumerable<Tuple<Point, ProgramFactory>> player1_spawns_programs,
+            IEnumerable<Tuple<Point, ProgramFactory>> player2_spawns_programs) :
             base(x_size, y_size, player1_spawns_programs, player2_spawns_programs)
         {
             
@@ -160,8 +160,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
 
         public WinnableEnemyMapFactory(int x_size, int y_size,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player1_spawns_programs,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player2_spawns_programs) :
+            IEnumerable<Tuple<Point, ProgramFactory>> player1_spawns_programs,
+            IEnumerable<Tuple<Point, ProgramFactory>> player2_spawns_programs) :
             base(x_size, y_size, player1_spawns_programs, player2_spawns_programs)
         {
 
@@ -182,8 +182,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
         }
 
         public WinnableDataMapFactory(int x_size, int y_size,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player1_spawns_programs,
-            IEnumerable<Tuple<Point, IFactory<Program>>> player2_spawns_programs) :
+            IEnumerable<Tuple<Point, ProgramFactory>> player1_spawns_programs,
+            IEnumerable<Tuple<Point, ProgramFactory>> player2_spawns_programs) :
             base(x_size, y_size, player1_spawns_programs, player2_spawns_programs)
         {
 

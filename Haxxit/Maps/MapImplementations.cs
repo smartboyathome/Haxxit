@@ -8,8 +8,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
 {
     public class NoWinMap : Map
     {
-        public NoWinMap(int x_size, int y_size, ushort initial_silicoins=0) :
-            base(x_size, y_size, initial_silicoins)
+        public NoWinMap(int x_size, int y_size, ushort initial_silicoins=0, ushort total_spawn_weights=0) :
+            base(x_size, y_size, initial_silicoins, total_spawn_weights)
         {
 
         }
@@ -22,8 +22,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class EnemyMap : Map
     {
-        public EnemyMap(int x_size, int y_size, ushort initial_silicoins=0) :
-            base(x_size, y_size, initial_silicoins)
+        public EnemyMap(int x_size, int y_size, ushort initial_silicoins=0, ushort total_spawn_weights=0) :
+            base(x_size, y_size, initial_silicoins, total_spawn_weights)
         {
 
         }
@@ -77,8 +77,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class DataMap : Map
     {
-        public DataMap(int x_size, int y_size, ushort initial_silicoins=0) :
-            base(x_size, y_size, initial_silicoins)
+        public DataMap(int x_size, int y_size, ushort initial_silicoins=0, ushort total_spawn_weights=0) :
+            base(x_size, y_size, initial_silicoins, total_spawn_weights)
         {
 
         }

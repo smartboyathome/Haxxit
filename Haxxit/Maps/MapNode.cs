@@ -194,7 +194,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
     public class SpawnNode : OwnedNode
     {
-        private Program p;
+        private ProgramFactory p;
 
         public SpawnNode() :
             base()
@@ -202,7 +202,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             p = null;
         }
 
-        public SpawnNode(Program p) :
+        public SpawnNode(ProgramFactory p) :
             base()
         {
             this.p = p;
@@ -218,7 +218,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return p != null;
         }
 
-        public Program program
+        public ProgramFactory program
         {
             get
             {
