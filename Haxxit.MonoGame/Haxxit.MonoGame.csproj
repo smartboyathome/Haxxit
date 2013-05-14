@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AI\AINodeData.cs" />
+    <Compile Include="AI\CommandInfo.cs" />
     <Compile Include="AI\NotifyArgs.cs" />
     <Compile Include="AI\PrioritizedCommand.cs" />
     <Compile Include="MonoGameMaps.cs" />

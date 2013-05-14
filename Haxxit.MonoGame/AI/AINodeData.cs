@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
@@ -30,8 +31,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         public bool IsSpawn { get { return isSpawn; } set { isSpawn = value; } }
 
         // Link to the program currently occupying this node
-        private Programs.Program occupiedBy;
-        public Programs.Program OccupiedBy { get { return occupiedBy; } set { occupiedBy = value; } }
+        private Maps.ProgramHeadNode occupiedBy;
+        public Maps.ProgramHeadNode OccupiedBy { get { return occupiedBy; } set { occupiedBy = value; } }
 
         // This is used on a node by node basis during
         // calls fromthe AStar shortest path algorithm
@@ -62,10 +63,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         private int h;
         public int H { get { return h; } set { h = value; } }
 
-        // Planned for future implementation
-        //public List<Maps.Point> endangeredBy;
-        //public List<Maps.Point> canFireUpon;
-
         // Constructor
         public AINodeData(int column, int row)
         {
@@ -80,10 +77,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             f = int.MaxValue;
             g = int.MaxValue;
             h = int.MaxValue;
-
-            // Planned for future implementation
-            //endangeredBy = new List<Maps.Point>();
-            //canFireUpon = new List<Maps.Point>();
         }
 
         // Checks to see if this node is either available or
@@ -94,7 +87,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 return true;
             }
-            else if (occupiedBy == program.Program)
+            else if (occupiedBy == program)
             {
                 return true;
             }
