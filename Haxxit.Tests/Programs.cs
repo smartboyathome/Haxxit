@@ -9,18 +9,11 @@ namespace SmartboyDevelopments.Haxxit.Tests
 {
     public class DynamicProgramFactory : ProgramFactory
     {
-        public int silicoinAmount
-        {
-            get;
-            set;
-        }
-
         public DynamicProgramFactory(ushort moves, ushort size, IEnumerable<Command> commands)
         {
             Moves = moves;
             Size = size;
-            //TypeName = "DynamicProgram " + moves.ToString() + "." + size.ToString("D2");
-            //TypeName = name;
+            TypeName = "DynamicProgram " + moves.ToString() + "." + size.ToString("D2");
             Commands = commands;
         }
     }

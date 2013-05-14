@@ -41,6 +41,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             map.Mediator = mediator;
             undo_stack.Mediator = mediator;
+            foreach (Player player in map.AllPlayers)
+                player.Notifiable = mediator;
         }
 
         public override void Init()

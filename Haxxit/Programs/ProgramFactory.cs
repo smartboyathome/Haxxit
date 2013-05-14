@@ -21,7 +21,7 @@ namespace SmartboyDevelopments.Haxxit.Programs
         public string TypeName
         {
             get;
-            set;
+            protected set;
         }
         public IEnumerable<Command> Commands
         {
