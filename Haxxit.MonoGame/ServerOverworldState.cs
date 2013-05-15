@@ -37,15 +37,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         //For Displayings Player's name, Silicoins, and exit options
         Rectangle PlayerOptions;
 
-        Texture2D rectTexture, backgroundTexture;
+        Texture2D rectTexture, backgroundTexture, availableTexture, availableTextureShadow,
+            hackedTexture, hackedTextureShadow, unAvailableTexture, unAvailableTextureShadow,
+            shopTexture, shopTextureShadow;
         Rectangle backgroundRect;
 
         Color rectanglesGreenColor = Color.Green;
         Color rectanglesRedColor = Color.Red;
         Texture2D test_text;
 
-        //Shop Prototype variables
-        Player mPlayer1;
         SpriteBatch sprite_Batch;
         SpriteFont ArialFontSize14;
         SpriteFont ArialFontSize12;
@@ -125,8 +125,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             backgroundTexture = content.Load<Texture2D>("Grid2D");
             //------------------------------------------------------------------------------------
-
-            mPlayer1 = new Player("ELF Cadet");
             columnWidth = mWindowWidth / 8;
             column1 = 0;
             column2 = columnWidth;
@@ -136,15 +134,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             column6 = columnWidth * 5;
             column7 = columnWidth * 6;
 
+            availableTexture = CreateBG(graphics, columnWidth, columnWidth, "blue");
+            availableTextureShadow = CreateBG(graphics, columnWidth, columnWidth, "darkblue");
+            hackedTexture = CreateBG(graphics, columnWidth, columnWidth, "yellow");
+            hackedTextureShadow = CreateBG(graphics, columnWidth, columnWidth, "darkyellow");
+            unAvailableTexture = CreateBG(graphics, columnWidth, columnWidth, "red");
+            unAvailableTextureShadow = CreateBG(graphics, columnWidth, columnWidth, "darkred");
+            shopTexture = CreateBG(graphics, columnWidth, columnWidth, "purple");
+            shopTextureShadow = CreateBG(graphics, columnWidth, columnWidth, "darkpurple");
+
+
 
             int yPos = (mWindowHeight / 2) - (columnWidth / 2);
             startNode = new Rectangle(column2, yPos, columnWidth, columnWidth);
+            startNodeShadow = new Rectangle(column2 + 5, yPos + 5, columnWidth, columnWidth);
 
             int yPos2 = (mWindowHeight / 2) - (columnWidth * 3 / 2);
             tier2Node1 = new Rectangle(column4, yPos2, columnWidth, columnWidth);
+            tier2Node1Shadow = new Rectangle(column4 + 5, yPos2 + 5, columnWidth, columnWidth);
 
             int yPos3 = (mWindowHeight / 2) + (columnWidth / 2);
             tier2Node2 = new Rectangle(column4, yPos3, columnWidth, columnWidth);
+            tier2Node2Shadow = new Rectangle(column4 + 5, yPos3 + 5, columnWidth, columnWidth);
 
             int yPos4 = (mWindowHeight / 2) - (columnWidth / 2);
             tier3Node1 = new Rectangle(column6, yPos4, columnWidth, columnWidth);
@@ -172,8 +183,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             ArialFontSize14 = content.Load<SpriteFont>("Arial-16px-Regular");
             ArialFontSize12 = content.Load<SpriteFont>("Arial-12px-Regular");
-
-            bool mouseClicked = false;
 
             isNodeHacked = new bool[5];
             for (int i = 0; i < 5; i++)
@@ -283,29 +292,46 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             if (mPlayer1InOverWorld.IsHacked == true)
             {
-                sprite_batch.Draw(test_text, new Vector2(startNode.X, startNode.Y), startNode, Color.Red);
+                sprite_batch.Draw(hackedTextureShadow, startNodeShadow, Color.White);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(hackedTexture, startNode, Color.White);
+                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
                 isNodeVisible[1] = true;
                 isNodeVisible[2] = true;
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
             else
             {
-                sprite_batch.Draw(test_text, new Vector2(startNode.X, startNode.Y), startNode, Color.Black);
+                sprite_batch.Draw(availableTextureShadow, startNodeShadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier2Node2Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier2Node1Shadow, Color.White);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(availableTexture, startNode, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier2Node1, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier2Node2, Color.White);
             }
 
             if (isNodeVisible[1] == true && isNodeHacked[1] == false)
             {
-                sprite_batch.Draw(test_text, new Vector2(tier2Node1.X, tier2Node1.Y), tier2Node1, Color.Black);
+                sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
+                sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
+                //PrimiviteDrawing.DrawCircle(test_text, sprite_batch, new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), 50, Color.White, 2, 16);
             }
             else if (isNodeVisible[1] == true && isNodeHacked[1] == true)
             {
-                sprite_batch.Draw(test_text, new Vector2(tier2Node1.X, tier2Node1.Y), tier2Node1, Color.Red);
+                //sprite_batch.Draw(test_text, new Vector2(tier2Node1.X, tier2Node1.Y), tier2Node1, Color.Red);
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
 
             if (isNodeVisible[2] == true && isNodeHacked[2] == false)
             {
-                sprite_batch.Draw(test_text, new Vector2(tier2Node2.X, tier2Node2.Y), tier2Node2, Color.Black);
+                sprite_batch.Draw(availableTextureShadow, tier2Node2Shadow, Color.White);
+                sprite_batch.Draw(availableTexture, tier2Node2, Color.White);
             }
             else if (isNodeVisible[2] == true && isNodeHacked[2] == true)
             {
@@ -351,6 +377,65 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             sprite_batch.Draw(test_text, temp, Color.Yellow);
              * */
         }
+
+        //---------------------------------------------------------------------------------------------
+        //Code for gradient textures used from:
+        //https://mattryder.wordpress.com/2011/02/02/xna-creating-a-gradient-styled-texture2d/
+        /// <summary>
+        /// Creates a pretty cool gradient texture!
+        /// Used for a background Texture!
+        /// </summary>
+        /// <param name="width">The width of the current viewport</param>
+        /// <param name="height">The height of the current viewport</param>
+        /// A Texture2D with a gradient applied.
+        private Texture2D CreateBG(GraphicsDevice graphics, int width, int height, string request)
+        {
+            Texture2D backgroundTex = new Texture2D(graphics, width, height);
+            Color[] bgc = new Color[height * width];
+            int texColour = 0;          // Defines the colour of the gradient.
+            int gradientThickness = 2;  // Defines how "diluted" the gradient gets. I've found 2 works great, and 16 is a very fine gradient.
+
+            for (int i = 0; i < bgc.Length; i++)
+            {
+                texColour = (i / (height / gradientThickness));
+
+                if (request == "blue")
+                {
+                    bgc[i] = new Color(0, 100, texColour +200); 
+                }
+                else if (request == "darkblue")
+                {
+                    bgc[i] = new Color(0, 0, texColour + 100); 
+                }
+                else if (request == "yellow")
+                {
+                    bgc[i] = new Color(texColour + 150, texColour + 150, 0); 
+                }
+                else if (request == "darkyellow")
+                {
+                    bgc[i] = new Color(texColour + 25, texColour + 25, 0); 
+                }
+                else if (request == "red")
+                {
+                    bgc[i] = new Color(texColour + 150, 0, 0); 
+                }
+                else if (request == "darkred")
+                {
+                    bgc[i] = new Color(texColour + 50, 0, 0); 
+                }
+                else if (request == "purple")
+                {
+                    bgc[i] = new Color(texColour + 175, 0, texColour + 175); 
+                }
+                else if (request == "darkpurple")
+                {
+                    bgc[i] = new Color(texColour + 75, 0, texColour + 75); 
+                }
+            }
+            backgroundTex.SetData(bgc);
+            return backgroundTex;
+        }
+        //-------------------------------------------------------------------------------------------
 
         /// <summary>
         /// For letting ServerOverworldState know the Game Window Bounds (i.e. height and width)
