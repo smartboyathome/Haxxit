@@ -37,6 +37,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         //For Displayings Player's name, Silicoins, and exit options
         Rectangle PlayerOptions;
 
+        Texture2D rectTexture, backgroundTexture;
+        Rectangle backgroundRect;
+
         Color rectanglesGreenColor = Color.Green;
         Color rectanglesRedColor = Color.Red;
         Texture2D test_text;
@@ -64,8 +67,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         int column8;
 
         Rectangle startNode;
+        Rectangle startNodeShadow;
         Rectangle tier2Node1;
+        Rectangle tier2Node1Shadow;
         Rectangle tier2Node2;
+        Rectangle tier2Node2Shadow;
         Rectangle tier3Node1;
         Rectangle tier3Node2;
 
@@ -78,6 +84,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         bool[] isNodeHacked;
         bool[] isNodeVisible;
 
+        bool firstLevel;
+        bool secondLevel;
+        bool shop;
+
         #endregion
 
 
@@ -86,6 +96,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             
             mPlayer1InOverWorld = GlobalAccessors.mPlayer1;
+            firstLevel = false;
+            secondLevel = false;
+            shop = false;
+            mWindowWidth = GlobalAccessors.mGame.Window.ClientBounds.Width; //use to be 640
+            mWindowHeight = GlobalAccessors.mGame.Window.ClientBounds.Height;
+            backgroundRect = new Rectangle(0, 0, mWindowWidth, mWindowHeight);
             /*
             mPlayer1InOverWorld.IsHacked = false;
             if (!mPlayer1InOverWorld.OwnsProgrm(new BugFactory()))
@@ -98,10 +114,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
-            graphics.Clear(Color.CornflowerBlue);
+            graphics.Clear(Color.Black);
 
-            mWindowHeight = 480;
-            mWindowWidth = 800;
+            rectTexture = new Texture2D(graphics, 1, 1);
+            rectTexture.SetData(new Color[] { Color.White });
+
+            //File: Ogd1 layers2 License: GPLv2 or later <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html> 
+            //Author Original: Traversal Technology Author Ferivative: Sreejith K <http://commons.wikimedia.org/wiki/User:Sreejithk2000>
+            //backgroundTexture = content.Load<Texture2D>("Ogd1_layers2");
+
+            backgroundTexture = content.Load<Texture2D>("Grid2D");
+            //------------------------------------------------------------------------------------
 
             mPlayer1 = new Player("ELF Cadet");
             columnWidth = mWindowWidth / 8;
@@ -185,13 +208,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     return;
                 }
-                else
+                else if (firstLevel == true)
                 {
-                    //mouseClicked = false;
-                    //PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
-                    //ShopState new_state = new ShopState();
                     MapSpawnGameState new_state = new MapSpawnGameState((new SpawnMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (secondLevel == true)
+                {
+                    MapSpawnGameState new_state = new MapSpawnGameState((new SpawnMapFactory()).NewInstance());
+                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (shop == true)
+                {
+                    ShopState new_state = new ShopState();
+                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+                else
+                {
+                    mouseClicked = false;
+                    //PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
+                    //ShopState new_state = new ShopState();
+                    //MapSpawnGameState new_state = new MapSpawnGameState((new SpawnMapFactory()).NewInstance());
+                    //Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
             }
 
@@ -213,6 +251,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     isNodeHacked[i] = true;
                     updateProgramInfo = true;
                     mouseClicked = true;
+
+                    if (i == 0 && mPlayer1InOverWorld.IsHacked == false)
+                    {
+                        firstLevel = true;
+                    }
+                    else if (i == 1)
+                    {
+                        shop = true;
+                    }
+                    else if (i == 2)
+                    {
+                        secondLevel = true;
+                    }
+
                     return;
                 }
             }
@@ -222,7 +274,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Draw(SpriteBatch sprite_batch)
         {
-
+            sprite_batch.Draw(backgroundTexture, backgroundRect, Color.White);
             sprite_batch.Draw(test_text, new Vector2(PlayerOptions.X, PlayerOptions.Y), PlayerOptions, Color.Green);
             if (mPlayer1InOverWorld.IsHacked == false)
             {
@@ -258,11 +310,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             else if (isNodeVisible[2] == true && isNodeHacked[2] == true)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier2Node2.X, tier2Node2.Y), tier2Node2, Color.Red);
-                isNodeVisible[3] = true;
-                isNodeVisible[4] = true;
+                //isNodeVisible[3] = true;
+                //isNodeVisible[4] = true;
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Sergeant", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
 
+            /*
             if (isNodeVisible[3] == true && isNodeHacked[3] == false)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier3Node1.X, tier3Node1.Y), tier3Node1, Color.Black);
@@ -282,6 +335,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(test_text, new Vector2(tier3Node2.X, tier3Node2.Y), tier3Node2, Color.Red);
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Captain", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
+             * */
 
             //sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Cadet", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
 
