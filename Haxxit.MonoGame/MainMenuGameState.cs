@@ -116,6 +116,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     mStartPlayer = GlobalAccessors.mPlayer1;
                     mStartPlayer.AddProgram(new BugFactory());
+                    mStartPlayer.AddProgram(new HackFactory());
+                    mStartPlayer.AddProgram(new SlingshotFactory());
                     mStartPlayer.IsHacked = false;
                     ServerOverworldState new_state = new ServerOverworldState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));

@@ -7,17 +7,17 @@ using SmartboyDevelopments.Haxxit.Commands;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
 {
-    class SlingshotFactory : ProgramFactory
+    class HackFactory : ProgramFactory
     {
-        public SlingshotFactory()
+        public HackFactory()
         {
             Moves = 2;
-            Size = 2;
+            Size = 4;
             SpawnWeight = 20;
-            ProgramCost = 500;
-            TypeName = "Slingshot";
+            ProgramCost = 250;
+            TypeName = "Hack";
             List<Command> commands = new List<Command>();
-            commands.Add(new DamageCommand("Fling", "Deletes 1 cell from target.", 1, 2));
+            commands.Add(new DamageCommand("Slice", "Deletes 2 cells from target.", 2, 1));
             Commands = commands;
         }
     }
