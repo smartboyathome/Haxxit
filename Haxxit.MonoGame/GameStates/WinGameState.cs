@@ -63,16 +63,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
-            //TODO Really Bad Code, needs to be fixed, never never never do a spin lock,
-            //That being said, I'm running low on time so here we go
-            while (System.Environment.TickCount < departureTime)
-            {
-            }
-            
-            ServerOverworldState new_state = new ServerOverworldState();
-            Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
-            
 
+            // Fixed, you can just check it on each update to see if it worked. --Alex
+            if (System.Environment.TickCount >= departureTime)
+            {
+                ServerOverworldState new_state = new ServerOverworldState();
+                Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+            }
         }
 
         public override void Draw(SpriteBatch sprite_batch)
