@@ -16,6 +16,7 @@ namespace SmartboyDevelopments.Haxxit
         /// The dictionary containing the number of copies of each program that is owned.
         /// </summary>
         private List<ProgramFactory> owned_programs;
+
         
         /// <summary>
         /// The total number of silicoins the player has earned so far.

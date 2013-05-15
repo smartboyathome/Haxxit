@@ -1,16 +1,20 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
-using SmartboyDevelopments.Haxxit.Commands;
-using SmartboyDevelopments.Haxxit.Programs;
 using SmartboyDevelopments.SimplePubSub;
+using HaxxitCom = SmartboyDevelopments.Haxxit.Commands;
+using HaxxitProg = SmartboyDevelopments.Haxxit.Programs;
+using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
+using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
+using SmartboyDevelopments.Haxxit.MonoGame.Programs;
+using SmartboyDevelopments.Haxxit.MonoGame.Maps;
+using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
 #endregion
 
 
@@ -20,6 +24,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     {
         int mWindowWidth;
         int mWindowHeight;
+
+        Player mPlayer1InOverWorld;
 
         int mMouseHoveringRectangleIndex;
         int mMouseClickedRectangleIndex;
@@ -44,7 +50,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         String[] mPlayerProgramNames = new String[5];
         Texture2D[] mPlayerProgramImages = new Texture2D[5];
-        Program[] mBuyablePrograms = new Program[5];
         Rectangle ProgramImageRect;
 
         #region Overworld Variables
@@ -79,7 +84,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Init()
         {
-            //mPlayer1.AddProgram
+            mPlayer1InOverWorld = GlobalAccessors.mPlayer1;
+            mPlayer1InOverWorld.AddProgram(new BugFactory());
+
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
@@ -174,7 +181,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 else
                 {
                     //mouseClicked = false;
-                    ShopState new_state = new ShopState();
+                    //PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
+                    //ShopState new_state = new ShopState();
+                    MapSpawnGameState new_state = new MapSpawnGameState((new SpawnMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
             }
