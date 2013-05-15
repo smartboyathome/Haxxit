@@ -17,20 +17,29 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         SpriteFont sub_font;
         ushort earned_silicoins;
         HaxxitGameState background_state;
-        Player mPlayer1Win;
+        Player winner;
         int departureTime;
 
-        public WinGameState(ushort earned_silicoins, HaxxitGameState background_state) :
+        public WinGameState(ushort earned_silicoins, Player winner, HaxxitGameState background_state) :
             base()
         {
             this.earned_silicoins = earned_silicoins;
+            this.winner = winner;
             this.background_state = background_state;
         }
 
         public override void Init()
         {
-            mPlayer1Win = GlobalAccessors.mPlayer1;
             departureTime = System.Environment.TickCount + 3000;
+            if (winner == GlobalAccessors.mPlayer1)
+            {
+                winner.AddSilicoins(earned_silicoins);
+                winner.IsHacked = true;
+            }
+            else
+            {
+                earned_silicoins = 0;
+            }
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
@@ -58,7 +67,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Update()
         {
-            mPlayer1Win.IsHacked = true;
             // To change a scene, just call one of these:
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
@@ -77,7 +85,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             //sprite_batch.Draw(rectangle_texture, rectangle, rectangle_color);
             background_state.Draw(sprite_batch);
             overlay.Draw(sprite_batch);
-            sprite_batch.DrawString(win_font, "YOU WIN!", new Vector2(125, 125), Color.Orange);
+            string win_line;
+            if (winner == GlobalAccessors.mPlayer1)
+                win_line = "YOU WIN!";
+            else
+                win_line = "YOU LOSE!";
+            sprite_batch.DrawString(win_font, win_line, new Vector2(125, 125), Color.Orange);
             sprite_batch.DrawString(sub_font, "You earned " + earned_silicoins.ToString() + " silicoins.", new Vector2(125, 175), Color.Orange);
         }
     }

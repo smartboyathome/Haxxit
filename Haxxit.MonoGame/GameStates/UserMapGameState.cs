@@ -233,7 +233,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             Haxxit.Maps.HackedEventArgs event_args = args as Haxxit.Maps.HackedEventArgs;
             //WinGameState new_state = new WinGameState(event_args.EarnedSilicoins, this);
-            WinGameState new_state = new WinGameState(500, this);
+            WinGameState new_state = new WinGameState(500, event_args.WinningPlayer, this);
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
