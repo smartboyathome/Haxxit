@@ -154,7 +154,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         protected override Player CreatePlayer1()
         {
-            return new Player("Player1");
+            return new PlayerAI("Player1");
         }
 
         protected override Player CreatePlayer2()

@@ -23,16 +23,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             height = 7;
             initial_silicoins = 500;
             total_spawn_weight = 30;
-            player1 = new Player("Bob");
+            player1 = GlobalAccessors.mPlayer1;
             player2 = new PlayerAI("Jane");
             player1_spawns = new List<Point>();
             player2_programs = new List<Tuple<ProgramFactory, Point, IEnumerable<Point>>>();
             player1_spawns.Add(new Point(2, 2));
             player1_spawns.Add(new Point(3, 4));
             AddPlayer2Program(new SentinelFactory(), new Point(6, 2), new Point(6, 3), new Point(6, 4));
-            player1.AddProgram(new BugFactory());
-            player1.AddProgram(new HackFactory());
-            player1.AddProgram(new SlingshotFactory());
+            //player1.AddProgram(new BugFactory());
+            //player1.AddProgram(new HackFactory());
+            //player1.AddProgram(new SlingshotFactory());
         }
 
         private void AddPlayer2Program(ProgramFactory program, Point head, params Point[] tail)
