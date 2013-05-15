@@ -739,6 +739,24 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     enemyPrograms.Remove(targetProgram);
                 }
             }
+            else if (command.GetType() == typeof(Commands.DamageCommand))
+            {
+                int damage = ((Commands.DamageCommand)command).Strength;
+                int index = 0;
+                foreach (Haxxit.Maps.Point point in programPoints)
+                {
+                    if (index < damage)
+                    {
+                        mapData[point.X, point.Y].IsAvailable = true;
+                        mapData[point.X, point.Y].OccupiedBy = null;
+                    }
+                    index++;
+                }
+                if (index <= damage)
+                {
+                    enemyPrograms.Remove(targetProgram);
+                }
+            }
             return CommandCode.Success;
         }
 

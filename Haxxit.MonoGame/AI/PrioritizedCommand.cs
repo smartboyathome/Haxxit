@@ -36,6 +36,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 damage = ((Tests.DynamicDamageCommand)newCommand).Strength;
             }
+            else if (newCommand.GetType() == typeof(Commands.DamageCommand))
+            {
+                damage = ((Commands.DamageCommand)newCommand).Strength;
+            }
             range = newCommand.Range;
             command = newCommand;
             next = null;
