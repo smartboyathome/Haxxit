@@ -148,10 +148,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     Haxxit.Maps.ProgramHeadNode head_node = (Haxxit.Maps.ProgramHeadNode)map.GetNode(p);
                     string Name = head_node.Program.TypeName[0].ToString();
                 }
-                else if (map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
-                {
-
-                }
             }
             if (rectangles.Count() > 0)
             {
@@ -211,8 +207,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 }
             }
 
+            int spawn_weight_sum = 0;
+            foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
+            {
+                if (map.NodeIsType<Haxxit.Maps.SpawnNode>(p) && map.GetNode<Haxxit.Maps.SpawnNode>(p).program != null)
+                {
+                    spawn_weight_sum += map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
+                }
+            }
             List<string> bottom_status = new List<string>();
-            bottom_status.Add(map.CurrentPlayer.Name + "'s turn.");
+            bottom_status.Add("Spawn Points remaining: " + (map.TotalSpawnWeights - spawn_weight_sum).ToString());
             for (int i = 0; i < bottom_status.Count; i++)
             {
                 Vector2 bottom_status_position = new Vector2(10, 450 - 18 * (bottom_status.Count - i - 1));

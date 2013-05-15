@@ -106,7 +106,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 Vector2 name_size = arial_16px_regular.MeasureString(pair.Key.TypeName);
                 Vector2 name_location = new Vector2(pair.Value.Area.X + 2, pair.Value.Area.Y + 2);
                 sprite_batch.DrawString(arial_16px_regular, pair.Key.TypeName, name_location, Color.White);
-                string info = "Moves: " + pair.Key.Moves.ToString() + "   Size: " + pair.Key.Size.ToString() + "\nCommands: ";
+                string info = "Moves: " + pair.Key.Moves.ToString() + "   Size: " + pair.Key.Size.ToString() 
+                    + "   Spawn Weight: " + pair.Key.SpawnWeight.ToString() + "\nCommands: ";
                 bool first = true;
                 foreach (Haxxit.Commands.Command command in pair.Key.Commands)
                 {
