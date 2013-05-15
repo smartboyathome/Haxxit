@@ -17,6 +17,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         SpriteFont sub_font;
         ushort earned_silicoins;
         HaxxitGameState background_state;
+        Player mPlayer1Win;
+        int departureTime;
 
         public WinGameState(ushort earned_silicoins, HaxxitGameState background_state) :
             base()
@@ -27,7 +29,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Init()
         {
-            
+            mPlayer1Win = GlobalAccessors.mPlayer1;
+            departureTime = System.Environment.TickCount + 3000;
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
@@ -55,12 +58,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Update()
         {
+            mPlayer1Win.IsHacked = true;
             // To change a scene, just call one of these:
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
-            //ServerOverworldState new_state = new ServerOverworldState();
-            //Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+            //TODO Really Bad Code, needs to be fixed, never never never do a spin lock,
+            //That being said, I'm running low on time so here we go
+            while (System.Environment.TickCount < departureTime)
+            {
+            }
+            
+            ServerOverworldState new_state = new ServerOverworldState();
+            Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
             
 
         }

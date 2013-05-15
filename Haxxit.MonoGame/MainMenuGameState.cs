@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
+using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
@@ -30,6 +31,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Texture2D buttonReleased, buttonPressed;
 
         bool isStartButtonClicked, isOptionsButtonClicked, isCreditsButtonClicked, isExitButtonClicked;
+
+        //TODO Need to change this for the future
+        Player mStartPlayer;
 
 
         public MainMenuGameState() : base()
@@ -110,6 +114,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
+                    mStartPlayer = GlobalAccessors.mPlayer1;
+                    mStartPlayer.AddProgram(new BugFactory());
+                    mStartPlayer.IsHacked = false;
                     ServerOverworldState new_state = new ServerOverworldState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }

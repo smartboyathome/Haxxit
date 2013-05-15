@@ -27,6 +27,12 @@ namespace SmartboyDevelopments.Haxxit
             private set;
         }
 
+        public bool IsHacked
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// The NotifiableManager to be used for mediating notifications between parts of the game.
         /// </summary>

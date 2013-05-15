@@ -84,8 +84,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Init()
         {
+            
             mPlayer1InOverWorld = GlobalAccessors.mPlayer1;
-            mPlayer1InOverWorld.AddProgram(new BugFactory());
+            /*
+            mPlayer1InOverWorld.IsHacked = false;
+            if (!mPlayer1InOverWorld.OwnsProgrm(new BugFactory()))
+            {
+                mPlayer1InOverWorld.AddProgram(new BugFactory());
+            }
+             */
 
         }
 
@@ -217,12 +224,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
 
             sprite_batch.Draw(test_text, new Vector2(PlayerOptions.X, PlayerOptions.Y), PlayerOptions, Color.Green);
-            if (isNodeHacked[0] == false)
+            if (mPlayer1InOverWorld.IsHacked == false)
             {
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Cadet", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
 
-            if (isNodeHacked[0] == true)
+            if (mPlayer1InOverWorld.IsHacked == true)
             {
                 sprite_batch.Draw(test_text, new Vector2(startNode.X, startNode.Y), startNode, Color.Red);
                 isNodeVisible[1] = true;
