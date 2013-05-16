@@ -530,7 +530,26 @@ namespace SmartboyDevelopments.Haxxit.Maps
             map[end.X, end.Y] = head_node;
             map[start.X, start.Y] = tail_node;
 
-            if (head_node.Program.Size.IsMaxSize() && !end_is_tail_node)
+            if (end_is_tail_node)
+            {
+                ProgramTailNode end_node = head_node.Tail;
+                while (end_node != null)
+                {
+                    if (end_node.coordinate == head_node.coordinate)
+                    {
+                        ProgramNode end_head_node = end_node.Head;
+                        ProgramTailNode end_tail_node = end_node.Tail;
+                        end_head_node.Tail = end_tail_node;
+                        if (end_tail_node != null)
+                            end_tail_node.Head = end_head_node;
+                        end_node.Head = end_node.Tail = null;
+                        break;
+                    }
+                    else
+                        end_node = end_node.Tail;
+                }
+            }
+            else if (head_node.Program.Size.IsMaxSize() && !end_is_tail_node)
             {
                 ProgramTailNode end_node = head_node.Tail;
                 while (end_node.Tail != null)
@@ -538,7 +557,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     end_node = end_node.Tail;
                 }
                 Point coord = end_node.coordinate;
-                if (this.NodeIsType<ProgramTailNode>(coord))
+                if (this.NodeIsType<ProgramTailNode>(coord) && coord != tail_node.coordinate)
                 {
                     map[coord.X, coord.Y] = new AvailableNode();
                     map[coord.X, coord.Y].coordinate = coord;
