@@ -494,8 +494,9 @@ namespace SmartboyDevelopments.Haxxit.Maps
             if (!IsSpawningFinished() || !IsInBounds(start) || !IsInBounds(end) || !NodeIsType<ProgramHeadNode>(start)
                 || !(NodeIsType<AvailableNode>(end) || NodeIsType<ProgramTailNode>(end)) || !direction.IsDirectional())
                 return false;
-            bool end_is_tail_node = NodeIsType<ProgramTailNode>(end);
             ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
+            if (NodeIsType<ProgramTailNode>(end) && !Object.ReferenceEquals(GetNode<ProgramTailNode>(end).Program, head_node.Program))
+                return false;
             if (!head_node.Program.Moves.CanMove() || head_node.Program.AlreadyRanCommand() || CurrentPlayer != head_node.Player)
                 return false;
             return true;

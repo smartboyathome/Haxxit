@@ -43,7 +43,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             List<Tuple<Point, ProgramFactory>> player1_spawns = new List<Tuple<Point, ProgramFactory>>();
             List<Tuple<Point, ProgramFactory>> player2_spawns = new List<Tuple<Point, ProgramFactory>>();
-            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 1), FasterProgramFactory));
+            player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(0, 0), FasterProgramFactory));
             player1_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 0), FasterProgramFactory));
             player2_spawns.Add(new Tuple<Point, ProgramFactory>(new Point(1, 1), FasterProgramFactory));
             TinyPreloadedMapFactory = new PlayerMapFactory(2, 2, player1_spawns, player2_spawns);

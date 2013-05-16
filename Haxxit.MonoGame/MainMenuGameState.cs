@@ -115,8 +115,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
                     mStartPlayer = GlobalAccessors.mPlayer1;
-                    mStartPlayer.AddProgram(new BugFactory());
-                    mStartPlayer.AddProgram(new HackFactory());
+                    //mStartPlayer.AddProgram(new BugFactory());
+                    //mStartPlayer.AddProgram(new HackFactory());
                     mStartPlayer.AddProgram(new SlingshotFactory());
                     mStartPlayer.IsHacked = false;
                     ServerOverworldState new_state = new ServerOverworldState();
