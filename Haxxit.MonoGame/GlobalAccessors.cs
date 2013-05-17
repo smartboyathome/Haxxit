@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
@@ -10,5 +11,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     {
         public static Player mPlayer1{get; set;}
         public static HaxxitEngine mGame { get; set; }
+        public static GameTime mGameTime { get; set; }
     }
 }

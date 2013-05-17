@@ -162,7 +162,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             GlobalAccessors.mPlayer1 = new Player("Bob");
             GlobalAccessors.mPlayer1.AddSilicoins(1400);
 
-            PushState(new MainMenuGameState());
+            PushState(new IntroductionState());
             //PushState(new MapSpawnGameState((new SpawnMapFactory()).NewInstance()));
             //PushState(new UserMapGameState(GenerateTinyMap())); // For 2x2 testing
             //PushState(new UserMapGameState(GenerateTinyEnemyMap())); // For 2x2 testing with enemy
@@ -296,6 +296,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            GlobalAccessors.mGameTime = gameTime;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 

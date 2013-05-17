@@ -119,7 +119,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     //mStartPlayer.AddProgram(new HackFactory());
                     mStartPlayer.AddProgram(new SlingshotFactory());
                     mStartPlayer.IsHacked = false;
-                    ServerOverworldState new_state = new ServerOverworldState();
+                    StoryTellingGameState new_state = new StoryTellingGameState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
             }

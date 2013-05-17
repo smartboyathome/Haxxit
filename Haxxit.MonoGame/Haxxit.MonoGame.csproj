@@ -39,6 +39,7 @@
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="GlobalAccessors.cs" />
+    <Compile Include="IntroductionState.cs" />
     <Compile Include="MainMenuGameState.cs" />
     <Compile Include="Maps\SpawnMap.cs" />
     <Compile Include="MonoGameMaps.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerOverworldState.cs" />
     <Compile Include="ShopState.cs" />
+    <Compile Include="StoryTellingGameState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK">

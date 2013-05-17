@@ -50,7 +50,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
-            backSpriteFont = content.Load<SpriteFont>("Arial");
+            backSpriteFont = content.Load<SpriteFont>("Arial-12px-Regular");
 
             creditsTexture = content.Load<Texture2D>("Border");
             backgroundTexture = content.Load<Texture2D>("Grid2D");
