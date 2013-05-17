@@ -272,7 +272,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     //Check to see if Player has enough Silicoins to purchase Program
                     if (mBuyablePrograms[mAvailSingleProgramSelectedIndex].ProgramCost <= mPlayer1InShop.TotalSilicoins)
                     {
-                        if (!mPlayer1InShop.GetPrograms().Contains((ProgramFactory) mBuyablePrograms[mAvailSingleProgramSelectedIndex]))
+                        if (!mPlayer1InShop.OwnsProgrm(mBuyablePrograms[mAvailSingleProgramSelectedIndex]))
                         {
                             //if player does, deduct amount of program cost from player's silicoins
                             mPlayer1InShop.RemoveSilicoins((ushort)mBuyablePrograms[mAvailSingleProgramSelectedIndex].ProgramCost);

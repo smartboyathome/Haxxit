@@ -49,7 +49,9 @@ namespace SmartboyDevelopments.Haxxit.Programs
             if (Moves != other.Moves || Size != other.Size || TypeName != other.TypeName || Commands.Count() != other.Commands.Count())
                 return false;
             for (int i = 0; i < Commands.Count(); i++)
-                if (Commands.ElementAt(i) != other.Commands.ElementAt(i))
+                if (Commands.ElementAt(i).Description != other.Commands.ElementAt(i).Description
+                    || Commands.ElementAt(i).Name != other.Commands.ElementAt(i).Name
+                    || Commands.ElementAt(i).Range != other.Commands.ElementAt(i).Range)
                     return false;
             return true;
         }
