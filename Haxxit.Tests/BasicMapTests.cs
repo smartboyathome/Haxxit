@@ -14,8 +14,9 @@ namespace SmartboyDevelopments.Haxxit.Tests
     public class BasicMapTests
     {
         static DynamicProgramFactory BasicProgramFactory, FasterProgramFactory,
-            BiggerFasterProgramFactory;
+            BiggerFasterProgramFactory, FastSmallProgramFactory;
         static IFactory<Map> BasicMapFactory, SpawnMapFactory;
+        static UndoStack undo_stack;
 
         void AssertListEqual<T>(IList<T> a, IList<T> b)
         {
@@ -32,6 +33,8 @@ namespace SmartboyDevelopments.Haxxit.Tests
             BasicProgramFactory = new DynamicProgramFactory(4, 4, commands);
             FasterProgramFactory = new DynamicProgramFactory(8, 4, commands);
             BiggerFasterProgramFactory = new DynamicProgramFactory(16, 8, commands);
+            FastSmallProgramFactory = new DynamicProgramFactory(5, 1, commands);
+            undo_stack = new UndoStack(16, new SynchronousMediator());
             List<Point> spawns = new List<Point>();
             spawns.Add(new Point(0, 1));
             spawns.Add(new Point(1, 0));
@@ -374,17 +377,37 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             SilicoinNodeFactory silicoin_node_factory = new SilicoinNodeFactory(100);
             Map map = SpawnMapFactory.NewInstance();
-            //List<ushort> output = new List<ushort>();
-            //Action<string, object, EventArgs> action = (x, y, z) => output.Add(((SilicoinEventArgs)z).Silicoins);
-            //map.Mediator.Subscribe("haxxit.silicoins.add", action);
             map.SpawnProgram(BasicProgramFactory, 0, 1);
             map.CreateNode(silicoin_node_factory, 0, 2);
             map.FinishedSpawning();
             map.MoveProgram(new Point(0, 1), new Point(0, 1));
             Assert.AreEqual<ushort>(100, map.EarnedSilicoins);
-            //List<ushort> expected_output = new List<ushort>();
-            //expected_output.Add(100);
-            //AssertListEqual<ushort>(output, expected_output);
+        }
+
+        [TestMethod]
+        public void TestMoveSmallProgram()
+        {
+            Map map = SpawnMapFactory.NewInstance();
+            map.SpawnProgram(FastSmallProgramFactory, 0, 1);
+            map.FinishedSpawning();
+            map.MoveProgram(new Point(0, 1), new Point(0, 1));
+            Assert.IsTrue(map.NodeIsType<AvailableNode>(new Point(0, 1)));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(new Point(0, 2)));
+        }
+
+        [TestMethod]
+        public void TestUndoSmallProgram()
+        {
+            Map map = SpawnMapFactory.NewInstance();
+            map.Mediator = undo_stack.Mediator;
+            map.SpawnProgram(FastSmallProgramFactory, 0, 1);
+            map.FinishedSpawning();
+            map.Mediator.Notify("haxxit.map.move", this, new MoveEventArgs(new Point(0, 1), new Point(0, 1)));
+            Assert.IsTrue(map.NodeIsType<AvailableNode>(new Point(0, 1)));
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(new Point(0, 2)));
+            map.Mediator.Notify("haxxit.undo_stack.trigger", this, new EventArgs());
+            Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(new Point(0, 1)));
+            Assert.IsFalse(map.NodeIsType<AvailableNode>(0, 2));
         }
     }
 }
