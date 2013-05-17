@@ -638,13 +638,13 @@ namespace SmartboyDevelopments.Haxxit.Maps
             {
                 map[end.X, end.Y] = new AvailableNode();
                 map[end.X, end.Y].coordinate = end;
-                if (IsInBounds(tail_location) && tail_location != head_node.coordinate)
+                if (IsInBounds(tail_location) && head_node.Program.Size.MaxSize != 1)
                 {
                     map[tail_location.X, tail_location.Y] = new ProgramTailNode(head_node.Program, head_node);
                     map[tail_location.X, tail_location.Y].coordinate = tail_location;
                     map[tail_location.X, tail_location.Y].Notifiable = Mediator;
 
-                    ProgramTailNode end_node = head_node.Tail;
+                    ProgramNode end_node = head_node;
                     while (end_node.Tail != null)
                     {
                         end_node = end_node.Tail;
