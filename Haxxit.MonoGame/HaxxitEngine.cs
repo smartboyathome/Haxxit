@@ -11,7 +11,6 @@ using SmartboyDevelopments.SimplePubSub;
 using HaxxitCom = SmartboyDevelopments.Haxxit.Commands;
 using HaxxitProg = SmartboyDevelopments.Haxxit.Programs;
 using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
-using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 using SmartboyDevelopments.Haxxit.MonoGame.Maps;
 using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
@@ -50,11 +49,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Stack<HaxxitGameState> state_stack;
         IMediator mediator;
 
-        public HaxxitMap.Map GenerateMap()
+        /*public HaxxitMap.Map GenerateMap()
         {
             List<HaxxitCom.Command> commands = new List<HaxxitCom.Command>();
-            commands.Add(new HaxxitTest.DynamicDamageCommand(3, 1, "Pong"));
-            commands.Add(new HaxxitTest.DynamicDamageCommand(2, 2, "Ping"));
+            commands.Add(new HaxxitCom.DamageCommand("Pong", "Removes 3 cells from target", 3, 1));
+            commands.Add(new HaxxitCom.DamageCommand("Ping", "Removes 2 cells from target", 2, 2));
             HaxxitTest.DynamicProgramFactory program_factory = new HaxxitTest.DynamicProgramFactory(4, 4, commands);
             List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>> player1_spawns =
                 new List<Tuple<HaxxitMap.Point, HaxxitProg.ProgramFactory>>();
@@ -145,7 +144,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(13, 8));
             map.CreateNode(new Haxxit.Maps.UnavailableNodeFactory(), new Haxxit.Maps.Point(14, 9));
             return map;
-        }
+        }*/
 
         public HaxxitEngine()
             : base()

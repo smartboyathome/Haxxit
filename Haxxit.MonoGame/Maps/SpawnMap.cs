@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using SmartboyDevelopments.Haxxit.Maps;
 using SmartboyDevelopments.Haxxit.Commands;
-using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 using SmartboyDevelopments.Haxxit.Programs;
 

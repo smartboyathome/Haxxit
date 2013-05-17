@@ -32,11 +32,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         // Constructor
         public PrioritizedCommand(Commands.Command newCommand)
         {
-            if (newCommand.GetType() == typeof(Tests.DynamicDamageCommand))
+            /*if (newCommand.GetType() == typeof(Tests.DynamicDamageCommand))
             {
                 damage = ((Tests.DynamicDamageCommand)newCommand).Strength;
             }
-            else if (newCommand.GetType() == typeof(Commands.DamageCommand))
+            else*/ if (newCommand.GetType() == typeof(Commands.DamageCommand))
             {
                 damage = ((Commands.DamageCommand)newCommand).Strength;
             }

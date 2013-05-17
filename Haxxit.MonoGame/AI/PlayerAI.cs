@@ -721,9 +721,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             Haxxit.Maps.CommandEventArgs commandArgs = new Haxxit.Maps.CommandEventArgs(target, source, command.Name);
             turnActions.Enqueue(new NotifyArgs("haxxit.map.command", this, commandArgs));
-            if(command.GetType() == typeof(Tests.DynamicDamageCommand))
+            //if(command.GetType() == typeof(Tests.DynamicDamageCommand))
+            if(command.GetType() == typeof(Commands.DamageCommand))
             {
-                int damage = ((Tests.DynamicDamageCommand)command).Strength;
+                //int damage = ((Tests.DynamicDamageCommand)command).Strength;
+                int damage = ((Commands.DamageCommand)command).Strength;
                 int index = 0;
                 foreach (Haxxit.Maps.Point point in programPoints)
                 {

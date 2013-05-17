@@ -11,7 +11,6 @@ using SmartboyDevelopments.SimplePubSub;
 using HaxxitCom = SmartboyDevelopments.Haxxit.Commands;
 using HaxxitProg = SmartboyDevelopments.Haxxit.Programs;
 using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
-using HaxxitTest = SmartboyDevelopments.Haxxit.Tests;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 using SmartboyDevelopments.Haxxit.MonoGame.Maps;
 using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
