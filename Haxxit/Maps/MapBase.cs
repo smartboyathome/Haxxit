@@ -557,7 +557,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     end_node = end_node.Tail;
                 }
                 Point coord = end_node.coordinate;
-                if (this.NodeIsType<ProgramTailNode>(coord) && coord != tail_node.coordinate)
+                if (this.NodeIsType<ProgramTailNode>(coord))
                 {
                     map[coord.X, coord.Y] = new AvailableNode();
                     map[coord.X, coord.Y].coordinate = coord;
@@ -638,7 +638,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             {
                 map[end.X, end.Y] = new AvailableNode();
                 map[end.X, end.Y].coordinate = end;
-                if (IsInBounds(tail_location))
+                if (IsInBounds(tail_location) && tail_location != head_node.coordinate)
                 {
                     map[tail_location.X, tail_location.Y] = new ProgramTailNode(head_node.Program, head_node);
                     map[tail_location.X, tail_location.Y].coordinate = tail_location;

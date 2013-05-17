@@ -407,7 +407,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
             Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(new Point(0, 2)));
             map.Mediator.Notify("haxxit.undo_stack.trigger", this, new EventArgs());
             Assert.IsTrue(map.NodeIsType<ProgramHeadNode>(new Point(0, 1)));
-            Assert.IsFalse(map.NodeIsType<AvailableNode>(0, 2));
+            Assert.IsTrue(map.NodeIsType<AvailableNode>(new Point(0, 2)));
         }
     }
 }
