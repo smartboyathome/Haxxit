@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\AddNodeCommand.cs" />
+    <Compile Include="Commands\RemoveNodeCommand.cs" />
     <Compile Include="Commands\DamageCommand.cs" />
     <Compile Include="Commands\DecreaseSpeedCommand.cs" />
     <Compile Include="Commands\IncreaseSpeedCommand.cs" />

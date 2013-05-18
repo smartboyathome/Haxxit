@@ -135,21 +135,22 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 SpawnDialogGameState new_state = new SpawnDialogGameState(this, map, haxxit_location);
                 _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
             }
-            else
+            else if(selected_attack == "")
             {
                 Haxxit.Maps.Point difference = haxxit_location - selected_node;
                 bool can_move = map.CanMoveProgram(selected_node, difference);
-                if (selected_attack != "")
+                /*if (selected_attack != "")
                 {
                     Haxxit.Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
                     _mediator_manager.Notify("haxxit.map.command", this,
                         new Haxxit.Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
                     //map.RunCommand(selected_node, attacked_point, selected_attack);
                     selected_attack = "";
+                    selected_node = new Haxxit.Maps.Point(-1, -1);
                     extra.Clear();
                     attacks.Clear();
                 }
-                if (can_move)
+                else*/ if (can_move)
                 {
                     _mediator_manager.Notify("haxxit.map.move", this, new Haxxit.Maps.MoveEventArgs(selected_node, difference));
                     //map.MoveProgram(selected_node, difference);
@@ -189,11 +190,23 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.map.turn_done", this, new EventArgs());
             extra.Clear();
             attacks.Clear();
-            if (map_squares.ContainsKey(selected_node))
+            if (map_squares.ContainsKey(selected_node) && map_squares[selected_node].Item2.Count() != 0)
             {
                 map_squares[selected_node].Item2.First().BorderSize = 0;
                 selected_node = new Haxxit.Maps.Point(-1, -1);
             }
+        }
+
+        public void OnAttackNodeClick(DrawableRectangle rectangle)
+        {
+            Haxxit.Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
+            _mediator_manager.Notify("haxxit.map.command", this,
+                new Haxxit.Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
+            //map.RunCommand(selected_node, attacked_point, selected_attack);
+            selected_attack = "";
+            selected_node = new Haxxit.Maps.Point(-1, -1);
+            extra.Clear();
+            attacks.Clear();
         }
 
         public void OnAttackClick(DrawableRectangle rectangle)
@@ -209,6 +222,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                         if (map.IsInBounds(p))
                         {
                             DrawableRectangle attack_node = new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size), Color.Red * 0.25f);
+                            attack_node.OnMouseLeftClick += OnAttackNodeClick;
                             extra.Add(attack_node);
                         }
                     }
@@ -365,13 +379,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
             if (map.CurrentPlayer.GetType() != typeof(Haxxit.MonoGame.PlayerAI))
             {
-                foreach (DrawableRectangle rectangle in extra)
+                foreach (DrawableRectangle rectangle in extra.ShallowCopy())
                 {
                     rectangle.Update();
                 }
                 foreach (Tuple<DrawableRectangle, string> attack in attacks)
                 {
                     attack.Item1.Update();
+                }
+                foreach (DrawableRectangle rectangle in extra)
+                {
+                    rectangle.Update();
                 }
                 turn_done_button.Update();
                 undo_button.Update();

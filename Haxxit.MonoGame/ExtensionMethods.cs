@@ -39,5 +39,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             return new Haxxit.Maps.Point((int)Math.Floor((p.X / (rectangle_size + border_size)) - 1),
                 (int)Math.Floor((p.Y / (rectangle_size + border_size)) - 1));
         }
+
+        public static IEnumerable<T> ShallowCopy<T>(this IEnumerable<T> enumerable)
+        {
+            List<T> list = new List<T>();
+            foreach (T element in enumerable)
+                list.Add(element);
+            return list;
+        }
     }
 }
