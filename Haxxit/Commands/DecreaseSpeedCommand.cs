@@ -7,15 +7,28 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.Commands
 {
-    public abstract class DecreaseSpeedCommand : Command
+    public class DecreaseSpeedCommand : Command
     {
-        protected ushort _speed;
         public ushort Speed
         {
-            get
-            {
-                return _speed;
-            }
+            get;
+            protected set;
+        }
+
+        public DecreaseSpeedCommand()
+        {
+            Name = "";
+            Description = "";
+            Speed = 0;
+            Range = 0;
+        }
+
+        public DecreaseSpeedCommand(string name, string description, ushort speed, ushort range)
+        {
+            Name = name;
+            Description = description;
+            Speed = speed;
+            Range = range;
         }
 
         public override UndoCommand Run(Map map, Point attacked_point)
@@ -24,8 +37,25 @@ namespace SmartboyDevelopments.Haxxit.Commands
                 return null;
             ProgramNode attacked_node = (ProgramNode)map.GetNode(attacked_point);
             Program attacked_program = attacked_node.Program;
-            DecreaseProgramSpeed(attacked_program, _speed);
+            DecreaseProgramSpeed(attacked_program, Speed);
             return null; // TODO: implement UndoDecreaseSpeedCommand
+        }
+    }
+
+    public class UndoDecreaseSpeedCommand : UndoCommand
+    {
+        private IncreaseSpeedCommand command;
+        private Point attacked_point;
+
+        public UndoDecreaseSpeedCommand(ushort speed, Point attacked_point)
+        {
+            this.command = new IncreaseSpeedCommand("", "", speed, 0);
+            this.attacked_point = attacked_point;
+        }
+
+        public override bool Run(Map map)
+        {
+            return command.Run(map, attacked_point) != null;
         }
     }
 }

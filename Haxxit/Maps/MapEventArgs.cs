@@ -137,4 +137,25 @@ namespace SmartboyDevelopments.Haxxit.Maps
             EarnedSilicoins = earned_silicoins;
         }
     }
+
+    public class CreateNodeEventArgs : EventArgs
+    {
+        public Point NodeLocation
+        {
+            get;
+            private set;
+        }
+
+        public IFactory<MapNode> NodeFactory
+        {
+            get;
+            private set;
+        }
+
+        public CreateNodeEventArgs(Point node_location, IFactory<MapNode> node_factory)
+        {
+            NodeLocation = node_location;
+            NodeFactory = node_factory;
+        }
+    }
 }

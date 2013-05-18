@@ -16,7 +16,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
      *     haxxit.map.command.undo
      *     haxxit.map.hacked
      *     haxxit.map.hacked.check
-     *     haxxit.silicoins.add
+     *     haxxit.map.silicoins.add
+     *     haxxit.map.nodes.create
      */
     public abstract partial class Map
     {
@@ -115,6 +116,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
         {
             SilicoinEventArgs event_args = (SilicoinEventArgs)args;
             IncreraseEarnedSilicoins(event_args.Silicoins);
+        }
+
+        public void CreateNodeListener(string channel, object sender, EventArgs args)
+        {
+            CreateNodeEventArgs event_args = (CreateNodeEventArgs)args;
+            CreateNode(event_args.NodeFactory, event_args.NodeLocation);
         }
 
         public abstract void CheckIfHackedListener(string channel, object sender, EventArgs args);

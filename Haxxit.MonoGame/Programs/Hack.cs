@@ -14,7 +14,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             Moves = 2;
             Size = 4;
             SpawnWeight = 20;
-            ProgramCost = 250;
+            ProgramCost = 500;
             TypeName = "Hack";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Slice", "Deletes 2 cells from target.", 2, 1));
