@@ -30,6 +30,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Init()
         {
+            background_state.Update();
             departureTime = System.Environment.TickCount + 3000;
             if (winner == GlobalAccessors.mPlayer1)
             {
