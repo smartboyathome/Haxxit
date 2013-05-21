@@ -69,21 +69,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         private void OnScrollUp(DrawableRectangle rectangle)
         {
-            if (currentScrollLevel < totalPrograms - 4)
-            {
-                foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
-                {
-                    DrawableRectangle program_rectangle = pair.Value;
-                    Rectangle area = program_rectangle.Area;
-                    area.Y -= 72;
-                    program_rectangle.Area = area;
-                }
-                currentScrollLevel++;
-            }
-        }
-
-        private void OnScrollDown(DrawableRectangle rectangle)
-        {
             if (currentScrollLevel > 0)
             {
                 foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
@@ -94,6 +79,21 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     program_rectangle.Area = area;
                 }
                 currentScrollLevel--;
+            }
+        }
+
+        private void OnScrollDown(DrawableRectangle rectangle)
+        {
+            if (currentScrollLevel < totalPrograms - 4)
+            {
+                foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
+                {
+                    DrawableRectangle program_rectangle = pair.Value;
+                    Rectangle area = program_rectangle.Area;
+                    area.Y -= 72;
+                    program_rectangle.Area = area;
+                }
+                currentScrollLevel++;
             }
         }
 
@@ -174,11 +174,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
             if (currentScrollLevel > 0)
             {
-                sprite_batch.DrawString(arial_16px_regular, "...", new Vector2(popup_window.Area.X + 10, popup_window.Area.Y + popup_window.Area.Height - 30), Color.White);
+                sprite_batch.DrawString(arial_16px_regular, "...", new Vector2(popup_window.Area.X + 10, popup_window.Area.Y + 20), Color.White);
             }
             if (currentScrollLevel < totalPrograms - 4)
             {
-                sprite_batch.DrawString(arial_16px_regular, "...", new Vector2(popup_window.Area.X + 10, popup_window.Area.Y + 20), Color.White);
+                sprite_batch.DrawString(arial_16px_regular, "...", new Vector2(popup_window.Area.X + 10, popup_window.Area.Y + popup_window.Area.Height - 30), Color.White);
             }
         }
     }

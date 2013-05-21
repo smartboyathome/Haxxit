@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             Size = 3;
             SpawnWeight = 15;
             ProgramCost = 1000;
-            TypeName = "Sniper 2.0";
+            TypeName = "Sniper2";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Snipe 2.0", "Deletes 2 cells from target.", 2, 3));
             Commands = commands;
