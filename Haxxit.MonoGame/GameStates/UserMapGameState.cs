@@ -142,9 +142,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 /*if (selected_attack != "")
                 {
                     Haxxit.Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
-                    _mediator_manager.Notify("haxxit.map.command", this,
+                    _mediator_manager.Notify("haxxit.Map.command", this,
                         new Haxxit.Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
-                    //map.RunCommand(selected_node, attacked_point, selected_attack);
+                    //Map.RunCommand(selected_node, attacked_point, selected_attack);
                     selected_attack = "";
                     selected_node = new Haxxit.Maps.Point(-1, -1);
                     extra.Clear();
@@ -153,7 +153,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 else*/ if (can_move)
                 {
                     _mediator_manager.Notify("haxxit.map.move", this, new Haxxit.Maps.MoveEventArgs(selected_node, difference));
-                    //map.MoveProgram(selected_node, difference);
+                    //Map.MoveProgram(selected_node, difference);
                     DrawProgramExtras(haxxit_location);
                     selected_node = haxxit_location;
                 }
@@ -202,7 +202,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Haxxit.Maps.Point attacked_point = rectangle.Area.Center.ToHaxxitPoint(map_rectangle_size, map_border_size);
             _mediator_manager.Notify("haxxit.map.command", this,
                 new Haxxit.Maps.CommandEventArgs(attacked_point, selected_node, selected_attack));
-            //map.RunCommand(selected_node, attacked_point, selected_attack);
+            //Map.RunCommand(selected_node, attacked_point, selected_attack);
             selected_attack = "";
             selected_node = new Haxxit.Maps.Point(-1, -1);
             extra.Clear();
@@ -304,7 +304,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 else if (map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
                 {
                     /* NOT FINISHED! Used for drawing connectors between nodes.
-                    Maps.ProgramTailNode this_node = map.GetNode<Maps.ProgramTailNode>(p);
+                    Maps.ProgramTailNode this_node = Map.GetNode<Maps.ProgramTailNode>(p);
                     foreach (Maps.ProgramNode node in this_node.GetAllNodes())
                     {
                         Maps.Point difference = node.coordinate - this_node.coordinate;

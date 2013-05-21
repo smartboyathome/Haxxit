@@ -8,16 +8,19 @@ using SmartboyDevelopments.Haxxit.Commands;
 namespace SmartboyDevelopments.Haxxit.Maps
 {
     /*
-     * Emitted signals:
+     * Listens for these signals:
      *     haxxit.map.move
      *     haxxit.map.move.undo
      *     haxxit.map.turn_done
      *     haxxit.map.command
      *     haxxit.map.command.undo
-     *     haxxit.map.hacked
      *     haxxit.map.hacked.check
      *     haxxit.map.silicoins.add
      *     haxxit.map.nodes.create
+     * Emits these signals:
+     *     haxxit.map.hacked
+     *     haxxit.undo_stack.push
+     *     haxxit.map.nodes.changed
      */
     public abstract partial class Map
     {
@@ -44,6 +47,16 @@ namespace SmartboyDevelopments.Haxxit.Maps
             subscribable_manager.OnSubscribe += SubscribeAll;
             _mediator_manager = new MediatorManager(subscribable_manager);
             InitializeMap(x_size, y_size, initial_silicoins, total_spawn_weights);
+        }
+
+        public void MapChanged(params Point[] changed_nodes)
+        {
+            MapChanged((IEnumerable<Point>)changed_nodes);
+        }
+
+        public void MapChanged(IEnumerable<Point> changed_nodes)
+        {
+            _mediator_manager.Notify("haxxit.map.nodes.changed", this, new MapChangedEventArgs(changed_nodes));
         }
 
         private void SubscribeAll()

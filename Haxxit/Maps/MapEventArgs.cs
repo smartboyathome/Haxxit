@@ -158,4 +158,18 @@ namespace SmartboyDevelopments.Haxxit.Maps
             NodeFactory = node_factory;
         }
     }
+
+    public class MapChangedEventArgs : EventArgs
+    {
+        public IEnumerable<Point> ChangedNodes
+        {
+            get;
+            private set;
+        }
+
+        public MapChangedEventArgs(IEnumerable<Point> changed_nodes)
+        {
+            ChangedNodes = changed_nodes;
+        }
+    }
 }

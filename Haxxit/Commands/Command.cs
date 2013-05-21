@@ -56,7 +56,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
             for (int i = 0; i < strength; ++i)
             {
                 ProgramNode current_node = nodes_stack.Pop();
-                map.CreateNode<AvailableNode>(current_node.coordinate);
+                map.CreateNode(new AvailableNodeFactory(), current_node.coordinate, false);
                 removed_nodes.Add(current_node);
                 if (current_node.Head == null)
                     break;
@@ -65,6 +65,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
                 nodes_stack.Peek().Tail = null;
             attacked_node.Program.Size.DecreaseCurrentSize(strength);
             removed_nodes.Reverse();
+            map.MapChanged(removed_nodes.Select<ProgramNode, Point>(x => x.coordinate));
             return removed_nodes;
         }
 
@@ -96,6 +97,4 @@ namespace SmartboyDevelopments.Haxxit.Commands
     }
 
     // TODO: Create increase Size and add nodes to Program Commands.
-
-    // TODO: Create remove square and add square Commands.
 }

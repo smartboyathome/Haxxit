@@ -175,5 +175,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return hash;
             }
         }
+
+        public override string ToString()
+        {
+            return "(" + X.ToString() + ", " + Y.ToString() + ")";
+        }
     }
 }

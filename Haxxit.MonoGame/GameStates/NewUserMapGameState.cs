@@ -10,25 +10,15 @@ using Haxxit = SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
-    public class MapSpawnGameState : HaxxitGameState
+    public class NewUserMapGameState : HaxxitGameState
     {
-        const string finished_text = "Finished";
-
         MapDisplayGameState display_map_state;
         Texture2D rectangle_texture;
-
         SpriteFont arial_16px_regular, arial_12px_regular;
-        Vector2 finished_text_size;
-        DrawableRectangle finished_button;
+        DrawableRectangle turn_done_button, undo_button;
+        Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
 
-        List<DrawableRectangle> spawns;
-
-        public MapSpawnGameState(Haxxit.Maps.Map map)
-        {
-            display_map_state = new MapDisplayGameState(map);
-        }
-
-        public MapSpawnGameState(MapDisplayGameState background_state)
+        public NewUserMapGameState(MapDisplayGameState background_state)
         {
             display_map_state = background_state;
         }
@@ -40,54 +30,45 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Init()
         {
-            display_map_state.Init();
-            spawns = new List<DrawableRectangle>();
+            head_nodes = new Dictionary<Haxxit.Maps.Point, DrawableRectangle>();
         }
 
-        public void OnSpawnClick(DrawableRectangle rectangle)
+        public void OnProgramClick(DrawableRectangle rectangle)
         {
-            Haxxit.Maps.Point haxxit_location = display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
-            SpawnDialogGameState new_state = new SpawnDialogGameState(this, display_map_state.Map, haxxit_location);
-            _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+            
         }
 
-        public void OnFinishedClick(DrawableRectangle rectangle)
+        public void OnTurnDoneClick(DrawableRectangle rectangle)
         {
-            display_map_state.Map.FinishedSpawning();
-            UserMapGameState new_state = new UserMapGameState(display_map_state.Map);
-            _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+            _mediator_manager.Notify("haxxit.map.turn_done", this, new EventArgs());
+        }
+
+        public void OnUndoClick(DrawableRectangle rectangle)
+        {
+            _mediator_manager.Notify("haxxit.undo_stack.trigger", this, new EventArgs());
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
-            display_map_state.LoadContent(graphics, sprite_batch, content);
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
-            finished_text_size = arial_16px_regular.MeasureString(finished_text);
-            finished_button = new DrawableRectangle(
-                rectangle_texture,
-                new Rectangle(
-                    800 - (int)Math.Floor(finished_text_size.X) - 15,
-                    480 - (int)Math.Floor(finished_text_size.Y) - 15,
-                    (int)Math.Floor(finished_text_size.X) + 10,
-                    (int)Math.Floor(finished_text_size.Y) + 10
-                ),
-                Color.Green
-            );
-            finished_button.OnMouseLeftClick += OnFinishedClick;
+
+            turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
+            turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
+            undo_button = new DrawableRectangle(rectangle_texture, new Rectangle(580, 440, 100, 30), Color.Orange);
+            undo_button.OnMouseLeftClick += OnUndoClick;
 
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
             {
-                if (map.NodeIsType<Haxxit.Maps.SpawnNode>(p)
-                    && map.GetNode<Haxxit.Maps.SpawnNode>(p).Player == map.CurrentPlayer)
+                if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p) 
+                    && map.GetNode<Haxxit.Maps.ProgramHeadNode>(p).Player == map.CurrentPlayer)
                 {
-                    DrawableRectangle spawn =
-                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.White);
-                    spawn.OnMouseLeftClick += OnSpawnClick;
-                    spawns.Add(spawn);
+                    head_nodes[p] =
+                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
+                    head_nodes[p].OnMouseLeftClick += OnProgramClick;
                 }
             }
         }
@@ -113,29 +94,36 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
 
-            foreach (DrawableRectangle spawn in spawns)
+            foreach (DrawableRectangle head_node in head_nodes.Values)
             {
-                spawn.Update();
+                head_node.Update();
             }
 
-            finished_button.Update();
+            turn_done_button.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)
         {
             display_map_state.Draw(sprite_batch);
 
-            finished_button.Draw(sprite_batch);
-            Vector2 finished_text_position = new Vector2(finished_button.Area.X + (finished_button.Area.Width - finished_text_size.X) / 2,
-                finished_button.Area.Y + (finished_button.Area.Height - finished_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, finished_text, finished_text_position, Color.White);
+            turn_done_button.Draw(sprite_batch);
+            Vector2 turn_done_size = arial_16px_regular.MeasureString("Turn Done");
+            Vector2 turn_done_position = new Vector2(turn_done_button.Area.X + (turn_done_button.Area.Width - turn_done_size.X) / 2,
+                turn_done_button.Area.Y + (turn_done_button.Area.Height - turn_done_size.Y) / 2);
+            sprite_batch.DrawString(arial_16px_regular, "Turn Done", turn_done_position, Color.White);
 
-            foreach (DrawableRectangle spawn in spawns)
+            undo_button.Draw(sprite_batch);
+            Vector2 undo_text_size = arial_16px_regular.MeasureString("Undo");
+            Vector2 undo_text_position = new Vector2(undo_button.Area.X + (undo_button.Area.Width - undo_text_size.X) / 2,
+                undo_button.Area.Y + (undo_button.Area.Height - undo_text_size.Y) / 2);
+            sprite_batch.DrawString(arial_16px_regular, "Undo", undo_text_position, Color.White);
+
+            foreach (DrawableRectangle head_node in head_nodes.Values)
             {
-                spawn.Draw(sprite_batch);
+                head_node.Draw(sprite_batch);
             }
 
-            List<string> bottom_status = new List<string>();
+            /*List<string> bottom_status = new List<string>();
             int spawn_weight_sum = 0;
             foreach (Haxxit.Maps.Point p in display_map_state.Map.Low.IterateOverRange(display_map_state.Map.High))
             {
@@ -150,7 +138,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 Vector2 bottom_status_position = new Vector2(10, 450 - 18 * (bottom_status.Count - i - 1));
                 sprite_batch.DrawString(arial_12px_regular, bottom_status[i], bottom_status_position, Color.White);
-            }
+            }*/
         }
     }
 }

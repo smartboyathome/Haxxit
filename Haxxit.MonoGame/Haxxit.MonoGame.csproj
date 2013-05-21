@@ -65,6 +65,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CreditsGameState.cs" />
+    <Compile Include="GameStates\MapNewSpawnGameState.cs" />
+    <Compile Include="GameStates\MapDisplayGameState.cs" />
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="GlobalAccessors.cs" />

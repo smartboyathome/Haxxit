@@ -18,7 +18,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         private int departureTime; // Time to send next action
         private List<Haxxit.Maps.ProgramHeadNode> friendlyPrograms;
         private List<Haxxit.Maps.ProgramHeadNode> enemyPrograms;
-        private AINodeData[,] mapData; // A restructured grid of map data pulled from Haxxit.Maps
+        private AINodeData[,] mapData; // A restructured grid of Map data pulled from Haxxit.Maps
 
         private enum MoveCode
         {
@@ -88,18 +88,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 state = AIState.Planning; // Planning to plan...
                 map = currentMap;
-                GetMapData(); // Load and restructure map data for AI usage
+                GetMapData(); // Load and restructure Map data for AI usage
                 PlanTurn();   // Begin planning
                 state = AIState.Sending;
             }
         }
 
-        // Reassembles the map data in a format that allows the AI easy access to program and node info
+        // Reassembles the Map data in a format that allows the AI easy access to program and node info
         private void GetMapData()
         {
             friendlyPrograms.Clear();
             enemyPrograms.Clear();
-            mapData = new AINodeData[map.XSize, map.YSize]; // Instantiate the map data grid
+            mapData = new AINodeData[map.XSize, map.YSize]; // Instantiate the Map data grid
             for (int column = 0; column < map.XSize; column++)
             {
                 for (int row = 0; row < map.YSize; row++)
@@ -160,7 +160,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
         }
 
-        // Plans the actions for each AI program based on the current map data
+        // Plans the actions for each AI program based on the current Map data
         private void PlanTurn()
         {
             foreach (Haxxit.Maps.ProgramHeadNode program in friendlyPrograms)
@@ -278,7 +278,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
             }
 
-            // If there are no accessible positions from which to use a command anywhere on the map...
+            // If there are no accessible positions from which to use a command anywhere on the Map...
             if (!optionChosen)
             {
                 // We have nowhere we want to move.
@@ -345,7 +345,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             for (int moves = 0; program.Program.Moves.MovesLeft > moves; moves++)
             {
                 Haxxit.Maps.Point movedHead = new Haxxit.Maps.Point(head.X - moves, head.Y);
-                if (movedHead.X - 1 < 0) // Can't move off edge of map
+                if (movedHead.X - 1 < 0) // Can't move off edge of Map
                 {
                     break;
                 }
@@ -475,7 +475,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             return nodesInRange;
         }
 
-        // A simple function to determine if a specified point is within the map bounds.
+        // A simple function to determine if a specified point is within the Map bounds.
         // Used to prevent null reference exceptions when dereferencing the mapData array.
         public bool IsInBounds(Haxxit.Maps.Point point)
         {

@@ -10,7 +10,7 @@ using Haxxit = SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
-    public class MapSpawnGameState : HaxxitGameState
+    public class MapMovementGameState : HaxxitGameState
     {
         const string finished_text = "Finished";
 
@@ -23,14 +23,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         List<DrawableRectangle> spawns;
 
-        public MapSpawnGameState(Haxxit.Maps.Map map)
+        public MapMovementGameState(Haxxit.Maps.Map map)
         {
             display_map_state = new MapDisplayGameState(map);
         }
 
-        public MapSpawnGameState(MapDisplayGameState background_state)
+        public MapMovementGameState(MapDisplayGameState background_state)
         {
-            display_map_state = background_state;
+            this.display_map_state = background_state;
         }
 
         public override void NewMediator(SimplePubSub.IMediator mediator)

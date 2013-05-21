@@ -206,10 +206,11 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="factory">The factory that creates the MapNode.</param>
         /// <param name="x">The X-coordinate of where the node will be created.</param>
         /// <param name="y">The Y-coordinate of where the node will be created.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns>Whether the node was able to be created.</returns>
-        public bool CreateNode(IFactory<MapNode> factory, int x, int y)
+        public bool CreateNode(IFactory<MapNode> factory, int x, int y, bool emit_changed_signal = true)
         {
-            return CreateNode(factory, new Point(x, y));
+            return CreateNode(factory, new Point(x, y), emit_changed_signal);
         }
 
         /// <summary>
@@ -220,10 +221,11 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="y1">The Y-coordinate of one corner of the rectangle.</param>
         /// <param name="x2">The X-coordinate of the opposite corner of the rectangle.</param>
         /// <param name="y2">The Y-coordinate of the opposite corner of the rectangle.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns>Whether all the nodes could be created.</returns>
-        public bool CreateNodes(IFactory<MapNode> factory, int x1, int y1, int x2, int y2)
+        public bool CreateNodes(IFactory<MapNode> factory, int x1, int y1, int x2, int y2, bool emit_changed_signal = true)
         {
-            return CreateNodes(factory, new Point(x1, y1), new Point(x2, y2));
+            return CreateNodes(factory, new Point(x1, y1), new Point(x2, y2), emit_changed_signal);
         }
 
         /// <summary>
@@ -232,16 +234,19 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <typeparam name="T">The type of MapNode that is to be created.</typeparam>
         /// <param name="start">One corner of the rectangle.</param>
         /// <param name="end">The opposite corner of the rectangle.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns></returns>
-        public bool CreateNodes(IFactory<MapNode> factory, Point start, Point end)
+        public bool CreateNodes(IFactory<MapNode> factory, Point start, Point end, bool emit_changed_signal = true)
         {
             if (!IsInBounds(start) || !IsInBounds(end))
                 return false;
             Point direction = start.DirectionsTo(end);
             foreach (Point p in start.IterateOverRange(end))
             {
-                CreateNode(factory, p);
+                CreateNode(factory, p, false);
             }
+            if (emit_changed_signal)
+                MapChanged(start.IterateOverRange(end));
             return true;
         }
 
@@ -250,14 +255,17 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// </summary>
         /// <param name="factory">The type of node that is to be created.</param>
         /// <param name="p">The point at which the node will be created.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns>Whether the node was able to be created.</returns>
-        public bool CreateNode(IFactory<MapNode> factory, Point p)
+        public bool CreateNode(IFactory<MapNode> factory, Point p, bool emit_changed_signal = true)
         {
             if (!IsInBounds(p) || factory == null)
                 return false;
             map[p.X, p.Y] = factory.NewInstance();
             map[p.X, p.Y].coordinate = p;
             map[p.X, p.Y].Notifiable = Mediator;
+            if (emit_changed_signal)
+                MapChanged(p);
             return true;
         }
 
@@ -267,10 +275,11 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <typeparam name="T">The type of MapNode that is to be created.</typeparam>
         /// <param name="x">The X-coordinate of where the node will be created.</param>
         /// <param name="y">The Y-coordinate of where the node will be created.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns>Whether the node was able to be created.</returns>
-        public bool CreateNode<T>(int x, int y) where T : MapNode, new()
+        public bool CreateNode<T>(int x, int y, bool emit_changed_signal = true) where T : MapNode, new()
         {
-            return CreateNode<T>(new Point(x, y));
+            return CreateNode<T>(new Point(x, y), emit_changed_signal);
         }
 
         /// <summary>
@@ -278,14 +287,17 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// </summary>
         /// <typeparam name="T">The type of node that is to be created.</typeparam>
         /// <param name="p">The point at which the node will be created.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns>Whether the node was able to be created.</returns>
-        public bool CreateNode<T>(Point p) where T : MapNode, new()
+        public bool CreateNode<T>(Point p, bool emit_changed_signal = true) where T : MapNode, new()
         {
             if (!IsInBounds(p))
                 return false;
             map[p.X, p.Y] = new T();
             map[p.X, p.Y].coordinate = p;
             map[p.X, p.Y].Notifiable = Mediator;
+            if (emit_changed_signal)
+                MapChanged(p);
             return true;
         }
 
@@ -297,10 +309,11 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <param name="y1">The Y-coordinate of one corner of the rectangle.</param>
         /// <param name="x2">The X-coordinate of the opposite corner of the rectangle.</param>
         /// <param name="y2">The Y-coordinate of the opposite corner of the rectangle.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns>Whether all the nodes could be created.</returns>
-        public bool CreateNodes<T>(int x1, int y1, int x2, int y2) where T : MapNode, new()
+        public bool CreateNodes<T>(int x1, int y1, int x2, int y2, bool emit_changed_signal = true) where T : MapNode, new()
         {
-            return CreateNodes<T>(new Point(x1, y1), new Point(x2, y2));
+            return CreateNodes<T>(new Point(x1, y1), new Point(x2, y2), emit_changed_signal);
         }
 
         /// <summary>
@@ -309,16 +322,19 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <typeparam name="T">The type of MapNode that is to be created.</typeparam>
         /// <param name="start">One corner of the rectangle.</param>
         /// <param name="end">The opposite corner of the rectangle.</param>
+        /// <param name="emit_changed_signal">Whether to emit a changed signal. Defaults to true.</param>
         /// <returns></returns>
-        public bool CreateNodes<T>(Point start, Point end) where T : MapNode, new()
+        public bool CreateNodes<T>(Point start, Point end, bool emit_changed_signal = true) where T : MapNode, new()
         {
             if (!IsInBounds(start) || !IsInBounds(end))
                 return false;
             Point direction = start.DirectionsTo(end);
             foreach (Point p in start.IterateOverRange(end))
             {
-                CreateNode<T>(p);
+                CreateNode<T>(p, false);
             }
+            if (emit_changed_signal)
+                MapChanged(start.IterateOverRange(end));
             return true;
         }
 
@@ -334,6 +350,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             OwnedNode node = (OwnedNode)GetNode(p);
             node.Player = player;
+            MapChanged(p);
             return true;
         }
 
@@ -431,6 +448,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
             SpawnNode spawn = (SpawnNode)map[p.X, p.Y];
             spawn.program = factory;
+            MapChanged(p);
             return true;
         }
 
@@ -442,6 +460,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
         {
             Point start = new Point(0, 0);
             Point end = new Point(XSize - 1, YSize - 1);
+            List<Point> changed_nodes = new List<Point>();
             foreach (Point p in start.IterateOverRange(end))
             {
                 if (NodeIsType<SpawnNode>(p))
@@ -458,11 +477,13 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     }
                     else
                     {
-                        CreateNode(new AvailableNodeFactory(), p);
+                        CreateNode(new AvailableNodeFactory(), p, false);
                     }
+                    changed_nodes.Add(p);
                 }
             }
             spawning_finished = true;
+            MapChanged(changed_nodes);
         }
 
         /// <summary>
@@ -515,6 +536,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             Point end = start + direction;
             if (!CanMoveProgram(start, direction))
                 return false;
+            List<Point> changed_nodes = new List<Point>();
             bool end_is_tail_node = NodeIsType<ProgramTailNode>(end);
             ProgramHeadNode head_node = (ProgramHeadNode)map[start.X, start.Y];
             if(NodeIsType<AvailableNode>(end))
@@ -529,6 +551,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
             tail_node.Player = head_node.Player;
             map[end.X, end.Y] = head_node;
             map[start.X, start.Y] = tail_node;
+            changed_nodes.Add(start);
+            changed_nodes.Add(end);
 
             if (end_is_tail_node)
             {
@@ -561,12 +585,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 {
                     map[coord.X, coord.Y] = new AvailableNode();
                     map[coord.X, coord.Y].coordinate = coord;
+                    changed_nodes.Add(coord);
                 }
                 end_node.Head.Tail = null;
             }
             else if(!end_is_tail_node)
                 head_node.Program.Size.IncreaseCurrentSize(1);
             head_node.Program.Moves.Moved();
+            MapChanged(changed_nodes);
             return true;
         }
 
@@ -613,6 +639,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             if (!IsSpawningFinished() || !IsInBounds(start) || !IsInBounds(end) || !NodeIsType<ProgramHeadNode>(end)
                 || !(NodeIsType<AvailableNode>(start) || NodeIsType<ProgramTailNode>(start)) || !direction.IsDirectional())
                 return false;
+            List<Point> changed_nodes = new List<Point>();
             ProgramHeadNode head_node = (ProgramHeadNode)map[end.X, end.Y];
             ProgramTailNode tail_node = head_node.Tail;
             if (tail_node != null && tail_node.Tail != null)
@@ -621,6 +648,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 head_node.Tail = tail_node.Tail;
             map[start.X, start.Y] = head_node;
             head_node.coordinate = start;
+            changed_nodes.Add(start);
 
             if (end_was_tail_node) // If the Program originally moved over a tail node
             {
@@ -633,6 +661,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 map[end.X, end.Y].coordinate = end;
                 end_node.Tail = (ProgramTailNode)map[end.X, end.Y];
                 ((ProgramTailNode)map[end.X, end.Y]).Head = end_node;
+                changed_nodes.Add(end);
             }
             else if (!program_resized) // If the Program wasn't resized
             {
@@ -652,6 +681,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                     end_node.Tail = (ProgramTailNode)map[tail_location.X, tail_location.Y];
                     ((ProgramTailNode)map[tail_location.X, tail_location.Y]).Head = end_node;
                     ((ProgramTailNode)map[tail_location.X, tail_location.Y]).Player = head_node.Player;
+                    changed_nodes.Add(tail_location);
                 }
             }
             else // The Program was resized and didn't move over a tail node
@@ -661,6 +691,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 head_node.Program.Size.DecreaseCurrentSize(1);
             }
             head_node.Program.Moves.UndoMove();
+            MapChanged(changed_nodes);
             return true;
         }
 
@@ -725,6 +756,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             new_tail.Tail = program_node.Tail;
             program_node.Tail = new_tail;
             program_node.Program.Size.IncreaseCurrentSize(1);
+            MapChanged(where_to_add);
             return true;
         }
 
@@ -747,6 +779,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             {
                 map[node.coordinate.X, node.coordinate.Y] = node;
             }
+            MapChanged(nodes.Select<ProgramNode, Point>(x => x.coordinate));
             return true;
         }
 
