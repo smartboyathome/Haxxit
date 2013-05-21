@@ -55,7 +55,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             display_map_state.Map.FinishedSpawning();
             //UserMapGameState new_state = new UserMapGameState(user_map_state.Map);
-            NewUserMapGameState new_state = new NewUserMapGameState(display_map_state);
+            MapPlayGameState new_state = new MapPlayGameState(display_map_state);
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 

@@ -10,7 +10,7 @@ using Haxxit = SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
-    public class UserMapGameState : HaxxitGameState
+    public class OLD_UserMapGameState : HaxxitGameState
     {
         const int map_rectangle_size = 24;
         const int map_border_size = 6;
@@ -28,7 +28,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Haxxit.Maps.Point selected_node;
         string selected_attack;
 
-        public UserMapGameState(Haxxit.Maps.Map map) :
+        public OLD_UserMapGameState(Haxxit.Maps.Map map) :
             base()
         {
             this.map = map;

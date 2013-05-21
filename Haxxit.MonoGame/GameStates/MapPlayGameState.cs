@@ -10,7 +10,7 @@ using Haxxit = SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
-    public class NewUserMapGameState : HaxxitGameState
+    public class MapPlayGameState : HaxxitGameState
     {
         public MapDisplayGameState display_map_state;
         public DrawableRectangle turn_done_button, undo_button;
@@ -19,7 +19,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         SpriteFont arial_16px_regular, arial_12px_regular;
         Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
 
-        public NewUserMapGameState(MapDisplayGameState background_state)
+        public MapPlayGameState(MapDisplayGameState background_state)
         {
             display_map_state = background_state;
         }

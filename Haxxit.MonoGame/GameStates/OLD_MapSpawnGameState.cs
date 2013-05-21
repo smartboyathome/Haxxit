@@ -79,7 +79,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public void OnFinishedClick(DrawableRectangle rectangle)
         {
             map.FinishedSpawning();
-            UserMapGameState new_state = new UserMapGameState(map);
+            OLD_UserMapGameState new_state = new OLD_UserMapGameState(map);
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 

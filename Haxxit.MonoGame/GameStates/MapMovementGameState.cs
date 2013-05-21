@@ -12,7 +12,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
     public class MapMovementGameState : HaxxitGameState
     {
-        NewUserMapGameState user_map_state;
+        MapPlayGameState user_map_state;
         Texture2D rectangle_texture;
         SpriteFont arial_16px_regular, arial_12px_regular;
         List<DrawableRectangle> movement;
@@ -20,7 +20,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         DrawableRectangle selected_border;
         Haxxit.Maps.Point selected_program;
 
-        public MapMovementGameState(NewUserMapGameState background_state, Haxxit.Maps.Point selected_program)
+        public MapMovementGameState(MapPlayGameState background_state, Haxxit.Maps.Point selected_program)
         {
             user_map_state = background_state;
             this.selected_program = selected_program;

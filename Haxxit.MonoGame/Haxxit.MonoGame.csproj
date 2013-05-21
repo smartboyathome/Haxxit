@@ -67,7 +67,7 @@
     <Compile Include="CreditsGameState.cs" />
     <Compile Include="GameStates\MapAttackGameState.cs" />
     <Compile Include="GameStates\MapMovementGameState.cs" />
-    <Compile Include="GameStates\NewUserMapGameState.cs" />
+    <Compile Include="GameStates\MapPlayGameState.cs" />
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\MapDisplayGameState.cs" />
     <Compile Include="GameStates\OLD_MapSpawnGameState.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="GameStates\WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
-    <Compile Include="GameStates\UserMapGameState.cs" />
+    <Compile Include="GameStates\OLD_UserMapGameState.cs" />
     <Compile Include="GameStates\DefaultGameState.cs" />
     <Compile Include="AI\AINodeData.cs" />
     <Compile Include="AI\CommandInfo.cs" />
