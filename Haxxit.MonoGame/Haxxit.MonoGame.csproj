@@ -94,7 +94,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Programs\AI\Swarmer.cs" />
     <Compile Include="Programs\Player\Tester.cs" />
-    <Compile Include="Programs\Player\Trojan2.0.cs" />
+    <Compile Include="Programs\Player\Trojan2.cs" />
     <Compile Include="Programs\AI\Watcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerOverworldState.cs" />
