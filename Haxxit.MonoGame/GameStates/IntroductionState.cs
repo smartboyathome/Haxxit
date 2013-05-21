@@ -43,14 +43,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         bool fadeIn;
         bool startFadeIn;
 
-        //for skipping logo
-        int xOffset, yOffset;
-        SpriteFont SkipButtonSpriteFont;
-        Rectangle SkipButtonRect;
-        String SkipButtonString = "Skip";
-        Vector2 SkipButtonStringPos;
-        bool isSkipButtonClicked;
-        Texture2D buttonPressed, buttonReleased;
+        bool userWantsToSkip;
 
         public IntroductionState()
         {
@@ -62,14 +55,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mWindowWidth = GlobalAccessors.mGame.Window.ClientBounds.Width;
             mWindowHeight = GlobalAccessors.mGame.Window.ClientBounds.Height;
 
-            xOffset = mWindowWidth / 10;
-            yOffset = mWindowHeight / 15;
-
             backgroundRect = new Rectangle(0, 0, mWindowWidth, mWindowHeight);
-            SkipButtonRect = new Rectangle(mWindowWidth - xOffset, mWindowHeight - yOffset, xOffset, yOffset);
 
             timeElasped = 0;
-            trackingTime = startFadeIn = isSkipButtonClicked = false;
+            trackingTime = startFadeIn = userWantsToSkip = false;
             fadeIn = true;
         }
 
@@ -80,9 +69,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             graphics.Clear(Color.Black);
 
             titleStringSpriteFont = content.Load<SpriteFont>("Arial-48px-Bold");
-            SkipButtonSpriteFont = content.Load<SpriteFont>("Arial-12px-Regular");
-            buttonPressed = content.Load<Texture2D>("blackButtonPressed");
-            buttonReleased = content.Load<Texture2D>("blackButtonReleased");
             blankTexture = new Texture2D(graphics, 1, 1);
             blankTexture.SetData(new Color[] { Color.White });
 
@@ -101,10 +87,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             titleStringLine2Pos.Y = titleStringLine1Pos.Y + length.Y;
 
             logoPictureRect = new Rectangle(mWindowWidth / 2 - 125, (int) (titleStringLine2Pos.Y + length.Y) + 10, 250, 250);
-
-            length = SkipButtonSpriteFont.MeasureString(SkipButtonString);
-            SkipButtonStringPos.X = SkipButtonRect.X + ((SkipButtonRect.Width - length.X) / 2);
-            SkipButtonStringPos.Y = SkipButtonRect.Y + ((SkipButtonRect.Height - length.Y) / 2);
         }
 
         public override void SubscribeAll()
@@ -117,7 +99,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             MouseState mouse_state = Mouse.GetState(); // Gets the mouse state object
             Point mouse_position = new Point(mouse_state.X, mouse_state.Y); // creates a point for the mouse's position
 
-            if (isSkipButtonClicked)
+            if (userWantsToSkip)
             {
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
@@ -126,18 +108,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
             }
 
-            //Update for Skip Button
-            if (SkipButtonRect.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+            //User clicks anywhere within window
+            if (backgroundRect.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
             {
-                isSkipButtonClicked = true;
-            }
-            // if hovering over rectangle
-            else if (SkipButtonRect.Contains(mouse_position))
-            {
-            }
-            else // neither clicking nor hovering over rectangle
-            {
-                isSkipButtonClicked = false;
+                userWantsToSkip = true;
             }
 
             //check to start new time capture
@@ -204,17 +178,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             //logo, fades in and then out
             sprite_batch.Draw(logoPictureTexture, logoPictureRect, Color.White * (alphaValue - .05f));
-
-            //draw Skip button, once clicked goes straight to Main Menu
-            if (isSkipButtonClicked)
-            {
-                sprite_batch.Draw(buttonPressed, SkipButtonRect, Color.White * alphaValue);
-            }
-            else
-            {
-                sprite_batch.Draw(buttonReleased, SkipButtonRect, Color.White * alphaValue);
-            }
-            sprite_batch.DrawString(SkipButtonSpriteFont, SkipButtonString, SkipButtonStringPos, Color.Black * alphaValue);
         }
     }
 }

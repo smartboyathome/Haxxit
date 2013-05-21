@@ -16,7 +16,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Texture2D rectTexture, backgroundTexture;
         Rectangle startGameRect, optionsRect, creditsRect, exitRect, backgroundRect;
         SpriteFont startGameSpriteFont, titleSpriteFont;
-        Color rectColor;
         Vector2 titleStringPos, startStringPos, optionsStringPos, creditsStringPos, exitStringPos;
 
         String titleString = "Haxxit";
@@ -115,9 +114,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
                     mStartPlayer = GlobalAccessors.mPlayer1;
-                    //mStartPlayer.AddProgram(new BugFactory());
-                    //mStartPlayer.AddProgram(new HackFactory());
-                    mStartPlayer.AddProgram(new SlingshotFactory());
+                    //mStartPlayer.AddProgram(new HackerFactory());
+                    //mStartPlayer.AddProgram(new Hacker2Factory());
+                    //mStartPlayer.AddProgram(new MemManFactory());
+                    mStartPlayer.AddProgram(new SniperFactory());
+                    //mStartPlayer.AddProgram(new Sniper2Factory());
+                    //mStartPlayer.AddProgram(new TrojanFactory());
+                    //mStartPlayer.AddProgram(new Trojan2Factory());
                     mStartPlayer.IsHacked = false;
                     StoryTellingGameState new_state = new StoryTellingGameState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));

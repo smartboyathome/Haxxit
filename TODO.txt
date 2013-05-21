@@ -1,0 +1,28 @@
+I'm using this file as a place to store future tasks.  Feel free to add your own or remove bullets as they're implemented/fixed, but feel no pressure to do so (I plan to keep this updated on my own whenever I get a chance).  -Alex
+
+TO IMPLEMENT:
+*Overworld links to new levels
+*Functioning "Saved World" screen for end of game
+*Implement or remove options selection from main menu (any plans for this?)
+*Inclusion of new unit types in store (attempted to add these but ran into trouble with GUI)
+*Icons representing each program via head node (tie shop icons to program icons)
+*Visual links between each program node
+*Unique background texture for all levels
+*Ability for player to exit levels before winning/losing (or if stuck)
+*Better indicators when units are placed on spawns
+*Better indicators when all spawns have been filled or weight limit reached
+*Better indication when all actions have been used up for the turn
+*Better indication when the turn is ended
+*GUI method for players to observe enemy programs/names/abilities
+*Ability to save game progress to disk
+*Sound!
+
+TO FIX:
+*MemMan sometimes causes crashes when undoing
+*Movement selection bug when attempting to attack your own programs
+*Double highlight bug for ranged attacks
+*Ghost movement indicator when actions are undone
+*Letter flashes when moving units
+*Can currently start level with no programs spawned without losing (AI does nothing)
+*initial_silicoins value in maps seems to do nothing (all maps currently reward 500 silicoins)
+*Silicoins in maps don't do anything yet

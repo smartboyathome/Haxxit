@@ -232,9 +232,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
             mBuyablePrograms = new ProgramFactory[numOfAvailPrograms];
-            mBuyablePrograms[0] = new BugFactory();
-            mBuyablePrograms[1] = new HackFactory();
-            mBuyablePrograms[2] = new SlingshotFactory();
+            mBuyablePrograms[0] = new TrojanFactory();
+            mBuyablePrograms[1] = new HackerFactory();
+            mBuyablePrograms[2] = new SniperFactory();
         }
 
         public override void SubscribeAll()

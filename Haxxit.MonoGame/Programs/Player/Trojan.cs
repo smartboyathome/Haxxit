@@ -7,16 +7,17 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
 {
-    class SentinelFactory : ProgramFactory
+    class TrojanFactory : ProgramFactory
     {
-        public SentinelFactory()
+        public TrojanFactory()
         {
-            Moves = 1;
-            Size = 3;
-            SpawnWeight = 0;
-            TypeName = "Sentinel";
+            Moves = 5;
+            Size = 1;
+            SpawnWeight = 20;
+            ProgramCost = 750;
+            TypeName = "Trojan";
             List<Command> commands = new List<Command>();
-            commands.Add(new DamageCommand("Cut", "Deletes 2 cells from target.", 2, 1));
+            commands.Add(new DamageCommand("Breach", "Deletes 2 cells from target.", 2, 1));
             Commands = commands;
         }
     }

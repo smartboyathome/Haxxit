@@ -7,17 +7,17 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
 {
-    class BugFactory : ProgramFactory
+    class SwarmerFactory : ProgramFactory
     {
-        public BugFactory()
+        public SwarmerFactory()
         {
-            Moves = 5;
-            Size = 1;
+            Moves = 3;
+            Size = 4;
             SpawnWeight = 20;
-            ProgramCost = 750;
-            TypeName = "Bug";
+            ProgramCost = 600;
+            TypeName = "Swarmer";
             List<Command> commands = new List<Command>();
-            commands.Add(new DamageCommand("Glitch", "Deletes 2 cells from target.", 2, 1));
+            commands.Add(new DamageCommand("Infect", "Deletes 2 cells from target.", 2, 1));
             Commands = commands;
         }
     }

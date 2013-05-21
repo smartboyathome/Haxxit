@@ -218,12 +218,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 else if (firstLevel == true)
                 {
-                    MapSpawnGameState new_state = new MapSpawnGameState((new SpawnMapFactory()).NewInstance());
+                    MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (secondLevel == true)
                 {
-                    MapSpawnGameState new_state = new MapSpawnGameState((new SpawnMapFactory()).NewInstance());
+                    MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (shop == true)

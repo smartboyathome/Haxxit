@@ -86,7 +86,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Haxxit.Maps.Map map = user_map_state.display_map_state.Map;
             foreach (Haxxit.Maps.Point p in selected_program.GetOrthologicalNeighbors())
             {
-                Haxxit.Maps.Point direction = selected_program - p;
+                Haxxit.Maps.Point direction = p - selected_program;
                 if (map.CanMoveProgram(selected_program, direction))
                 {
                     DrawableRectangle move =
