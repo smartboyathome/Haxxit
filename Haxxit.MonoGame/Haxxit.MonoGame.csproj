@@ -59,6 +59,7 @@
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\MapDisplayGameState.cs" />
     <Compile Include="GameStates\OLD_MapSpawnGameState.cs" />
+    <Compile Include="GameStates\ShopStateDialogBox.cs" />
     <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="GlobalAccessors.cs" />
     <Compile Include="GameStates\IntroductionState.cs" />
