@@ -12,10 +12,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
     public class NewUserMapGameState : HaxxitGameState
     {
-        MapDisplayGameState display_map_state;
+        public MapDisplayGameState display_map_state;
+        public DrawableRectangle turn_done_button, undo_button;
+
         Texture2D rectangle_texture;
         SpriteFont arial_16px_regular, arial_12px_regular;
-        DrawableRectangle turn_done_button, undo_button;
         Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
 
         public NewUserMapGameState(MapDisplayGameState background_state)
@@ -35,7 +36,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public void OnProgramClick(DrawableRectangle rectangle)
         {
-            
+            Haxxit.Maps.Point haxxit_location = display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
+            if (display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(haxxit_location)
+               && !display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(haxxit_location).Program.AlreadyRanCommand())
+            {
+                MapMovementGameState new_state = new MapMovementGameState(this, haxxit_location);
+                _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+            }
         }
 
         public void OnTurnDoneClick(DrawableRectangle rectangle)
@@ -73,6 +80,30 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
         }
 
+        private void MapHackedListener(string channel, object sender, EventArgs args)
+        {
+            Haxxit.Maps.HackedEventArgs event_args = args as Haxxit.Maps.HackedEventArgs;
+            //WinGameState new_state = new WinGameState(event_args.EarnedSilicoins, this);
+            WinGameState new_state = new WinGameState(display_map_state.Map.EarnedSilicoins, event_args.WinningPlayer, this);
+            _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+        }
+
+        private void MapChangedListener(string channel, object sender, EventArgs args)
+        {
+            Haxxit.Maps.MapChangedEventArgs event_args = (Haxxit.Maps.MapChangedEventArgs)args;
+            foreach (Haxxit.Maps.Point p in event_args.ChangedNodes)
+            {
+                if (head_nodes.ContainsKey(p) && !display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
+                    head_nodes.Remove(p);
+                else if (!head_nodes.ContainsKey(p) && display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
+                {
+                    head_nodes[p] =
+                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
+                    head_nodes[p].OnMouseLeftClick += OnProgramClick;
+                }
+            }
+        }
+
         public override void SubscribeAll()
         {
             // Add any channels you are subscribing to here by doing the following:
@@ -85,6 +116,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // arguments for the listener. If you need arguments, create a subclass of
             // EventArgs with the arguments as properties.
 
+            _mediator_manager.Subscribe("haxxit.map.hacked", MapHackedListener);
+            _mediator_manager.Subscribe("haxxit.map.nodes.changed", MapChangedListener);
         }
 
         public override void Update()
@@ -94,12 +127,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
 
-            foreach (DrawableRectangle head_node in head_nodes.Values)
+            if (display_map_state.Map.CurrentPlayer.GetType() != typeof(Haxxit.MonoGame.PlayerAI))
             {
-                head_node.Update();
-            }
+                foreach (DrawableRectangle head_node in head_nodes.Values)
+                {
+                    head_node.Update();
+                }
 
-            turn_done_button.Update();
+                turn_done_button.Update();
+                undo_button.Update();
+            }
+            else
+            {
+                ((Haxxit.MonoGame.PlayerAI)display_map_state.Map.CurrentPlayer).HandleAITurn(display_map_state.Map);
+            }
         }
 
         public override void Draw(SpriteBatch sprite_batch)
@@ -125,15 +166,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
             /*List<string> bottom_status = new List<string>();
             int spawn_weight_sum = 0;
-            foreach (Haxxit.Maps.Point p in display_map_state.Map.Low.IterateOverRange(display_map_state.Map.High))
+            foreach (Haxxit.Maps.Point p in user_map_state.Map.Low.IterateOverRange(user_map_state.Map.High))
             {
-                if (display_map_state.Map.NodeIsType<Haxxit.Maps.SpawnNode>(p)
-                    && display_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program != null)
+                if (user_map_state.Map.NodeIsType<Haxxit.Maps.SpawnNode>(p)
+                    && user_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program != null)
                 {
-                    spawn_weight_sum += display_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
+                    spawn_weight_sum += user_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
                 }
             }
-            bottom_status.Add("Spawn Points remaining: " + (display_map_state.Map.TotalSpawnWeights - spawn_weight_sum).ToString());
+            bottom_status.Add("Spawn Points remaining: " + (user_map_state.Map.TotalSpawnWeights - spawn_weight_sum).ToString());
             for (int i = 0; i < bottom_status.Count; i++)
             {
                 Vector2 bottom_status_position = new Vector2(10, 450 - 18 * (bottom_status.Count - i - 1));

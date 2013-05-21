@@ -12,82 +12,103 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
     public class MapMovementGameState : HaxxitGameState
     {
-        const string finished_text = "Finished";
-
-        MapDisplayGameState display_map_state;
+        NewUserMapGameState user_map_state;
         Texture2D rectangle_texture;
-
         SpriteFont arial_16px_regular, arial_12px_regular;
-        Vector2 finished_text_size;
-        DrawableRectangle finished_button;
+        List<DrawableRectangle> movement;
+        List<Tuple<DrawableRectangle, string>> attacks;
+        DrawableRectangle selected_border;
+        Haxxit.Maps.Point selected_program;
 
-        List<DrawableRectangle> spawns;
-
-        public MapMovementGameState(Haxxit.Maps.Map map)
+        public MapMovementGameState(NewUserMapGameState background_state, Haxxit.Maps.Point selected_program)
         {
-            display_map_state = new MapDisplayGameState(map);
-        }
-
-        public MapMovementGameState(MapDisplayGameState background_state)
-        {
-            this.display_map_state = background_state;
+            user_map_state = background_state;
+            this.selected_program = selected_program;
         }
 
         public override void NewMediator(SimplePubSub.IMediator mediator)
         {
-            display_map_state.Mediator = mediator;
+            user_map_state.Mediator = mediator;
         }
 
         public override void Init()
         {
-            display_map_state.Init();
-            spawns = new List<DrawableRectangle>();
+            movement = new List<DrawableRectangle>();
+            attacks = new List<Tuple<DrawableRectangle, string>>();
         }
 
-        public void OnSpawnClick(DrawableRectangle rectangle)
+        public void OnMoveClick(DrawableRectangle rectangle)
         {
-            Haxxit.Maps.Point haxxit_location = display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
-            SpawnDialogGameState new_state = new SpawnDialogGameState(this, display_map_state.Map, haxxit_location);
-            _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+            Haxxit.Maps.Map map = user_map_state.display_map_state.Map;
+            Haxxit.Maps.Point haxxit_location = user_map_state.display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
+            Haxxit.Maps.Point direction = haxxit_location - selected_program;
+            if (map.CanMoveProgram(selected_program, direction))
+            {
+                _mediator_manager.Notify("haxxit.map.move", this, new Haxxit.Maps.MoveEventArgs(selected_program, direction));
+                if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(haxxit_location)
+                    && !map.GetNode<Haxxit.Maps.ProgramHeadNode>(haxxit_location).Program.AlreadyRanCommand())
+                {
+                    MapMovementGameState new_state = new MapMovementGameState(user_map_state, haxxit_location);
+                    _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+                else
+                {
+                    _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+                }
+            }
         }
 
-        public void OnFinishedClick(DrawableRectangle rectangle)
+        public void OnAttackClick(DrawableRectangle rectangle)
         {
-            display_map_state.Map.FinishedSpawning();
-            UserMapGameState new_state = new UserMapGameState(display_map_state.Map);
-            _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+            Haxxit.Maps.Map map = user_map_state.display_map_state.Map;
+            foreach (Tuple<DrawableRectangle, string> attack in attacks)
+            {
+                if (attack.Item1 == rectangle)
+                {
+                    if (!map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program.HasCommand(attack.Item2))
+                        break;
+                    MapAttackGameState new_state = new MapAttackGameState(user_map_state, selected_program, attack.Item2);
+                    _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+            }
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
-            display_map_state.LoadContent(graphics, sprite_batch, content);
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
-            finished_text_size = arial_16px_regular.MeasureString(finished_text);
-            finished_button = new DrawableRectangle(
-                rectangle_texture,
-                new Rectangle(
-                    800 - (int)Math.Floor(finished_text_size.X) - 15,
-                    480 - (int)Math.Floor(finished_text_size.Y) - 15,
-                    (int)Math.Floor(finished_text_size.X) + 10,
-                    (int)Math.Floor(finished_text_size.Y) + 10
-                ),
-                Color.Green
-            );
-            finished_button.OnMouseLeftClick += OnFinishedClick;
 
-            Haxxit.Maps.Map map = display_map_state.Map;
-            foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
+            selected_border = new DrawableRectangle(rectangle_texture,
+                user_map_state.display_map_state.HaxxitPointToXnaRectangle(selected_program), Color.Transparent, 2, Color.White);
+
+            Haxxit.Maps.Map map = user_map_state.display_map_state.Map;
+            foreach (Haxxit.Maps.Point p in selected_program.GetOrthologicalNeighbors())
             {
-                if (map.NodeIsType<Haxxit.Maps.SpawnNode>(p)
-                    && map.GetNode<Haxxit.Maps.SpawnNode>(p).Player == map.CurrentPlayer)
+                Haxxit.Maps.Point direction = selected_program - p;
+                if (map.CanMoveProgram(selected_program, direction))
                 {
-                    DrawableRectangle spawn =
-                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.White);
-                    spawn.OnMouseLeftClick += OnSpawnClick;
-                    spawns.Add(spawn);
+                    DrawableRectangle move =
+                        new DrawableRectangle(rectangle_texture, user_map_state.display_map_state.HaxxitPointToXnaRectangle(p),
+                            Color.White * 0.5f);
+                    move.OnMouseLeftClick += OnMoveClick;
+                    movement.Add(move);
+                }
+            }
+
+            Haxxit.Maps.ProgramHeadNode selected_node = map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program);
+            if (!selected_node.Program.AlreadyRanCommand())
+            {
+                foreach (string command in selected_node.Program.GetAllCommands())
+                {
+                    Vector2 text_size = arial_16px_regular.MeasureString(command);
+                    DrawableRectangle rectangle = new DrawableRectangle(rectangle_texture,
+                            new Rectangle(760 - (int)Math.Floor(text_size.Y), 10 + ((int)Math.Floor(text_size.Y) + 15) * attacks.Count,
+                                (int)Math.Floor(text_size.X) + 10, (int)Math.Floor(text_size.Y) + 10),
+                            Color.Red);
+                    rectangle.OnMouseLeftClick += OnAttackClick;
+                    attacks.Add(new Tuple<DrawableRectangle, string>(rectangle, command));
                 }
             }
         }
@@ -113,43 +134,47 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
 
-            foreach (DrawableRectangle spawn in spawns)
-            {
-                spawn.Update();
-            }
+            MouseState mouse_state = Mouse.GetState();
+            Point mouse_position = new Point(mouse_state.X, mouse_state.Y);
+            bool within_others = false;
 
-            finished_button.Update();
+            foreach (DrawableRectangle move in movement)
+            {
+                if(!within_others && move.Area.Contains(mouse_position))
+                    within_others = true;
+                move.Update();
+            }
+            foreach (Tuple<DrawableRectangle, string> attack in attacks)
+            {
+                if (!within_others && attack.Item1.Area.Contains(mouse_position))
+                    within_others = true;
+                attack.Item1.Update();
+            }
+            user_map_state.turn_done_button.Update();
+            user_map_state.undo_button.Update();
+            
+            if (mouse_state.LeftButton == ButtonState.Pressed && !within_others)
+            {
+                _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+            }
         }
 
         public override void Draw(SpriteBatch sprite_batch)
         {
-            display_map_state.Draw(sprite_batch);
+            user_map_state.Draw(sprite_batch);
 
-            finished_button.Draw(sprite_batch);
-            Vector2 finished_text_position = new Vector2(finished_button.Area.X + (finished_button.Area.Width - finished_text_size.X) / 2,
-                finished_button.Area.Y + (finished_button.Area.Height - finished_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, finished_text, finished_text_position, Color.White);
-
-            foreach (DrawableRectangle spawn in spawns)
+            foreach (DrawableRectangle move in movement)
             {
-                spawn.Draw(sprite_batch);
+                move.Draw(sprite_batch);
             }
 
-            List<string> bottom_status = new List<string>();
-            int spawn_weight_sum = 0;
-            foreach (Haxxit.Maps.Point p in display_map_state.Map.Low.IterateOverRange(display_map_state.Map.High))
+            foreach (Tuple<DrawableRectangle, string> attack in attacks)
             {
-                if (display_map_state.Map.NodeIsType<Haxxit.Maps.SpawnNode>(p)
-                    && display_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program != null)
-                {
-                    spawn_weight_sum += display_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
-                }
-            }
-            bottom_status.Add("Spawn Points remaining: " + (display_map_state.Map.TotalSpawnWeights - spawn_weight_sum).ToString());
-            for (int i = 0; i < bottom_status.Count; i++)
-            {
-                Vector2 bottom_status_position = new Vector2(10, 450 - 18 * (bottom_status.Count - i - 1));
-                sprite_batch.DrawString(arial_12px_regular, bottom_status[i], bottom_status_position, Color.White);
+                attack.Item1.Draw(sprite_batch);
+                Vector2 command_size = arial_16px_regular.MeasureString(attack.Item2);
+                sprite_batch.DrawString(arial_16px_regular, attack.Item2,
+                    new Vector2(attack.Item1.Area.X + (attack.Item1.Area.Width - command_size.X) / 2,
+                        attack.Item1.Area.Y + (attack.Item1.Area.Width - command_size.X) / 2), Color.White);
             }
         }
     }
