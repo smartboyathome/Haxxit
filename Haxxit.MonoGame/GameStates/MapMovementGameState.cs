@@ -163,6 +163,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             user_map_state.Draw(sprite_batch);
 
+            selected_border.Draw(sprite_batch);
+
             foreach (DrawableRectangle move in movement)
             {
                 move.Draw(sprite_batch);
@@ -176,6 +178,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     new Vector2(attack.Item1.Area.X + (attack.Item1.Area.Width - command_size.X) / 2,
                         attack.Item1.Area.Y + (attack.Item1.Area.Width - command_size.X) / 2), Color.White);
             }
+
+            Haxxit.Programs.Program program = user_map_state.display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program;
+            string bottom_status_string = program.TypeName + " has " + program.Moves.MovesLeft + " moves left.";
+            Vector2 bottom_status_position = new Vector2(10, 450);
+            sprite_batch.DrawString(arial_12px_regular, bottom_status_string, bottom_status_position, Color.White);
         }
     }
 }

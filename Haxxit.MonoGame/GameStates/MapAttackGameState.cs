@@ -66,7 +66,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             foreach (Haxxit.Maps.Point p in selected_program.GetPointsWithinDistance(program.GetCommand(selected_attack).Range))
             {
                 Rectangle attack_rectangle = user_map_state.display_map_state.HaxxitPointToXnaRectangle(p);
-                if(attack_nodes.Count(x => x.Area == attack_rectangle) == 0)
+                if(attack_nodes.Count(x => x.Area == attack_rectangle) == 0 && map.IsInBounds(p))
                 {
                     DrawableRectangle attack_node =
                         new DrawableRectangle(rectangle_texture, attack_rectangle, Color.White * 0.5f);
@@ -120,10 +120,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             user_map_state.Draw(sprite_batch);
 
+            selected_border.Draw(sprite_batch);
+
             foreach (DrawableRectangle attack_node in attack_nodes)
             {
                 attack_node.Draw(sprite_batch);
             }
+
+            Haxxit.Programs.Program program = user_map_state.display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program;
+            Haxxit.Commands.Command command = program.GetCommand(selected_attack);
+            string bottom_status_string = command.Name + ": " + command.Description;
+            Vector2 bottom_status_position = new Vector2(10, 450);
+            sprite_batch.DrawString(arial_12px_regular, bottom_status_string, bottom_status_position, Color.White);
         }
     }
 }
