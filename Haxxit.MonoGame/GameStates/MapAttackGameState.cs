@@ -69,7 +69,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 if(attack_nodes.Count(x => x.Area == attack_rectangle) == 0 && map.IsInBounds(p))
                 {
                     DrawableRectangle attack_node =
-                        new DrawableRectangle(rectangle_texture, attack_rectangle, Color.White * 0.5f);
+                        new DrawableRectangle(rectangle_texture, attack_rectangle, Color.Green * 0.5f);
                     attack_node.OnMouseLeftClick += OnAttackNodeClick;
                     attack_nodes.Add(attack_node);
                 }

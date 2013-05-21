@@ -15,7 +15,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         const int map_rectangle_size = 24;
         const int map_border_size = 6;
 
-        Texture2D rectangle_texture;
+        Texture2D rectangle_texture, background;
+        DrawableRectangle background_rectangle;
         Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>> map_squares;
         Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
@@ -73,6 +74,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
+            background = content.Load<Texture2D>("Map-Background-1");
+            background_rectangle = new DrawableRectangle(background, new Rectangle(0, 0, 800, 480), Color.White);
             map_squares.Clear();
             foreach (SmartboyDevelopments.Haxxit.Maps.Point p in Map.Low.IterateOverRange(Map.High))
                 map_squares[p] = MapNodeToRectangle(p);
@@ -121,7 +124,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             if (Map.NodeIsType<Haxxit.Maps.AvailableNode>(p))
             {
                 Rectangle square = p.ToXNARectangle(map_rectangle_size, 6);
-                rectangles.Add(new DrawableRectangle(rectangle_texture, square, Color.Blue));
+                rectangles.Add(new DrawableRectangle(rectangle_texture, square, Color.LightBlue * 0.5f));
                 if (Map.NodeIsType<Haxxit.Maps.SilicoinNode>(p))
                     rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(square.X + 10, square.Y + 10, 4, 4), Color.Green));
                 else if (Map.NodeIsType<Haxxit.Maps.DataNode>(p))
@@ -189,6 +192,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Draw(SpriteBatch sprite_batch)
         {
+            background_rectangle.Draw(sprite_batch);
             foreach (IEnumerable<DrawableRectangle> rectangle_list in map_squares.Values)
                 foreach (DrawableRectangle rectangle in rectangle_list)
                     rectangle.Draw(sprite_batch);

@@ -18,6 +18,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Texture2D rectangle_texture;
         SpriteFont arial_16px_regular, arial_12px_regular;
         Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
+        bool is_ai_turn;
 
         public MapPlayGameState(MapDisplayGameState background_state)
         {
@@ -32,6 +33,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public override void Init()
         {
             head_nodes = new Dictionary<Haxxit.Maps.Point, DrawableRectangle>();
+            is_ai_turn = false;
         }
 
         public void OnProgramClick(DrawableRectangle rectangle)
@@ -104,6 +106,24 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
         }
 
+        private void TurnDoneListener(string channel, object sender, EventArgs args)
+        {
+            TempDialogGameState new_state;
+            // This does not work since SimplePubSub does not guarentee any ordering of subscribers.
+            //if (display_map_state.Map.CurrentPlayer.GetType() == typeof(PlayerAI))
+            if (!is_ai_turn)
+            {
+                new_state = new TempDialogGameState(this, "S.A.N.T.A.'s turn", 1000);
+                is_ai_turn = true;
+            }
+            else
+            {
+                new_state = new TempDialogGameState(this, "Your turn", 1000);
+                is_ai_turn = false;
+            }
+            _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+        }
+
         public override void SubscribeAll()
         {
             // Add any channels you are subscribing to here by doing the following:
@@ -118,6 +138,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
             _mediator_manager.Subscribe("haxxit.map.hacked", MapHackedListener);
             _mediator_manager.Subscribe("haxxit.map.nodes.changed", MapChangedListener);
+            _mediator_manager.Subscribe("haxxit.map.turn_done", TurnDoneListener);
         }
 
         public override void Update()
@@ -163,23 +184,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 head_node.Draw(sprite_batch);
             }
-
-            /*List<string> bottom_status = new List<string>();
-            int spawn_weight_sum = 0;
-            foreach (Haxxit.Maps.Point p in user_map_state.Map.Low.IterateOverRange(user_map_state.Map.High))
-            {
-                if (user_map_state.Map.NodeIsType<Haxxit.Maps.SpawnNode>(p)
-                    && user_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program != null)
-                {
-                    spawn_weight_sum += user_map_state.Map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
-                }
-            }
-            bottom_status.Add("Spawn Points remaining: " + (user_map_state.Map.TotalSpawnWeights - spawn_weight_sum).ToString());
-            for (int i = 0; i < bottom_status.Count; i++)
-            {
-                Vector2 bottom_status_position = new Vector2(10, 450 - 18 * (bottom_status.Count - i - 1));
-                sprite_batch.DrawString(arial_12px_regular, bottom_status[i], bottom_status_position, Color.White);
-            }*/
         }
     }
 }

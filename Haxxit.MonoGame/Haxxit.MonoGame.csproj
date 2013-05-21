@@ -52,6 +52,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameStates\TempDialogGameState.cs" />
     <Compile Include="GameStates\CreditsGameState.cs" />
     <Compile Include="GameStates\MapAttackGameState.cs" />
     <Compile Include="GameStates\MapMovementGameState.cs" />
