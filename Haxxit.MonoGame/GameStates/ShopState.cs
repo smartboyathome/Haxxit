@@ -222,6 +222,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mBuyablePrograms.Add(new HackerFactory());
             mBuyablePrograms.Add(new MemManFactory());
             mBuyablePrograms.Add(new TrojanFactory());
+            mBuyablePrograms.Add(new Sniper2Factory());
         }
 
         public override void SubscribeAll()
@@ -449,6 +450,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     sprite_batch.DrawString(PlayerUISpriteFont, mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).Commands.ElementAt(i).Name,
                         pos, Color.White);
+                    containerYOffset += 7 * yOffset / 10;
+                    pos.Y = YourProgramsContainerRect.Y + containerYOffset + 2;
                 }
             }
             containerYOffset = 0;
@@ -540,6 +543,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     sprite_batch.DrawString(PlayerUISpriteFont, mBuyablePrograms.ElementAt(mAvailSingleProgramSelectedIndex).Commands.ElementAt(i).Name,
                         pos, Color.White);
+                    containerYOffset += 7 * yOffset / 10;
+                    pos.Y = YourProgramsContainerRect.Y + containerYOffset + 2;
                 }
             }
             containerYOffset = 0;
