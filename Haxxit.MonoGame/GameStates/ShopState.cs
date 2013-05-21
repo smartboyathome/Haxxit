@@ -50,7 +50,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle YourProgramsInfoContainerRect;
 
         //displaying program images
-        Texture2D[] mPlayerProgramImages;
+        List<Texture2D> mPlayerProgramImages;
         Rectangle mProgramImageRect, mAvailImageRect;
 
         //For Displaying Available Programs
@@ -206,15 +206,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             BuyButtonStringPos.X = BuyButtonRect.X + ((BuyButtonRect.Width - length.X) / 2);
             BuyButtonStringPos.Y = BuyButtonRect.Y + ((BuyButtonRect.Height - length.Y) / 2);
 
-            //for displaying program images
-            mPlayerProgramImages = new Texture2D[MAX_SELECTABLE];
-
-            mPlayerProgramImages[0] = content.Load<Texture2D>("Hack");
-            mPlayerProgramImages[1] = content.Load<Texture2D>("Bug");
-            mPlayerProgramImages[2] = content.Load<Texture2D>("SlingShot");
-            mPlayerProgramImages[3] = content.Load<Texture2D>("Virus");
-            mPlayerProgramImages[4] = content.Load<Texture2D>("Bomb");
-
             //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
             mBuyablePrograms = new List<ProgramFactory>();
 
@@ -223,6 +214,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mBuyablePrograms.Add(new MemManFactory());
             mBuyablePrograms.Add(new TrojanFactory());
             mBuyablePrograms.Add(new Sniper2Factory());
+
+            //for displaying program images
+            mPlayerProgramImages = new List<Texture2D>();
+
+            for (int i = 0; i < mBuyablePrograms.Count; i++)
+            {
+                mPlayerProgramImages.Add(content.Load<Texture2D>(mBuyablePrograms.ElementAt(i).TypeName));
+            }
         }
 
         public override void SubscribeAll()
