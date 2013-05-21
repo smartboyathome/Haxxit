@@ -411,7 +411,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             //displaying Program Info of selected players program
             containerYOffset = 0;
-            if (mIsAPlayerProgramSelected && mPlayer1InShop.GetPrograms().Count() > 0)
+            if (mIsAPlayerProgramSelected && mPlayer1InShop.GetPrograms().Count() > 0 && mPlayerSingleProgramSelectedIndex <= mPlayer1InShop.GetPrograms().Count() - 1)
             {
                 int buyingIndex = 0;
                 for (int i = 0; i < mBuyablePrograms.Count; i++)
