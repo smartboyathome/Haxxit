@@ -11,13 +11,16 @@ using SmartboyDevelopments.Haxxit.Commands;
 using SmartboyDevelopments.Haxxit.Programs;
 using SmartboyDevelopments.SimplePubSub;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
+using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame
 {
     class ShopState : HaxxitGameState
     {
+        //window variables
         int mWindowWidth, mWindowHeight, xOffset, yOffset, containerYOffset;
 
+        //button texture
         Texture2D buttonReleased, buttonPressed;
 
         //Background
@@ -38,6 +41,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle[] mPlayersProgramsSelectable;
         int mPlayerSingleProgramSelectedIndex;
         bool mIsAPlayerProgramSelected;
+        const int MAX_SELECTABLE = 5;
 
         //For Displaying Program Info
         Rectangle YourProgramsInfoTitleRect;
@@ -54,10 +58,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         String AvailProgramsString = "Available";
         Vector2 AvailProgramsStringPos;
         Rectangle AvailProgramsContainerRect;
-        const int numOfAvailPrograms = 3;
 
         //buyable Programs
-        ProgramFactory[] mBuyablePrograms;
+        List<ProgramFactory> mBuyablePrograms;
         Rectangle[] mAvailProgramsSelectable;
         int mAvailSingleProgramSelectedIndex;
         bool mIsAnAvailProgramSelected;
@@ -83,17 +86,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Vector2 ExitButtonStringPos;
         bool isExitButtonClicked;
 
-        //Rectangle[] PlayersPrograms;
-
-        //Message dialog
-        Rectangle mDialogMessageRect;
-        String mDialogMessageString = "";
-        Vector2 mDialogMessageStringPos;
+        //dialog box
         bool isDialogMessageOpen;
-
-        Rectangle mOkayButtonRect;
-        String mOkayButtonString = "OK";
-        Vector2 mOkayButtonStringPos;
         bool isOkayButtonClicked;
 
         public ShopState()
@@ -131,17 +125,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             ExitButtonRect = new Rectangle(mWindowWidth - xOffset, mWindowHeight - yOffset, xOffset, yOffset);
             isExitButtonClicked = isBuyButtonClicked = false;
 
-            mDialogMessageRect = new Rectangle(mWindowWidth / 4, mWindowHeight / 4, mWindowWidth / 2, mWindowHeight / 2);
-            mDialogMessageStringPos = Vector2.Zero;
-            isDialogMessageOpen = false;
-            mOkayButtonRect = new Rectangle(mDialogMessageRect.X + mDialogMessageRect.Width / 2 - xOffset / 2, mDialogMessageRect.Y + mDialogMessageRect.Height - mDialogMessageRect.Height / 4, xOffset, yOffset);
-            isOkayButtonClicked = false;
+            isOkayButtonClicked = isDialogMessageOpen = false;
 
             //Anytime changes are made should update back into Global Accessors
             mPlayer1InShop = GlobalAccessors.mPlayer1;
 
-            mPlayersProgramsSelectable = new Rectangle[numOfAvailPrograms];
-            mAvailProgramsSelectable = new Rectangle[numOfAvailPrograms];
+            mPlayersProgramsSelectable = new Rectangle[MAX_SELECTABLE];
+            mAvailProgramsSelectable = new Rectangle[MAX_SELECTABLE];
             mPlayerSingleProgramSelectedIndex = mAvailSingleProgramSelectedIndex = -1; 
 
             int playerProgramDisplacement = 7 * yOffset / 5; // 5 represents static number of available programs in players inventory
@@ -150,7 +140,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mPlayersProgramsSelectable[0] = new Rectangle(xOffset / 2, initialPlayerProgramOffset, 2 * xOffset, playerProgramDisplacement);
             mAvailProgramsSelectable[0] = new Rectangle(mWindowWidth / 2 + xOffset / 2, initialPlayerProgramOffset, 2 * xOffset, playerProgramDisplacement);
             initialPlayerProgramOffset += playerProgramDisplacement;
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < MAX_SELECTABLE; i++)
             {
                 mPlayersProgramsSelectable[i] = new Rectangle(xOffset / 2, initialPlayerProgramOffset, 2 * xOffset, playerProgramDisplacement);
                 mAvailProgramsSelectable[i] = new Rectangle(mWindowWidth / 2 + xOffset / 2, initialPlayerProgramOffset, 2 * xOffset, playerProgramDisplacement);
@@ -173,7 +163,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             blankRectTexture.SetData(new Color[] { Color.White });
 
             mBackgroundTexture = content.Load<Texture2D>("Grid2D");
-            //border = content.Load<Texture2D>("blackButtonReleased");
 
             PlayerUISpriteFont = content.Load<SpriteFont>("Arial-12px-Regular");
 
@@ -217,24 +206,22 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             BuyButtonStringPos.X = BuyButtonRect.X + ((BuyButtonRect.Width - length.X) / 2);
             BuyButtonStringPos.Y = BuyButtonRect.Y + ((BuyButtonRect.Height - length.Y) / 2);
 
-            length = PlayerUISpriteFont.MeasureString(mOkayButtonString);
-            mOkayButtonStringPos.X = mOkayButtonRect.X + ((mOkayButtonRect.Width - length.X) / 2);
-            mOkayButtonStringPos.Y = mOkayButtonRect.Y + ((mOkayButtonRect.Height - length.Y) / 2);
-
             //for displaying program images
-            mPlayerProgramImages = new Texture2D[numOfAvailPrograms];
+            mPlayerProgramImages = new Texture2D[MAX_SELECTABLE];
 
             mPlayerProgramImages[0] = content.Load<Texture2D>("Hack");
             mPlayerProgramImages[1] = content.Load<Texture2D>("Bug");
             mPlayerProgramImages[2] = content.Load<Texture2D>("SlingShot");
-            //mPlayerProgramImages[3] = content.Load<Texture2D>("Virus");
-            //mPlayerProgramImages[4] = content.Load<Texture2D>("Bomb");
+            mPlayerProgramImages[3] = content.Load<Texture2D>("Virus");
+            mPlayerProgramImages[4] = content.Load<Texture2D>("Bomb");
 
             //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
-            mBuyablePrograms = new ProgramFactory[numOfAvailPrograms];
-            mBuyablePrograms[0] = new TrojanFactory();
-            mBuyablePrograms[1] = new HackerFactory();
-            mBuyablePrograms[2] = new SniperFactory();
+            mBuyablePrograms = new List<ProgramFactory>();
+
+            mBuyablePrograms.Add(new SniperFactory());
+            mBuyablePrograms.Add(new HackerFactory());
+            mBuyablePrograms.Add(new MemManFactory());
+            mBuyablePrograms.Add(new TrojanFactory());
         }
 
         public override void SubscribeAll()
@@ -284,20 +271,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                         {
                             //if they do display to user they already have program
                             isDialogMessageOpen = true;
-                            mDialogMessageString = "You already have that program.";
-                            Vector2 length = PlayerUISpriteFont.MeasureString(mDialogMessageString);
-                            mDialogMessageStringPos.X = mDialogMessageRect.X + ((mDialogMessageRect.Width - length.X) / 2);
-                            mDialogMessageStringPos.Y = mDialogMessageRect.Y + ((mDialogMessageRect.Height - length.Y) / 2);
+                            ShopStateDialogBox new_state = new ShopStateDialogBox(this, "You already have that program.");
+                            Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                         }
                     }
                     else
                     {
                         //if not display to user they don't have enough silicoins
                         isDialogMessageOpen = true;
-                        mDialogMessageString = "You don't have enough silicoins.";
-                        Vector2 length = PlayerUISpriteFont.MeasureString(mDialogMessageString);
-                        mDialogMessageStringPos.X = mDialogMessageRect.X + ((mDialogMessageRect.Width - length.X) / 2);
-                        mDialogMessageStringPos.Y = mDialogMessageRect.Y + ((mDialogMessageRect.Height - length.Y) / 2);
+                        ShopStateDialogBox new_state = new ShopStateDialogBox(this, "You don't have enough silicoins.");
+                        Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                     }
 
                     //released button click state
@@ -312,34 +295,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             //Update for Exit Button
             if (ExitButtonRect.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
             {
-                //rectColor = Color.Red;
                 isExitButtonClicked = true;
             }
             // if hovering over rectangle
             else if (ExitButtonRect.Contains(mouse_position))
             {
-                //rectColor = Color.Yellow;
             }
             else // neither clicking nor hovering over rectangle
             {
-                //rectColor = Color.Green;
                 isExitButtonClicked = false;
             }
 
             //Update for Buy Button
             if (BuyButtonRect.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
             {
-                //rectColor = Color.Red;
                 isBuyButtonClicked = true;
             }
             // if hovering over rectangle
             else if (BuyButtonRect.Contains(mouse_position))
             {
-                //rectColor = Color.Yellow;
             }
             else // neither clicking nor hovering over rectangle
             {
-                //rectColor = Color.Green;
                 isBuyButtonClicked = false;
             }
 
@@ -378,23 +355,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
                 }
             }
-
-            //Update for Okay Button
-            if (mOkayButtonRect.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed && isDialogMessageOpen) 
-            {
-                //rectColor = Color.Red;
-                isOkayButtonClicked = true;
-            }
-            // if hovering over rectangle
-            else if (mOkayButtonRect.Contains(mouse_position))
-            {
-                //rectColor = Color.Yellow;
-            }
-            else // neither clicking nor hovering over rectangle
-            {
-                //rectColor = Color.Green;
-                isOkayButtonClicked = false;
-            }
         }
 
         public override void Draw(SpriteBatch sprite_batch)
@@ -415,7 +375,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mPlayerSingleProgramSelectedIndex == i)
                 {
                     sprite_batch.Draw(blankRectTexture, mPlayersProgramsSelectable[i], Color.White * .25f);
-                    
                 }
                 else
                 {
@@ -432,7 +391,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 pos.Y = YourProgramsContainerRect.Y + containerYOffset;
                 if (mPlayerSingleProgramSelectedIndex == i)
                 {
-
                     sprite_batch.DrawString(PlayerUISpriteFont, mPlayer1InShop.GetPrograms().ElementAt(i).TypeName,
                         pos, Color.Black);
                 }
@@ -455,7 +413,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             if (mIsAPlayerProgramSelected && mPlayer1InShop.GetPrograms().Count() > 0)
             {
                 int buyingIndex = 0;
-                for (int i = 0; i < mBuyablePrograms.Length; i++)
+                for (int i = 0; i < mBuyablePrograms.Count; i++)
                 {
                     if (mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).TypeName == mBuyablePrograms[i].TypeName)
                     {
@@ -465,7 +423,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 sprite_batch.Draw(mPlayerProgramImages[buyingIndex],
                     mProgramImageRect, Color.White);
-                //pos.X = YourProgramsContainerRect.X + YourProgramsContainerRect.Width + 10;
                 pos.X = YourProgramsInfoContainerRect.X + mProgramImageRect.Width + 5;
                 pos.Y = YourProgramsContainerRect.Y + containerYOffset + 2;
                 sprite_batch.DrawString(PlayerUISpriteFont, "Move: " + mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).Moves,
@@ -507,7 +464,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mAvailSingleProgramSelectedIndex == i)
                 {
                     sprite_batch.Draw(blankRectTexture, mAvailProgramsSelectable[i], Color.White * .25f);
-
                 }
                 else
                 {
@@ -558,7 +514,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 sprite_batch.Draw(mPlayerProgramImages[mAvailSingleProgramSelectedIndex],
                     mAvailImageRect, Color.White);
-                //pos.X = AvailProgramsContainerRect.X + AvailProgramsContainerRect.Width + 10;
                 pos.X = AvailProgramsInfoContainerRect.X + mAvailImageRect.Width + 5;
                 pos.Y = AvailProgramsContainerRect.Y + containerYOffset + 2;
                 sprite_batch.DrawString(PlayerUISpriteFont, "Move: " + mBuyablePrograms.ElementAt(mAvailSingleProgramSelectedIndex).Moves,
@@ -616,23 +571,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
             sprite_batch.DrawString(PlayerUISpriteFont, ExitButtonString, ExitButtonStringPos + (Vector2.One * 2), Color.Black);
             sprite_batch.DrawString(PlayerUISpriteFont, ExitButtonString, ExitButtonStringPos, Color.White);
-
-            //Dialog Message pop up
-            if (isDialogMessageOpen)
-            {
-                sprite_batch.Draw(blankRectTexture, mDialogMessageRect, Color.Silver);
-                sprite_batch.DrawString(PlayerUISpriteFont, mDialogMessageString, mDialogMessageStringPos, Color.White);
-
-                if (isOkayButtonClicked)
-                {
-                    sprite_batch.Draw(buttonPressed, mOkayButtonRect, Color.White);
-                }
-                else
-                {
-                    sprite_batch.Draw(buttonReleased, mOkayButtonRect, Color.White);
-                }
-                sprite_batch.DrawString(PlayerUISpriteFont, mOkayButtonString, mOkayButtonStringPos, Color.White);
-            }
         }
     }
 }
