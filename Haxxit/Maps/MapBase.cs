@@ -667,6 +667,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             {
                 map[end.X, end.Y] = new AvailableNode();
                 map[end.X, end.Y].coordinate = end;
+                changed_nodes.Add(end);
                 if (IsInBounds(tail_location) && head_node.Program.Size.MaxSize != 1)
                 {
                     map[tail_location.X, tail_location.Y] = new ProgramTailNode(head_node.Program, head_node);
