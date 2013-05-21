@@ -13,6 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
     {
         public SecondMapFactory()
         {
+            mapType = MapType.DataMap;
             width = 12;
             height = 7;
             initial_silicoins = 150;
@@ -69,6 +70,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             silicoinNodes.Add(new Point(5, 6));
             silicoinNodes.Add(new Point(6, 6));
             dataNodes.Add(new Point(10, 3));
+        }
+
+        public override Map NewInstance()
+        {
+            Map map = base.NewInstance();
+            return map;
         }
     }
 }

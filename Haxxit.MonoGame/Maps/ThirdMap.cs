@@ -13,6 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
     {
         public ThirdMapFactory()
         {
+            mapType = MapType.EnemyMap;
             width = 20;
             height = 10;
             initial_silicoins = 300;
@@ -57,6 +58,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             unavailableNodes.Add(new Point(12, 7));
             unavailableNodes.Add(new Point(13, 8));
             unavailableNodes.Add(new Point(14, 9));
+        }
+
+        public override Map NewInstance()
+        {
+            Map map = base.NewInstance();
+            return map;
         }
     }
 }

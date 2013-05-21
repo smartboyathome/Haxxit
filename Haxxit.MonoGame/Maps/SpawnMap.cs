@@ -11,6 +11,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
 {
     abstract class SpawnMapFactory : IFactory<Map>
     {
+        protected enum MapType
+        {
+            EnemyMap,
+            DataMap
+        }
+
         protected ushort width, height, initial_silicoins, total_spawn_weight;
         protected List<Point> player1_spawns;
         protected List<Tuple<ProgramFactory, Point, IEnumerable<Point>>> player2_programs;
@@ -18,9 +24,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
         protected List<Point> unavailableNodes;
         protected List<Point> silicoinNodes;
         protected List<Point> dataNodes;
+        protected MapType mapType;
 
         public SpawnMapFactory()
         {
+            mapType = MapType.EnemyMap;
             width = 0;
             height = 0;
             initial_silicoins = 0;
@@ -45,9 +53,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             );
         }
 
-        public Map NewInstance()
+        public virtual Map NewInstance()
         {
-            Map map = new EnemyMap(width, height, initial_silicoins, total_spawn_weight);
+            Map map = null;
+            if (mapType == MapType.EnemyMap)
+            {
+                map = new EnemyMap(width, height, initial_silicoins, total_spawn_weight);
+            }
+            else if (mapType == MapType.DataMap)
+            {
+                map = new DataMap(width, height, initial_silicoins, total_spawn_weight);
+            }
             map.AddPlayer(player1);
             map.AddPlayer(player2);
             map.CreateNodes(new AvailableNodeFactory(), 0, 0, width - 1, height - 1);
