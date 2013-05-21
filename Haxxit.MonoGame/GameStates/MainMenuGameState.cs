@@ -114,9 +114,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
                     mStartPlayer = GlobalAccessors.mPlayer1;
-                    //mStartPlayer.AddProgram(new BugFactory());
-                    //mStartPlayer.AddProgram(new HackFactory());
-                    mStartPlayer.AddProgram(new SlingshotFactory());
+                    //mStartPlayer.AddProgram(new TrojanFactory());
+                    //mStartPlayer.AddProgram(new HackerFactory());
+                    mStartPlayer.AddProgram(new MemManFactory());
+                    mStartPlayer.AddProgram(new SniperFactory());
                     mStartPlayer.IsHacked = false;
                     StoryTellingGameState new_state = new StoryTellingGameState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));

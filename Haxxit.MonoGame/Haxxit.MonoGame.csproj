@@ -58,8 +58,6 @@
     <Compile Include="GlobalAccessors.cs" />
     <Compile Include="GameStates\IntroductionState.cs" />
     <Compile Include="GameStates\MainMenuGameState.cs" />
-    <Compile Include="IntroductionState.cs" />
-    <Compile Include="MainMenuGameState.cs" />
     <Compile Include="Maps\FifthMap.cs" />
     <Compile Include="Maps\FirstMap.cs" />
     <Compile Include="Maps\FourthMap.cs" />
