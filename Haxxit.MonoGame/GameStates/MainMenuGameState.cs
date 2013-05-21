@@ -16,7 +16,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Texture2D rectTexture, backgroundTexture;
         Rectangle startGameRect, optionsRect, creditsRect, exitRect, backgroundRect;
         SpriteFont startGameSpriteFont, titleSpriteFont;
-        Color rectColor;
         Vector2 titleStringPos, startStringPos, optionsStringPos, creditsStringPos, exitStringPos;
 
         String titleString = "Haxxit";

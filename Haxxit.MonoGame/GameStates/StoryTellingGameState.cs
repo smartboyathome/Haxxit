@@ -27,7 +27,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Vector2 storyPos;
         SpriteFont storyStringSpriteFont;
         int nextCharInString = 0;
-        Texture2D displayStoryTexture;
 
         //blinking icon effect
         Rectangle blinkingIconAfterStoryCharRect;
@@ -46,7 +45,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle ContinueButtonRect;
         String ContinueButtonString = "Continue";
         Vector2 ContinueButtonStringPos;
-        bool isContinueButtonClicked, showContinueButton;
+        bool isContinueButtonClicked;
         Texture2D buttonPressed, buttonReleased;
 
         public StoryTellingGameState()
@@ -65,7 +64,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             backgroundRect = new Rectangle(0, 0, mWindowWidth, mWindowHeight);
             ContinueButtonRect = new Rectangle(mWindowWidth - xOffset, mWindowHeight - yOffset, xOffset, yOffset);
 
-            trackingTime = trackBlink = isContinueButtonClicked = showContinueButton = false; 
+            trackingTime = trackBlink = isContinueButtonClicked = false;
             blinkIconIsShown = true;
         }
 
@@ -79,8 +78,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             blankTexture = new Texture2D(graphics, 1, 1);
             blankTexture.SetData(new Color[] { Color.White });
-
-            displayStoryTexture = content.Load<Texture2D>("BlackBorder");
 
             buttonPressed = content.Load<Texture2D>("blackButtonPressed");
             buttonReleased = content.Load<Texture2D>("blackButtonReleased");
@@ -146,10 +143,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     nextCharInString++;
                 }
-                else
-                {
-                    showContinueButton = true;
-                }
 
                 trackingTime = false;
             }
@@ -175,8 +168,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             sprite_batch.Draw(backgroundTexture, backgroundRect, Color.White);
 
             //displaying story rectangle and texture
-            sprite_batch.Draw(blankTexture, displayOutterEdgeRect, Color.Silver);
-            sprite_batch.Draw(blankTexture, displayRect, Color.Black);
+            sprite_batch.Draw(blankTexture, displayOutterEdgeRect, Color.Silver * .75f);
+            sprite_batch.Draw(blankTexture, displayRect, Color.Black * .75f);
 
             //for displaying story one char at a time
             Vector2 length;
@@ -189,7 +182,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 length = storyStringSpriteFont.MeasureString(storyString.ElementAt(i).ToString());
 
-                //sprite_batch.DrawString(storyStringSpriteFont, storyString.ElementAt(i).ToString(), charPos + (Vector2.One * 5), Color.Black);
+                sprite_batch.DrawString(storyStringSpriteFont, storyString.ElementAt(i).ToString(), charPos + (Vector2.One * 2), Color.Black);
                 sprite_batch.DrawString(storyStringSpriteFont, storyString.ElementAt(i).ToString(), charPos , Color.White);
 
                 charPos.X += (int) length.X;
@@ -212,20 +205,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             blinkingIconAfterStoryCharRect.X = (int) charPos.X;
             blinkingIconAfterStoryCharRect.Y = (int) charPos.Y;
 
-            //displaying continue button
-            if (showContinueButton)
+            //continue button
+            if (isContinueButtonClicked)
             {
-                if (isContinueButtonClicked)
-                {
-                    sprite_batch.Draw(buttonPressed, ContinueButtonRect, Color.White);
-                }
-                else
-                {
-                    sprite_batch.Draw(buttonReleased, ContinueButtonRect, Color.White);
-                }
-                sprite_batch.DrawString(storyStringSpriteFont, ContinueButtonString, ContinueButtonStringPos + (Vector2.One * 2), Color.Black);
-                sprite_batch.DrawString(storyStringSpriteFont, ContinueButtonString, ContinueButtonStringPos, Color.White);
+                sprite_batch.Draw(buttonPressed, ContinueButtonRect, Color.White);
             }
+            else
+            {
+                sprite_batch.Draw(buttonReleased, ContinueButtonRect, Color.White);
+            }
+            sprite_batch.DrawString(storyStringSpriteFont, ContinueButtonString, ContinueButtonStringPos + (Vector2.One * 2), Color.Black);
+            sprite_batch.DrawString(storyStringSpriteFont, ContinueButtonString, ContinueButtonStringPos, Color.White);
+
         }
     }
 }

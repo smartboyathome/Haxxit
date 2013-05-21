@@ -52,12 +52,12 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CreditsGameState.cs" />
+    <Compile Include="GameStates\CreditsGameState.cs" />
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="GlobalAccessors.cs" />
-    <Compile Include="IntroductionState.cs" />
-    <Compile Include="MainMenuGameState.cs" />
+    <Compile Include="GameStates\IntroductionState.cs" />
+    <Compile Include="GameStates\MainMenuGameState.cs" />
     <Compile Include="Maps\SpawnMap.cs" />
     <Compile Include="MonoGameMaps.cs" />
     <Compile Include="Programs\Bug.cs" />
@@ -80,8 +80,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerOverworldState.cs" />
-    <Compile Include="ShopState.cs" />
-    <Compile Include="StoryTellingGameState.cs" />
+    <Compile Include="GameStates\ShopState.cs" />
+    <Compile Include="GameStates\StoryTellingGameState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK">
