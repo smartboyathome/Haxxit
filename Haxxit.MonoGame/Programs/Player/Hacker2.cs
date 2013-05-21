@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             Size = 5;
             SpawnWeight = 30;
             ProgramCost = 1250;
-            TypeName = "Hacker 2.0";
+            TypeName = "Hacker2";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Crack 2.0", "Deletes 3 cells from target.", 3, 1));
             Commands = commands;

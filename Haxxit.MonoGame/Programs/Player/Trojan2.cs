@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             Size = 1;
             SpawnWeight = 20;
             ProgramCost = 1500;
-            TypeName = "Trojan 2.0";
+            TypeName = "Trojan2";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Breach 2.0", "Deletes 3 cells from target.", 3, 1));
             Commands = commands;

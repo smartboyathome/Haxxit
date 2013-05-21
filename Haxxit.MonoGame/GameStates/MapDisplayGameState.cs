@@ -20,6 +20,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>> map_squares;
         Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
+        ContentManager content;
+        GraphicsDevice graphics;
 
         public Haxxit.Maps.Map Map
         {
@@ -70,8 +72,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             map_squares = new Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>>();
         }
 
-        public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
+        public override void LoadContent(GraphicsDevice newGraphics, SpriteBatch sprite_batch, ContentManager newContent)
         {
+            graphics = newGraphics;
+            content = newContent;
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             background = content.Load<Texture2D>("Map-Background-1");
@@ -142,8 +146,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     player_color = new Tuple<Color,Color>(Color.Transparent, Color.Transparent);
                 Color node_color = player_color.Item2;
                 if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
+                {
                     node_color = player_color.Item1;
+                    string programTextureName = ((Haxxit.Maps.ProgramHeadNode)program_node).Program.TypeName;
+                    rectangle_texture = content.Load<Texture2D>(programTextureName);
+                }
                 rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), node_color));
+                rectangle_texture = new Texture2D(graphics, 1, 1); // Reset texture in case HeadNode texture was used
+                rectangle_texture.SetData(new Color[] { Color.White }); // Reset texture color in case HeadNode texture was used
                 if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
                     Haxxit.Maps.ProgramHeadNode head_node = (Haxxit.Maps.ProgramHeadNode)Map.GetNode(p);

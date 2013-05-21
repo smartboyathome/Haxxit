@@ -60,6 +60,7 @@
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\MapDisplayGameState.cs" />
     <Compile Include="GameStates\OLD_MapSpawnGameState.cs" />
+    <Compile Include="GameStates\ShopStateDialogBox.cs" />
     <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="GlobalAccessors.cs" />
     <Compile Include="GameStates\IntroductionState.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Programs\AI\Swarmer.cs" />
     <Compile Include="Programs\Player\Tester.cs" />
-    <Compile Include="Programs\Player\Trojan2.0.cs" />
+    <Compile Include="Programs\Player\Trojan2.cs" />
     <Compile Include="Programs\AI\Watcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerOverworldState.cs" />
