@@ -35,7 +35,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         Texture2D rectTexture, backgroundTexture, availableTexture, availableTextureShadow,
             hackedTexture, hackedTextureShadow, unAvailableTexture, unAvailableTextureShadow,
-            shopTexture, shopTextureShadow;
+            shopTexture, shopTextureShadow, serverIconTexture;
         Rectangle backgroundRect;
 
         Color rectanglesGreenColor = Color.Green;
@@ -113,7 +113,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             //Author Original: Traversal Technology Author Ferivative: Sreejith K <http://commons.wikimedia.org/wiki/User:Sreejithk2000>
             //backgroundTexture = content.Load<Texture2D>("Ogd1_layers2");
 
-            backgroundTexture = content.Load<Texture2D>("Grid2D");
+            backgroundTexture = content.Load<Texture2D>("OverworldBackground");
+            serverIconTexture = content.Load<Texture2D>("ServerIcon");
             //------------------------------------------------------------------------------------
             columnWidth = mWindowWidth / 8;
             column1 = 0;
@@ -318,6 +319,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
                 sprite_batch.Draw(hackedTexture, tier2Node2, Color.White);
                 sprite_batch.Draw(availableTexture, tier3Node1, Color.White);
+                //sprite_batch.Draw(serverIconTexture, tier3Node1, Color.White);
                 isNodeClickable[0] = true;
                 isNodeClickable[1] = true;
                 isNodeClickable[2] = true;

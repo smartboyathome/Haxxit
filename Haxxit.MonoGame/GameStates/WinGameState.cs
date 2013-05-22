@@ -78,6 +78,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 ServerOverworldState new_state = new ServerOverworldState();
                 Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                //Mediator.Notify("haxxit.engine.state.pop", this, new ChangeStateEventArgs(new_state));
             }
         }
 
