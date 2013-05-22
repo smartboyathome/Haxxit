@@ -49,7 +49,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         bool isContinueButtonClicked;
         Texture2D buttonPressed, buttonReleased;
 
-        public StoryTellingGameState()
+        public MainStoryState()
         {
 
         }
