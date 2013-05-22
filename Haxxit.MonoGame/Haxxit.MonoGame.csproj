@@ -52,6 +52,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameStates\MainStoryState.cs" />
     <Compile Include="GameStates\TempDialogGameState.cs" />
     <Compile Include="GameStates\CreditsGameState.cs" />
     <Compile Include="GameStates\MapAttackGameState.cs" />
@@ -98,7 +99,7 @@
     <Compile Include="Programs\Player\Trojan2.cs" />
     <Compile Include="Programs\AI\Watcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerOverworldState.cs" />
+    <Compile Include="GameStates\ServerOverworldState.cs" />
     <Compile Include="GameStates\ShopState.cs" />
     <Compile Include="GameStates\StoryTellingGameState.cs" />
   </ItemGroup>

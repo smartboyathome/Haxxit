@@ -110,7 +110,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
-                    ServerOverworldState new_state = new ServerOverworldState();
+                    //ServerOverworldState new_state = new ServerOverworldState();
+                    MainStoryState new_state = new MainStoryState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
             }

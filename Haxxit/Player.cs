@@ -17,6 +17,7 @@ namespace SmartboyDevelopments.Haxxit
         /// </summary>
         private List<ProgramFactory> owned_programs;
         private List<String> hackedNodes;
+        private List<String> stories_played;
 
         
         /// <summary>
@@ -84,6 +85,7 @@ namespace SmartboyDevelopments.Haxxit
         {
             owned_programs = new List<ProgramFactory>();
             hackedNodes = new List<String>();
+            stories_played = new List<String>();
             _notifiable_manager = new NotifiableManager();
             Name = name;
             //_guid = Guid.NewGuid();
