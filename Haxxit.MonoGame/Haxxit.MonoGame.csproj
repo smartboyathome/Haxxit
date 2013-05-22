@@ -69,6 +69,7 @@
     <Compile Include="Maps\FifthMap.cs" />
     <Compile Include="Maps\FirstMap.cs" />
     <Compile Include="Maps\FourthMap.cs" />
+    <Compile Include="Maps\MonoGameDataMap.cs" />
     <Compile Include="Maps\SecondMap.cs" />
     <Compile Include="Maps\SpawnMap.cs" />
     <Compile Include="Maps\ThirdMap.cs" />

@@ -201,8 +201,7 @@ namespace SmartboyDevelopments.Haxxit
         /// <returns></returns>
         public bool Equals(Player other)
         {
-            bool retval = Name == other.Name;
-            return Name == other.Name;
+            return other != null && Name == other.Name;
         }
 
         public override bool Equals(System.Object obj)

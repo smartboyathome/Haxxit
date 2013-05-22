@@ -92,7 +92,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 Mediator.Notify("haxxit.map.hacked", this, new HackedEventArgs(winner, EarnedSilicoins));
         }
 
-        protected Player CheckIfMapHacked(DataNode sender)
+        protected virtual Player CheckIfMapHacked(DataNode sender)
         {
             bool has_data_nodes = false;
             foreach (Point p in Low.IterateOverRange(High))

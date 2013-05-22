@@ -62,7 +62,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             }
             else if (mapType == MapType.DataMap)
             {
-                map = new DataMap(width, height, initial_silicoins, total_spawn_weight);
+                map = new MonoGameDataMap(width, height, initial_silicoins, total_spawn_weight);
             }
             map.AddPlayer(player1);
             map.AddPlayer(player2);
