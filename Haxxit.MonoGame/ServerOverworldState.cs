@@ -26,10 +26,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         Player mPlayer1InOverWorld;
 
-        int mMouseHoveringRectangleIndex;
         int mMouseClickedRectangleIndex;
-        bool updateProgramInfo = false;
-        bool updateShopInfo = false;
 
         bool mouseClicked = false;
 
@@ -48,11 +45,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         SpriteBatch sprite_Batch;
         SpriteFont ArialFontSize14;
         SpriteFont ArialFontSize12;
-        ContentManager content;
 
         String[] mPlayerProgramNames = new String[5];
         Texture2D[] mPlayerProgramImages = new Texture2D[5];
-        Rectangle ProgramImageRect;
 
         #region Overworld Variables
         int columnWidth;
