@@ -169,11 +169,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Hacker2.png">
-      <Name>Hacker2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="MemMan.png">
       <Name>MemMan</Name>
       <Importer>TextureImporter</Importer>
@@ -186,11 +181,6 @@
     </Compile>
     <Compile Include="Sniper.png">
       <Name>Sniper</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sniper2.png">
-      <Name>Sniper2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -209,13 +199,32 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Trojan2.png">
-      <Name>Trojan2</Name>
+    <Compile Include="Watcher.png">
+      <Name>Watcher</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Watcher.png">
-      <Name>Watcher</Name>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Hacker2.png">
+      <Name>Hacker2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="MemMam.png">
+      <Name>MemMam</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Sniper2.png">
+      <Name>Sniper2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Trojan2.png">
+      <Name>Trojan2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
