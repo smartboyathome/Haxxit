@@ -67,6 +67,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle tier2Node2;
         Rectangle tier2Node2Shadow;
         Rectangle tier3Node1;
+        Rectangle tier3Node1Shadow;
         Rectangle tier3Node2;
 
         Rectangle connector1;
@@ -76,10 +77,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         Rectangle[] nodeArray;
         bool[] isNodeHacked;
-        bool[] isNodeVisible;
+        bool[] isNodeClickable;
 
         bool firstLevel;
         bool secondLevel;
+        bool thirdLevel;
         bool shop;
 
         #endregion
@@ -92,17 +94,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mPlayer1InOverWorld = GlobalAccessors.mPlayer1;
             firstLevel = false;
             secondLevel = false;
+            thirdLevel = false;
             shop = false;
             mWindowWidth = GlobalAccessors.mGame.Window.ClientBounds.Width; //use to be 640
             mWindowHeight = GlobalAccessors.mGame.Window.ClientBounds.Height;
             backgroundRect = new Rectangle(0, 0, mWindowWidth, mWindowHeight);
-            /*
-            mPlayer1InOverWorld.IsHacked = false;
-            if (!mPlayer1InOverWorld.OwnsProgrm(new BugFactory()))
-            {
-                mPlayer1InOverWorld.AddProgram(new BugFactory());
-            }
-             */
 
         }
 
@@ -153,6 +149,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             int yPos4 = (mWindowHeight / 2) - (columnWidth / 2);
             tier3Node1 = new Rectangle(column6, yPos4, columnWidth, columnWidth);
+            tier3Node1Shadow = new Rectangle(column6 + 5, yPos4 + 5, columnWidth, columnWidth);
 
             int yPos5 = (mWindowHeight / 2) + (columnWidth * 3 / 2) - 10;
             tier3Node2 = new Rectangle(column6, yPos5, columnWidth, columnWidth);
@@ -184,11 +181,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isNodeHacked[i] = false;
             }
 
-            isNodeVisible = new bool[5];
-            isNodeVisible[0] = true;
+            isNodeClickable = new bool[5];
+            isNodeClickable[0] = true;
             for (int j = 1; j < 5; j++)
             {
-                isNodeVisible[j] = false;
+                isNodeClickable[j] = false;
             }
 
         }
@@ -213,18 +210,26 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 else if (firstLevel == true)
                 {
+                    mPlayer1InOverWorld.CurrentNode = "Node1";
                     MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
-                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (secondLevel == true)
                 {
+                    mPlayer1InOverWorld.CurrentNode = "Node2";
                     MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
-                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (thirdLevel == true)
+                {
+                    mPlayer1InOverWorld.CurrentNode = "Node3";
+                    MapSpawnGameState new_state = new MapSpawnGameState((new ThirdMapFactory()).NewInstance());
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (shop == true)
                 {
                     ShopState new_state = new ShopState();
-                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else
                 {
@@ -247,15 +252,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             for (int i = 0; i < 5; i++)
             {
-                if (nodeArray[i].Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed && !mouseClicked && isNodeVisible[i] == true)
+                if (nodeArray[i].Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed && !mouseClicked && isNodeClickable[i] == true)
                 {
                     //Node slection
                     mMouseClickedRectangleIndex = i;
-                    isNodeHacked[i] = true;
-                    updateProgramInfo = true;
+                    //isNodeHacked[i] = true;
                     mouseClicked = true;
 
-                    if (i == 0 && mPlayer1InOverWorld.IsHacked == false)
+                    if (i == 0 && mPlayer1InOverWorld.IsNodeHacked("Node1") == false)
                     {
                         firstLevel = true;
                     }
@@ -266,6 +270,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     else if (i == 2)
                     {
                         secondLevel = true;
+                    }
+                    else if (i == 3)
+                    {
+                        thirdLevel = true;
                     }
 
                     return;
@@ -279,12 +287,87 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             sprite_batch.Draw(backgroundTexture, backgroundRect, Color.White);
             sprite_batch.Draw(test_text, new Vector2(PlayerOptions.X, PlayerOptions.Y), PlayerOptions, Color.Green);
-            if (mPlayer1InOverWorld.IsHacked == false)
+
+            //REDO OF LOGIC TO ENHANCE DRAW PERFORMANCE
+            if (mPlayer1InOverWorld.IsNodeHacked("Node5") == true)
+            {
+
+            }
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node4") == true)
+            {
+
+            }
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node3") == true)
+            {
+                //Needs to be done for beta
+            }
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node2") == true)
+            {
+                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Corporal", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
+                sprite_batch.Draw(hackedTextureShadow, startNodeShadow, Color.White);
+                sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
+                sprite_batch.Draw(hackedTextureShadow, tier2Node2Shadow, Color.White);
+                sprite_batch.Draw(availableTextureShadow, tier3Node1Shadow, Color.White);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y),
+                    new Vector2(tier3Node1.Center.X, tier3Node1.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(hackedTexture, startNode, Color.White);
+                sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
+                sprite_batch.Draw(hackedTexture, tier2Node2, Color.White);
+                sprite_batch.Draw(availableTexture, tier3Node1, Color.White);
+                isNodeClickable[0] = true;
+                isNodeClickable[1] = true;
+                isNodeClickable[2] = true;
+                isNodeClickable[3] = true;
+            }
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node1") == true)
+            {
+                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
+                sprite_batch.Draw(hackedTextureShadow, startNodeShadow, Color.White);
+                sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
+                sprite_batch.Draw(availableTextureShadow, tier2Node2Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier3Node1Shadow, Color.White);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y),
+                    new Vector2(tier3Node1.Center.X, tier3Node1.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(hackedTexture, startNode, Color.White);
+                sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
+                sprite_batch.Draw(availableTexture, tier2Node2, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier3Node1, Color.White);
+                isNodeClickable[0] = true;
+                isNodeClickable[1] = true;
+                isNodeClickable[2] = true;
+                
+            }
+            else
+            {
+                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Cadet", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
+                sprite_batch.Draw(availableTextureShadow, startNodeShadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier2Node2Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier2Node1Shadow, Color.White);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(availableTexture, startNode, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier2Node1, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier2Node2, Color.White);
+                isNodeClickable[0] = true;
+            }
+            //-----------------------------------------------------------------------------------------------
+            /*
+            if (mPlayer1InOverWorld.IsNodeHacked("Node1") == false)
             {
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Cadet", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
 
-            if (mPlayer1InOverWorld.IsHacked == true)
+            if (mPlayer1InOverWorld.IsNodeHacked("Node1") == true)
             {
                 sprite_batch.Draw(hackedTextureShadow, startNodeShadow, Color.White);
                 PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
@@ -293,8 +376,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
                 sprite_batch.Draw(hackedTexture, startNode, Color.White);
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-                isNodeVisible[1] = true;
-                isNodeVisible[2] = true;
+                isNodeClickable[1] = true;
+                isNodeClickable[2] = true;
             }
             else
             {
@@ -310,47 +393,52 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(unAvailableTexture, tier2Node2, Color.White);
             }
 
-            if (isNodeVisible[1] == true && isNodeHacked[1] == false)
+            if (isNodeClickable[1] == true && isNodeHacked[1] == false)
             {
                 sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
                 sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
                 //PrimiviteDrawing.DrawCircle(test_text, sprite_batch, new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), 50, Color.White, 2, 16);
             }
-            else if (isNodeVisible[1] == true && isNodeHacked[1] == true)
+            else if (isNodeClickable[1] == true && isNodeHacked[1] == true)
             {
                 //sprite_batch.Draw(test_text, new Vector2(tier2Node1.X, tier2Node1.Y), tier2Node1, Color.Red);
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
 
-            if (isNodeVisible[2] == true && isNodeHacked[2] == false)
+            if (isNodeClickable[2] == true && mPlayer1InOverWorld.IsNodeHacked("Node2") == false)
             {
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y),
+                   new Vector2(tier3Node1.Center.X, tier3Node1.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(availableTextureShadow, tier3Node1Shadow, Color.White);
+                sprite_batch.Draw(availableTexture, tier3Node1, Color.White);
                 sprite_batch.Draw(availableTextureShadow, tier2Node2Shadow, Color.White);
                 sprite_batch.Draw(availableTexture, tier2Node2, Color.White);
             }
-            else if (isNodeVisible[2] == true && isNodeHacked[2] == true)
+            else if (isNodeClickable[2] == true && mPlayer1InOverWorld.IsNodeHacked("Node2") == true)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier2Node2.X, tier2Node2.Y), tier2Node2, Color.Red);
-                //isNodeVisible[3] = true;
-                //isNodeVisible[4] = true;
+                isNodeClickable[3] = true;
+                //isNodeClickable[4] = true;
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Sergeant", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
+            */
 
             /*
-            if (isNodeVisible[3] == true && isNodeHacked[3] == false)
+            if (isNodeClickable[3] == true && isNodeHacked[3] == false)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier3Node1.X, tier3Node1.Y), tier3Node1, Color.Black);
             }
-            else if (isNodeVisible[3] == true && isNodeHacked[3] == true)
+            else if (isNodeClickable[3] == true && isNodeHacked[3] == true)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier3Node1.X, tier3Node1.Y), tier3Node1, Color.Red);
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Captain", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
             }
 
-            if (isNodeVisible[4] == true && isNodeHacked[4] == false)
+            if (isNodeClickable[4] == true && isNodeHacked[4] == false)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier3Node2.X, tier3Node2.Y), tier3Node2, Color.Black);
             }
-            else if (isNodeVisible[4] == true && isNodeHacked[4] == true)
+            else if (isNodeClickable[4] == true && isNodeHacked[4] == true)
             {
                 sprite_batch.Draw(test_text, new Vector2(tier3Node2.X, tier3Node2.Y), tier3Node2, Color.Red);
                 sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Captain", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
