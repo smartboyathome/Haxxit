@@ -85,11 +85,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
             else if (mPlayer1Story.CurrentNode == "Node2")
             {
-                storyString = "This is it; the data you acquired for us has given us our chance.  We have found a weakness in S.A.N.T.A’s AI, if we can take the node that the data server is connected to handles most of S.A.N.T.A’s higher functions.  If we can take this node we will be able to end this war.  Purchase the heaviest hitting programs you can, this node is defending by multiple heavy duty defense programs; you’re going to have to wipe them all out to take the node.  Happy Hunting.";
+                storyString = "This is it; the data you acquired for us has given us our chance.  We have found a weakness in S.A.N.T.A's AI, if we can take the node that the data server is connected to handles most of S.A.N.T.A's higher functions.  If we can take this node we will be able to end this war.  Purchase the heaviest hitting programs you can, this node is defending by multiple heavy duty defense programs; you're going to have to wipe them all out to take the node.  Happy Hunting.";
+            }
+            else if (mPlayer1Story.CurrentNode == "Node3")
+            {
+                storyString = "Congratulations, you defeated S.A.N.T.A and freed the internet.";
             }
             else
             {
-                storyString = "Welcome to ELF, Cadet.  Your first task will be to break into a low security server node as a staging point to infiltrate S.A.N.T.A’s network.  You have been outfit with a simple attack program to deal with this node’s defenses.  Remember in this struggle to take back the internet some sacrifices will be required.  Good Luck.";
+                storyString = "Welcome to ELF, Cadet.  Your first task will be to break into a low security server node as a staging point to infiltrate S.A.N.T.A's network.  You have been outfit with a simple attack program to deal with this node's defenses.  Remember in this struggle to take back the internet some sacrifices will be required.  Good Luck.";
             }
             //------------------------------------------------------------------------
 

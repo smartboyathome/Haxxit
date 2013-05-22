@@ -88,7 +88,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 }
                 else if (winner != null && winner.CurrentNode == "Node3")
                 {
-                    //Send them to the victory scene
+                    MainStoryState new_state = new MainStoryState();
+                    Mediator.Notify("haxxit.engine.state.clear_change", this, new ChangeStateEventArgs(new_state));
                 }
                 else
                 {
