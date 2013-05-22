@@ -121,9 +121,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     //mStartPlayer.AddProgram(new Sniper2Factory());
                     //mStartPlayer.AddProgram(new TrojanFactory());
                     //mStartPlayer.AddProgram(new Trojan2Factory());
-                    mStartPlayer.IsHacked = false;
+                    //mStartPlayer.IsHacked = false;
                     StoryTellingGameState new_state = new StoryTellingGameState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+
+                    //TODO
+                    //DEBUG CODE REMOVE BEFORE RELEASE
+                    //mStartPlayer.AddHackedNode("Node1");
+                    //mStartPlayer.AddHackedNode("Node2"); 
+                    //-----------------------------------------
                 }
             }
 

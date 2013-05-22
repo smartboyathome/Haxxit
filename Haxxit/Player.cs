@@ -16,6 +16,7 @@ namespace SmartboyDevelopments.Haxxit
         /// The dictionary containing the number of copies of each program that is owned.
         /// </summary>
         private List<ProgramFactory> owned_programs;
+        private List<String> hackedNodes;
 
         
         /// <summary>
@@ -27,11 +28,19 @@ namespace SmartboyDevelopments.Haxxit
             private set;
         }
 
+        public String CurrentNode
+        {
+            get;
+            set;
+        }
+
+        /* Depricated Code
         public bool IsHacked
         {
             get;
             set;
         }
+         * */
 
         /// <summary>
         /// The NotifiableManager to be used for mediating notifications between parts of the game.
@@ -74,6 +83,7 @@ namespace SmartboyDevelopments.Haxxit
         public Player(string name="")
         {
             owned_programs = new List<ProgramFactory>();
+            hackedNodes = new List<String>();
             _notifiable_manager = new NotifiableManager();
             Name = name;
             //_guid = Guid.NewGuid();
@@ -131,6 +141,20 @@ namespace SmartboyDevelopments.Haxxit
         public bool OwnsProgrm(ProgramFactory factory)
         {
             return owned_programs.Contains(factory);
+        }
+
+        public void AddHackedNode(String node)
+        {
+            hackedNodes.Add(node);
+        }
+
+        public bool IsNodeHacked(String node)
+        {
+            if(hackedNodes.Contains(node))
+            {
+                return true;
+            }
+            return false;
         }
 
         public IEnumerable<ProgramFactory> GetPrograms()

@@ -35,7 +35,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             if (winner == GlobalAccessors.mPlayer1)
             {
                 winner.AddSilicoins(earned_silicoins);
-                winner.IsHacked = true;
+                winner.AddHackedNode(winner.CurrentNode);
             }
             else
             {
