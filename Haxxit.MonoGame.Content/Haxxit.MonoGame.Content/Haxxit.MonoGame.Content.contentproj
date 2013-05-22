@@ -211,11 +211,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MemMam.png">
-      <Name>MemMam</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Sniper2.png">
       <Name>Sniper2</Name>
       <Importer>TextureImporter</Importer>

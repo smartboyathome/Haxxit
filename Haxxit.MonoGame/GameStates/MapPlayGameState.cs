@@ -13,7 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class MapPlayGameState : HaxxitGameState
     {
         public MapDisplayGameState display_map_state;
-        public DrawableRectangle turn_done_button, undo_button;
+        public DrawableRectangle turn_done_button, undo_button, leave_map_button;
 
         Texture2D rectangle_texture;
         SpriteFont arial_16px_regular, arial_12px_regular;
@@ -57,6 +57,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.undo_stack.trigger", this, new EventArgs());
         }
 
+        public void OnLeaveMapClick(DrawableRectangle rectangle)
+        {
+            // This shouldn't be how it operates. I should be able to pop the play and display states off the stack,
+            // but it just restarts the map if I do that. Instead, I have to create a new overworld state, clear the
+            // stack, then push the new state onto the stack in order to avoid the stack eventually overflowing.
+            HaxxitGameState new_state = new ServerOverworldState();
+            _mediator_manager.Notify("haxxit.engine.state.clear_change", this, new ChangeStateEventArgs(new_state));
+        }
+
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
@@ -68,6 +77,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
             undo_button = new DrawableRectangle(rectangle_texture, new Rectangle(580, 440, 100, 30), Color.Orange);
             undo_button.OnMouseLeftClick += OnUndoClick;
+            leave_map_button = new DrawableRectangle(rectangle_texture, new Rectangle(675, 400, 115, 30), Color.Red);
+            leave_map_button.OnMouseLeftClick += OnLeaveMapClick;
 
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
@@ -157,6 +168,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
                 turn_done_button.Update();
                 undo_button.Update();
+                leave_map_button.Update();
             }
             else
             {
@@ -179,6 +191,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Vector2 undo_text_position = new Vector2(undo_button.Area.X + (undo_button.Area.Width - undo_text_size.X) / 2,
                 undo_button.Area.Y + (undo_button.Area.Height - undo_text_size.Y) / 2);
             sprite_batch.DrawString(arial_16px_regular, "Undo", undo_text_position, Color.White);
+
+            leave_map_button.Draw(sprite_batch);
+            Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
+            Vector2 leave_map_text_position = new Vector2(leave_map_button.Area.X + (leave_map_button.Area.Width - leave_map_text_size.X) / 2,
+                leave_map_button.Area.Y + (leave_map_button.Area.Height - leave_map_text_size.Y) / 2);
+            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);
 
             foreach (DrawableRectangle head_node in head_nodes.Values)
             {

@@ -150,13 +150,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     within_others = true;
                 attack.Item1.Update();
             }
-            user_map_state.turn_done_button.Update();
-            user_map_state.undo_button.Update();
             
             if (mouse_state.LeftButton == ButtonState.Pressed && !within_others)
             {
                 _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
             }
+
+            user_map_state.turn_done_button.Update();
+            user_map_state.undo_button.Update();
+            user_map_state.leave_map_button.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)

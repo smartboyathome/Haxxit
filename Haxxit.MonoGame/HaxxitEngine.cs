@@ -156,6 +156,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mediator.Subscribe("haxxit.engine.state.change", ChangeStateListener);
             mediator.Subscribe("haxxit.engine.state.push", PushStateListener);
             mediator.Subscribe("haxxit.engine.state.pop", PopStateListener);
+            mediator.Subscribe("haxxit.engine.state.clear_all", ClearAllStateListener);
+            mediator.Subscribe("haxxit.engine.state.clear_change", ClearChangeStateListener);
 
             GlobalAccessors.mGame = this;
             GlobalAccessors.mPlayer1 = new Player("Bob");
@@ -204,6 +206,30 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         }
 
         /// <summary>
+        /// A listener for notifications to clear the state stack sent through haxxit.engine.state.clear_all
+        /// </summary>
+        /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.clear_all).</param>
+        /// <param name="sender">The sender object of this notification.</param>
+        /// <param name="args">The arguments for this notification (requires no arguments).</param>
+        public void ClearAllStateListener(string channel, object sender, EventArgs args)
+        {
+            ClearStates();
+        }
+
+        /// <summary>
+        /// A listener for notifications to clear the state stack then push a new state onto it, sent through haxxit.engine.state.clear_change.
+        /// </summary>
+        /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.clear_change).</param>
+        /// <param name="sender">The sender object of this notification.</param>
+        /// <param name="args">The arguments for this notification (only takes ChangeStateEventArgs).</param>
+        public void ClearChangeStateListener(string channel, object sender, EventArgs args)
+        {
+            ChangeStateEventArgs event_args = (ChangeStateEventArgs)args;
+            ClearStates();
+            PushState(event_args.State);
+        }
+
+        /// <summary>
         /// Removes all states currently on the stack then adds passed in state to the stack.
         /// </summary>
         /// <param name="state">The state to add to the stack after all other states are dropped.</param>
@@ -245,6 +271,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if(state_stack.Count != 0)
                     state_stack.Peek().Mediator = mediator;
             }
+        }
+
+        /// <summary>
+        /// Clears the state stack.
+        /// </summary>
+        public void ClearStates()
+        {
+            if(state_stack.Count != 0)
+            {
+                state_stack.Peek().Mediator = null;
+            }
+            state_stack.Clear();
         }
 
         /// <summary>

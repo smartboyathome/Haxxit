@@ -19,7 +19,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         SpriteFont arial_16px_regular, arial_12px_regular;
         Vector2 finished_text_size;
-        DrawableRectangle finished_button;
+        DrawableRectangle finished_button, leave_map_button;
 
         List<DrawableRectangle> spawns;
 
@@ -59,6 +59,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
+        public void OnLeaveMapClick(DrawableRectangle rectangle)
+        {
+            // This shouldn't be how it operates. I should be able to pop the play and display states off the stack,
+            // but it just restarts the map if I do that. Instead, I have to create a new overworld state, clear the
+            // stack, then push the new state onto the stack in order to avoid the stack eventually overflowing.
+            HaxxitGameState new_state = new ServerOverworldState();
+            _mediator_manager.Notify("haxxit.engine.state.clear_change", this, new ChangeStateEventArgs(new_state));
+        }
+
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
             display_map_state.LoadContent(graphics, sprite_batch, content);
@@ -78,6 +87,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 Color.Green
             );
             finished_button.OnMouseLeftClick += OnFinishedClick;
+            leave_map_button = new DrawableRectangle(rectangle_texture, new Rectangle(675, 400, 115, 30), Color.Red);
+            leave_map_button.OnMouseLeftClick += OnLeaveMapClick;
 
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
@@ -120,6 +131,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
 
             finished_button.Update();
+            leave_map_button.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)
@@ -130,6 +142,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Vector2 finished_text_position = new Vector2(finished_button.Area.X + (finished_button.Area.Width - finished_text_size.X) / 2,
                 finished_button.Area.Y + (finished_button.Area.Height - finished_text_size.Y) / 2);
             sprite_batch.DrawString(arial_16px_regular, finished_text, finished_text_position, Color.White);
+
+            leave_map_button.Draw(sprite_batch);
+            Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
+            Vector2 leave_map_text_position = new Vector2(leave_map_button.Area.X + (leave_map_button.Area.Width - leave_map_text_size.X) / 2,
+                leave_map_button.Area.Y + (leave_map_button.Area.Height - leave_map_text_size.Y) / 2);
+            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);
 
             foreach (DrawableRectangle spawn in spawns)
             {
