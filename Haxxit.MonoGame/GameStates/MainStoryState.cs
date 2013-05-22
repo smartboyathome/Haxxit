@@ -9,11 +9,12 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 
-namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
+namespace SmartboyDevelopments.Haxxit.MonoGame
 {
     class MainStoryState : HaxxitGameState
     {
         int mWindowWidth, mWindowHeight;
+        Player mPlayer1Story;
 
         //Background art
         Rectangle backgroundRect;
@@ -24,7 +25,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Texture2D blankTexture;
 
         //story synopsis
-        String storyString = "The year is 2029.\nA rogue AI, known as the Sentient Autonomous Network Traffic Analyzer, has taken over most of the computers on the internet. Only a small number of computers have not been hacked.\nAs part of the Elite Liberation Force, you are tasked with taking back the net and shutting down S.A.N.T.A.\nHurry, there's no time to lose! . . . . . ";
+        //String storyString = "The year is 2029.\nA rogue AI, known as the Sentient Autonomous Network Traffic Analyzer, has taken over most of the computers on the internet. Only a small number of computers have not been hacked.\nAs part of the Elite Liberation Force, you are tasked with taking back the net and shutting down S.A.N.T.A.\nHurry, there's no time to lose! . . . . . ";
+        String storyString;
         Vector2 storyPos;
         SpriteFont storyStringSpriteFont;
         int nextCharInString = 0;
@@ -59,6 +61,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             mWindowWidth = GlobalAccessors.mGame.Window.ClientBounds.Width;
             mWindowHeight = GlobalAccessors.mGame.Window.ClientBounds.Height;
 
+            mPlayer1Story = GlobalAccessors.mPlayer1;
+
             xOffset = mWindowWidth / 10;
             yOffset = mWindowHeight / 15;
      
@@ -73,7 +77,23 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             Init();
 
-            backgroundTexture = content.Load<Texture2D>("Grid2D");
+            //STORY STRINGS----------------------------------------------------------
+            //TODO turn these into a resource file for easier editing
+            if (mPlayer1Story.CurrentNode == "Node1")
+            {
+                storyString = "Excellent work Cadet.  Your next mission will be to retrieve a piece of critical data for us from the node you just gained access to.  Our snooper programs are reporting that this node has two lines of defenses, the first are powerful stationary defense programs, and second is intentional memory corruption that has isolated the information we need from the rest of the node.  You will need to procure new programs from the black market store node you also gained access to.  You will need a MemMan program to repair the corruption to gain access to the data.";
+            }
+            else if (mPlayer1Story.CurrentNode == "Node2")
+            {
+                storyString = "This is it; the data you acquired for us has given us our chance.  We have found a weakness in S.A.N.T.A’s AI, if we can take the node that the data server is connected to handles most of S.A.N.T.A’s higher functions.  If we can take this node we will be able to end this war.  Purchase the heaviest hitting programs you can, this node is defending by multiple heavy duty defense programs; you’re going to have to wipe them all out to take the node.  Happy Hunting.";
+            }
+            else
+            {
+                storyString = "Welcome to ELF, Cadet.  Your first task will be to break into a low security server node as a staging point to infiltrate S.A.N.T.A’s network.  You have been outfit with a simple attack program to deal with this node’s defenses.  Remember in this struggle to take back the internet some sacrifices will be required.  Good Luck.";
+            }
+            //------------------------------------------------------------------------
+
+            backgroundTexture = content.Load<Texture2D>("OverworldBackground");
 
             storyStringSpriteFont = content.Load<SpriteFont>("Arial-12px-Regular");
 

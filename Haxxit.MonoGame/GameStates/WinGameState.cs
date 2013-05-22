@@ -19,6 +19,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         HaxxitGameState background_state;
         Player winner;
         int departureTime;
+        bool firstTime = false;
 
         public WinGameState(ushort earned_silicoins, Player winner, HaxxitGameState background_state) :
             base()
@@ -34,6 +35,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             departureTime = System.Environment.TickCount + 3000;
             if (winner == GlobalAccessors.mPlayer1)
             {
+                if (winner.IsNodeHacked(winner.CurrentNode) == false)
+                {
+                    firstTime = true;
+                }
                 winner.AddSilicoins(earned_silicoins);
                 winner.AddHackedNode(winner.CurrentNode);
             }
@@ -76,8 +81,21 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Fixed, you can just check it on each update to see if it worked. --Alex
             if (System.Environment.TickCount >= departureTime)
             {
-                ServerOverworldState new_state = new ServerOverworldState();
-                Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                if (firstTime == true)
+                {
+                    MainStoryState new_state = new MainStoryState();
+                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (winner.CurrentNode == "Node3")
+                {
+                    //Send them to the victory scene
+                }
+                else
+                {
+                    ServerOverworldState new_state = new ServerOverworldState();
+                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+
                 //Mediator.Notify("haxxit.engine.state.pop", this, new ChangeStateEventArgs(new_state));
             }
         }
