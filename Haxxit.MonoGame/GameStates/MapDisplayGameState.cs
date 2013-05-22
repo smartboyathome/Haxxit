@@ -20,6 +20,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>> map_squares;
         Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
+        Dictionary<string, Texture2D> program_textures;
         ContentManager content;
         GraphicsDevice graphics;
 
@@ -70,6 +71,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 count++;
             }
             map_squares = new Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>>();
+            program_textures = new Dictionary<string, Texture2D>();
         }
 
         public override void LoadContent(GraphicsDevice newGraphics, SpriteBatch sprite_batch, ContentManager newContent)
@@ -148,15 +150,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
                     node_color = player_color.Item1;
-                    string programTextureName = ((Haxxit.Maps.ProgramHeadNode)program_node).Program.TypeName;
-                    rectangle_texture = content.Load<Texture2D>(programTextureName);
                 }
                 rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, 6), node_color));
-                rectangle_texture = new Texture2D(graphics, 1, 1); // Reset texture in case HeadNode texture was used
-                rectangle_texture.SetData(new Color[] { Color.White }); // Reset texture color in case HeadNode texture was used
                 if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
-                    Haxxit.Maps.ProgramHeadNode head_node = (Haxxit.Maps.ProgramHeadNode)Map.GetNode(p);
+                    string programTextureName = ((Haxxit.Maps.ProgramHeadNode)program_node).Program.TypeName;
+                    if (!program_textures.ContainsKey(programTextureName))
+                        program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
+                    rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, 6), Color.White));
                 }
                 else if (Map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
                 {

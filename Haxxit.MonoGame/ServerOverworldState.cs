@@ -252,7 +252,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     //Node slection
                     mMouseClickedRectangleIndex = i;
                     isNodeHacked[i] = true;
-                    updateProgramInfo = true;
+                    //updateProgramInfo = true;
                     mouseClicked = true;
 
                     if (i == 0 && mPlayer1InOverWorld.IsHacked == false)
