@@ -13,7 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
         {
             Moves = 3;
             Size = 3;
-            SpawnWeight = 15;
+            SpawnWeight = 30;
             ProgramCost = 1000;
             TypeName = "Sniper2";
             List<Command> commands = new List<Command>();

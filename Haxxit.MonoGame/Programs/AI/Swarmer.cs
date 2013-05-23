@@ -18,6 +18,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             TypeName = "Swarmer";
             List<Command> commands = new List<Command>();
             commands.Add(new DamageCommand("Infect", "Deletes 2 cells from target.", 2, 1));
+            commands.Add(new DamageCommand("Spread", "Deletes 1 cell from target.", 1, 2));
             Commands = commands;
         }
     }

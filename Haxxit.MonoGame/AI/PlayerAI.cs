@@ -281,8 +281,89 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             // If there are no accessible positions from which to use a command anywhere on the Map...
             if (!optionChosen)
             {
-                // We have nowhere we want to move.
-                return;
+                // Find the first reachable point in expanding circles from the nearest enemy and move towards it instead
+                Haxxit.Maps.Point closestEnemy = FindClosestEnemy(program);
+                int checkRange = 1; // First circle to try will have a range of 1 from target
+                while (chosenPath == null)
+                {
+                    for (int negativeX = checkRange * -1; negativeX < 0; negativeX++) // Find options in lower left quadrant from target
+                    {
+                        if (optionChosen)
+                        {
+                            break;
+                        }
+                        Haxxit.Maps.Point checkPoint = new Haxxit.Maps.Point(closestEnemy.X + negativeX, closestEnemy.Y + checkRange + negativeX);
+                        if (IsInBounds(checkPoint))
+                        {
+                            if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                            {
+                                chosenPath = AStar(program, checkPoint);
+                                if (chosenPath != null)
+                                {
+                                    optionChosen = true;
+                                }
+                            }
+                        }
+                    }
+                    for (int positiveY = checkRange; positiveY > 0; positiveY--) // Find options in lower right quadrant from target
+                    {
+                        if (optionChosen)
+                        {
+                            break;
+                        }
+                        Haxxit.Maps.Point checkPoint = new Haxxit.Maps.Point(closestEnemy.X + checkRange - positiveY, closestEnemy.Y + positiveY);
+                        if (IsInBounds(checkPoint))
+                        {
+                            if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                            {
+                                chosenPath = AStar(program, checkPoint);
+                                if (chosenPath != null)
+                                {
+                                    optionChosen = true;
+                                }
+                            }
+                        }
+                    }
+                    for (int positiveX = checkRange; positiveX > 0; positiveX--) // Find options in upper right quadrant from target
+                    {
+                        if (optionChosen)
+                        {
+                            break;
+                        }
+                        Haxxit.Maps.Point checkPoint = new Haxxit.Maps.Point(closestEnemy.X + positiveX, closestEnemy.Y - checkRange + positiveX);
+                        if (IsInBounds(checkPoint))
+                        {
+                            if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                            {
+                                chosenPath = AStar(program, checkPoint);
+                                if (chosenPath != null)
+                                {
+                                    optionChosen = true;
+                                }
+                            }
+                        }
+                    }
+                    for (int negativeY = checkRange * -1; negativeY < 0; negativeY++) // Find options in upper left quadrant from target
+                    {
+                        if (optionChosen)
+                        {
+                            break;
+                        }
+                        Haxxit.Maps.Point checkPoint = new Haxxit.Maps.Point(closestEnemy.X - checkRange - negativeY, closestEnemy.Y + negativeY);
+                        if (IsInBounds(checkPoint))
+                        {
+                            if (mapData[checkPoint.X, checkPoint.Y].canHoldCurrentProgram(program))
+                            {
+                                chosenPath = AStar(program, checkPoint);
+                                if (chosenPath != null)
+                                {
+                                    optionChosen = true;
+                                }
+                            }
+                        }
+                    }
+                    checkRange++; // Try next circle from target
+                }
             }
             Queue<Haxxit.Maps.Point> finalPath = new Queue<Haxxit.Maps.Point>();
             if (chosenPath.Count < program.Program.Moves.MovesLeft)
@@ -304,7 +385,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 moveCode = PerformMoves(program, finalPath);
             }
-            if (moveCode != MoveCode.Success)
+            if (moveCode != MoveCode.Success) // For debugging AI movement
             {
                 #if DEBUG
                 throw new Exception();
@@ -315,7 +396,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 commandCode = PerformCommand(chosenTarget, chosenSource, chosenCommand);
             }
-            if (commandCode != CommandCode.Success)
+            if (commandCode != CommandCode.Success) // For debugging AI commands
             {
                 #if DEBUG
                 throw new Exception();
@@ -370,7 +451,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             return commands;
         }
 
-        // Fills a PrioritizeCommand object with a list of all the valid nodes from which a program can execute the
+        // Fills a PrioritizedCommand object with a list of all the valid nodes from which a program can execute the
         // associated command.  This list will be used by the AI in conjunction with AStar pathfinding to determine
         // the best node to move to and issue a command from this turn.
         private PrioritizedCommand FindCommandOptions(Haxxit.Maps.ProgramHeadNode program, Commands.Command command)
@@ -609,6 +690,39 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
         }
 
+        // Finds the closest enemy node from the specified program's head node.  This is used as
+        // part a fallback for pathfinding when no paths to valid attack positions can be found
+        // for a program on this turn.
+        private Haxxit.Maps.Point FindClosestEnemy(Haxxit.Maps.ProgramHeadNode program)
+        {
+            Haxxit.Maps.Point closestEnemyPoint = new Haxxit.Maps.Point(-1, -1);
+            int closestEnemyDistance = int.MaxValue;
+
+             // For every enemy program...
+            if (enemyPrograms.Any())
+            {
+                foreach (Haxxit.Maps.ProgramHeadNode enemyProgram in enemyPrograms)
+                {
+                    // For every node in that enemy program...
+                    foreach (Haxxit.Maps.ProgramNode node in enemyProgram.GetAllNodes())
+                    {
+                        // Determine the distance to that enemy node
+                        int xDistanceToEnemy = Math.Abs(node.coordinate.X - program.coordinate.X);
+                        int yDistanceToEnemy = Math.Abs(node.coordinate.Y - program.coordinate.Y);
+                        int distanceToEnemy = xDistanceToEnemy + yDistanceToEnemy;
+
+                        // Determine if the distance is shorter than any others yet calculated
+                        if (distanceToEnemy < closestEnemyDistance)
+                        {
+                            closestEnemyPoint = node.coordinate;
+                            closestEnemyDistance = distanceToEnemy;
+                        }
+                    }
+                }
+            }
+            return closestEnemyPoint;
+        }
+
         // This function accepts a queue of intended moves for the specified program.  It first performs error
         // checking to ensure that the moves are possible, then updates the associated AINodeData to reflect
         // game changes as a result of these moves, and finally submits the moves to the turnActions queue for
@@ -721,10 +835,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             Haxxit.Maps.CommandEventArgs commandArgs = new Haxxit.Maps.CommandEventArgs(target, source, command.Name);
             turnActions.Enqueue(new NotifyArgs("haxxit.map.command", this, commandArgs));
-            //if(command.GetType() == typeof(Tests.DynamicDamageCommand))
             if(command.GetType() == typeof(Commands.DamageCommand))
             {
-                //int damage = ((Tests.DynamicDamageCommand)command).Strength;
                 int damage = ((Commands.DamageCommand)command).Strength;
                 int index = 0;
                 foreach (Haxxit.Maps.Point point in programPoints)

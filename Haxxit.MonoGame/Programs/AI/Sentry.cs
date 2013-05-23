@@ -17,7 +17,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
             ProgramCost = 50;
             TypeName = "Sentry";
             List<Command> commands = new List<Command>();
-            commands.Add(new DamageCommand("Revoke", "Deletes 2 cells from target.", 2, 1));
+            commands.Add(new DamageCommand("Revoke", "Deletes 1 cell from target.", 1, 1));
             Commands = commands;
         }
     }
