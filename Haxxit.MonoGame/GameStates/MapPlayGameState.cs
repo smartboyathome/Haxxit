@@ -119,6 +119,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         private void TurnDoneListener(string channel, object sender, EventArgs args)
         {
+            _mediator_manager.Notify("haxxit.undo_stack.clear", this, new EventArgs());
             TempDialogGameState new_state;
             // This does not work since SimplePubSub does not guarentee any ordering of subscribers.
             //if (display_map_state.Map.CurrentPlayer.GetType() == typeof(PlayerAI))

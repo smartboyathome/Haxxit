@@ -18,7 +18,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Texture2D rectangle_texture, background;
         DrawableRectangle background_rectangle;
         Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>> map_squares;
-        Haxxit.UndoStack undo_stack;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
         Dictionary<string, Texture2D> program_textures;
         ContentManager content;
@@ -29,18 +28,24 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             get;
             private set;
         }
+
+        public Haxxit.UndoStack UndoStack
+        {
+            get;
+            private set;
+        }
         
         public MapDisplayGameState(Haxxit.Maps.Map map) :
             base()
         {
             Map = map;
-            undo_stack = new UndoStack(256);
+            UndoStack = new UndoStack(256);
         }
 
         public override void NewMediator(SimplePubSub.IMediator mediator)
         {
             Map.Mediator = mediator;
-            undo_stack.Mediator = mediator;
+            UndoStack.Mediator = mediator;
             foreach (Player player in Map.AllPlayers)
                 player.Notifiable = mediator;
         }

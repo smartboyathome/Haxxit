@@ -9,7 +9,7 @@ namespace SmartboyDevelopments.SimplePubSub
     {
         private ISubscribable _subscribable;
 
-        public ISubscribable Subsscribable
+        public ISubscribable Subscribable
         {
             get
             {
@@ -104,7 +104,7 @@ namespace SmartboyDevelopments.SimplePubSub
             }
             set
             {
-                SubscribableManager.Subsscribable = value;
+                SubscribableManager.Subscribable = value;
                 NotifiableManager.Notifiable = value;
                 _mediator = value;
             }
