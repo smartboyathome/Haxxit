@@ -650,7 +650,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             head_node.coordinate = start;
             changed_nodes.Add(start);
 
-            if (end_was_tail_node) // If the Program originally moved over a tail node
+            if (end_was_tail_node && head_node.Tail != null) // If the Program originally moved over a tail node
             {
                 ProgramTailNode end_node = head_node.Tail;
                 while (end_node.Tail != null)
@@ -689,6 +689,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             {
                 map[end.X, end.Y] = new AvailableNode();
                 map[end.X, end.Y].coordinate = end;
+                changed_nodes.Add(end);
                 head_node.Program.Size.DecreaseCurrentSize(1);
             }
             head_node.Program.Moves.UndoMove();

@@ -79,9 +79,10 @@ namespace SmartboyDevelopments.Haxxit.Maps
         public void MoveListener(string channel, object sender, EventArgs args)
         {
             MoveEventArgs move_args = (MoveEventArgs)args;
-            bool program_resized = NodeIsType<ProgramHeadNode>(move_args.Start) &&
-                !GetNode<ProgramHeadNode>(move_args.Start).Program.Size.IsMaxSize();
-            bool end_was_tailnode = this.NodeIsType<ProgramTailNode>(move_args.Start + move_args.Direction);
+            bool end_was_tailnode = NodeIsType<ProgramTailNode>(move_args.Start + move_args.Direction);
+            bool program_resized = NodeIsType<ProgramHeadNode>(move_args.Start)
+                && !GetNode<ProgramHeadNode>(move_args.Start).Program.Size.IsMaxSize()
+                && !end_was_tailnode;
             Point tail_location = new Point(-1, -1);
             if(!program_resized)
             {
