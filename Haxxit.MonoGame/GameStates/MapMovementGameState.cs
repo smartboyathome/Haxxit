@@ -113,7 +113,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 {
                     Vector2 text_size = arial_16px_regular.MeasureString(command);
                     DrawableRectangle rectangle = new DrawableRectangle(rectangle_texture,
-                            new Rectangle(760 - (int)Math.Floor(text_size.Y), 10 + ((int)Math.Floor(text_size.Y) + 15) * attacks.Count,
+                            new Rectangle(780 - (int)Math.Floor(text_size.X), 10 + ((int)Math.Floor(text_size.Y) + 15) * attacks.Count,
                                 (int)Math.Floor(text_size.X) + 10, (int)Math.Floor(text_size.Y) + 10),
                             Color.Red);
                     if (!moveAI)
