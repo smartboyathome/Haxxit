@@ -1,8 +1,8 @@
 I'm using this file as a place to store future tasks.  Feel free to add your own or remove bullets as they're implemented/fixed, but feel no pressure to do so (I plan to keep this updated on my own whenever I get a chance).  -Alex
 
 TO IMPLEMENT:
-*Make AI move closer even when there is no path
 *Highlight AI attacks
+*Highlight AI movements
 *Functioning "Saved World" screen for end of game
 *Implement or remove options selection from main menu (any plans for this?)
 *Visual links between each program node
@@ -11,12 +11,11 @@ TO IMPLEMENT:
 *Indication when all actions have been used up for the turn
 *GUI method for players to observe enemy programs/names/abilities
 *Ability to save game progress to disk
+*Tutorial
 *Sound!
 
 TO FIX:
-*MemMan sometimes causes crashes when undoing
-*Movement selection bug when attempting to attack your own programs
-*Ghost movement indicator when actions are undone
-*Letter flashes when moving units
+*Can currently select enemy units after the first turn (but cannot issue actions to them)
+*Crash when undoing a move over a program's own tail node
 *Can currently start level with no programs spawned without losing (AI does nothing)
 *Silicoins in maps don't do anything yet
