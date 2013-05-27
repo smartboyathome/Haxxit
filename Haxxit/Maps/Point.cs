@@ -74,28 +74,41 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
         }
 
-        public IEnumerable<Point> GetOrthologicalNeighbors()
+        public List<Point> GetOrthologicalNeighbors()
         {
             return GetPointsWithinDistance(1);
         }
 
-        public IEnumerable<Point> GetPointsWithinDistance(int distance)
+        // Recursively generates a list of points within a specified distance of this one
+        public List<Point> GetPointsWithinDistance(int distance)
         {
-            for (int i = 0; i <= distance; i++)
+            List<Haxxit.Maps.Point> pointsWithinDistance;
+            if (distance == 0) // Base case instantiates the actual list object
             {
-                for (int j = 0; j <= distance; j++)
+                pointsWithinDistance = new List<Point>();
+                return pointsWithinDistance;
+            }
+            else // Find all of the valid points in the current range ring (each recursive call handles a smaller ring)
+            {
+                pointsWithinDistance = GetPointsWithinDistance(distance - 1);
+                for (int negativeX = distance * -1; negativeX < 0; negativeX++) // Find options in lower left quadrant from this point
                 {
-                    if (i == 0 && j == 0)
-                        continue;
-                    if (i + j <= distance)
-                    {
-                        yield return new Point(X - i, Y - j);
-                        yield return new Point(X + i, Y + j);
-                        yield return new Point(X - i, Y + j);
-                        yield return new Point(X + i, Y - j);
-                    }
+                    pointsWithinDistance.Add(new Point(x + negativeX, y + distance + negativeX));
+                }
+                for (int positiveY = distance; positiveY > 0; positiveY--) // Find options in lower right quadrant from this point
+                {
+                    pointsWithinDistance.Add(new Point(x + distance - positiveY, y + positiveY));
+                }
+                for (int positiveX = distance; positiveX > 0; positiveX--) // Find options in upper right quadrant from this point
+                {
+                    pointsWithinDistance.Add(new Point(x + positiveX, y - distance + positiveX));
+                }
+                for (int negativeY = distance * -1; negativeY < 0; negativeY++) // Find options in upper left quadrant from this point
+                {
+                    pointsWithinDistance.Add(new Point(x - distance - negativeY, y + negativeY));
                 }
             }
+            return pointsWithinDistance;
         }
 
         public bool IsDirectional()

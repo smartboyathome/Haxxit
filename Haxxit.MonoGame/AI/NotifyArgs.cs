@@ -12,6 +12,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     // used to send the actual commands via NotifiableManager.Notify.
     class NotifyArgs
     {
+        public enum ArgType
+        {
+            Move,
+            Command,
+            TurnDone
+        }
+
         private string eventItem;
         public string EventItem { get { return eventItem; } set {eventItem = value; } }
 
@@ -21,12 +28,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         private EventArgs eventArgsItem;
         public EventArgs EventArgsItem { get { return eventArgsItem; } set { eventArgsItem = value; } }
 
+        private ArgType argsType;
+        public ArgType ArgsType { get { return argsType; } set { argsType = value; } }
+
         // Constructor
-        public NotifyArgs(string newEventItem, object newObjectItem, EventArgs newEventArgsItem)
+        public NotifyArgs(string newEventItem, object newObjectItem, EventArgs newEventArgsItem, ArgType newArgsType)
         {
             eventItem = newEventItem;
             objectItem = newObjectItem;
             eventArgsItem = newEventArgsItem;
+            argsType = newArgsType;
         }
     }
 }

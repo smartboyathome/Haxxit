@@ -183,33 +183,50 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
             else if (Map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
             {
-                /* NOT FINISHED! Used for drawing connectors between nodes.
-                Maps.ProgramTailNode this_node = Map.GetNode<Maps.ProgramTailNode>(p);
-                foreach (Maps.ProgramNode node in this_node.GetAllNodes())
+                // Used for drawing connectors between nodes.
+                Haxxit.Maps.ProgramTailNode this_node = Map.GetNode<Haxxit.Maps.ProgramTailNode>(p);
+                Haxxit.Maps.Point difference = this_node.Head.coordinate - this_node.coordinate;
+                if (!difference.IsDirectional())
                 {
-                    Maps.Point difference = node.coordinate - this_node.coordinate;
-                    Point center = rectangles.First().Area.Center;
-                    int width = rectangles.First().Area.Width;
-                    int height = rectangles.First().Area.Height;
-                    if (!difference.IsDirectional())
-                        continue;
-                    else if (difference == new Maps.Point(0, 1)) // Down
+                    #if DEBUG
+                    throw new Exception();
+                    #endif
+                }
+                else
+                {
+                    DrawableRectangle connector = new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size), Color.Gray);
+                    Rectangle area = connector.Area;
+                    if (difference == new Haxxit.Maps.Point(0, 1)) // Down
                     {
-                        width /= 4;
+                        area.Y += map_rectangle_size;
+                        area.Height /= (map_rectangle_size / map_border_size);
+                        area.Width /= 2;
+                        area.X += area.Width / 2;
                     }
-                    else if (difference == new Maps.Point(0, -1)) // Up
+                    else if (difference == new Haxxit.Maps.Point(0, -1)) // Up
                     {
-
+                        area.Y -= map_border_size;
+                        area.Height /= (map_rectangle_size / map_border_size);
+                        area.Width /= 2;
+                        area.X += area.Width / 2;
                     }
-                    else if (difference == new Maps.Point(1, 0)) // Right
+                    else if (difference == new Haxxit.Maps.Point(1, 0)) // Right
                     {
-
+                        area.X += map_rectangle_size;
+                        area.Width /= (map_rectangle_size / map_border_size);
+                        area.Height /= 2;
+                        area.Y += area.Height / 2;
                     }
                     else // Left
                     {
-
+                        area.X -= map_border_size;
+                        area.Width /= (map_rectangle_size / map_border_size);
+                        area.Height /= 2;
+                        area.Y += area.Height / 2;
                     }
-                }*/
+                    connector.Area = area;
+                    rectangles.Add(connector);
+                }
             }
             return rectangles;
         }

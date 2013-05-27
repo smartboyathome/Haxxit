@@ -396,7 +396,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
             else // AI is in charge
             {
-                ((Haxxit.MonoGame.PlayerAI)map.CurrentPlayer).HandleAITurn(map);
+                ((Haxxit.MonoGame.PlayerAI)map.CurrentPlayer).HandleAITurn(map, null);
             }
         }
 

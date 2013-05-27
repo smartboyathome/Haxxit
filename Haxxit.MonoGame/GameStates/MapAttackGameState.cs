@@ -19,12 +19,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         DrawableRectangle selected_border;
         Haxxit.Maps.Point selected_program;
         string selected_attack;
+        int popTime; // Scheduled time to pop this overlay state and return to AI handler
+
+        bool commandAI; // prevents onClick handlers from being assigned during AI turn
+        public bool CommandAI { get { return commandAI; } set { commandAI = value; } }
 
         public MapAttackGameState(MapPlayGameState background_state, Haxxit.Maps.Point selected_program, string selected_attack)
         {
             user_map_state = background_state;
             this.selected_program = selected_program;
             this.selected_attack = selected_attack;
+            commandAI = false;
+            popTime = -1;
         }
 
         public override void NewMediator(SimplePubSub.IMediator mediator)
@@ -68,11 +74,23 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 Rectangle attack_rectangle = user_map_state.display_map_state.HaxxitPointToXnaRectangle(p);
                 if(attack_nodes.Count(x => x.Area == attack_rectangle) == 0 && map.IsInBounds(p))
                 {
-                    DrawableRectangle attack_node =
-                        new DrawableRectangle(rectangle_texture, attack_rectangle, Color.Green * 0.5f);
-                    attack_node.OnMouseLeftClick += OnAttackNodeClick;
+                    DrawableRectangle attack_node = null;
+                    if (!commandAI)
+                    {
+                        attack_node = new DrawableRectangle(rectangle_texture, attack_rectangle, Color.Green * 0.5f);
+                        attack_node.OnMouseLeftClick += OnAttackNodeClick;
+                    }
+                    else
+                    {
+                        attack_node = new DrawableRectangle(rectangle_texture, attack_rectangle, Color.Red * 0.5f);
+                    }
                     attack_nodes.Add(attack_node);
                 }
+            }
+
+            if (commandAI)
+            {
+                popTime = System.Environment.TickCount + PlayerAI.ACTIONSTALLTIME_MSECS;
             }
         }
 
@@ -107,15 +125,26 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     within_others = true;
                 attack_node.Update();
             }
-            
-            if (mouse_state.LeftButton == ButtonState.Pressed && !within_others)
+
+            // Player uses mouse to control when to end command state
+            if (mouse_state.LeftButton == ButtonState.Pressed && !within_others && !commandAI)
             {
                 _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
             }
 
-            user_map_state.turn_done_button.Update();
-            user_map_state.undo_button.Update();
-            user_map_state.leave_map_button.Update();
+            // These buttons are for the player only
+            if (!commandAI)
+            {
+                user_map_state.turn_done_button.Update();
+                user_map_state.undo_button.Update();
+                user_map_state.leave_map_button.Update();
+            }
+
+            // AI uses timer to control when to end command state
+            else if (System.Environment.TickCount > popTime)
+            {
+                _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+            }
         }
 
         public override void Draw(SpriteBatch sprite_batch)

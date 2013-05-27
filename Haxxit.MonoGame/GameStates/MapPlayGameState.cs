@@ -173,7 +173,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
             else
             {
-                ((Haxxit.MonoGame.PlayerAI)display_map_state.Map.CurrentPlayer).HandleAITurn(display_map_state.Map);
+                ((Haxxit.MonoGame.PlayerAI)display_map_state.Map.CurrentPlayer).HandleAITurn(display_map_state.Map, this);
             }
         }
 

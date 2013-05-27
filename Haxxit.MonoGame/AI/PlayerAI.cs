@@ -10,15 +10,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     // An AI version of the player which plans and sends its own program actions to the engine
     class PlayerAI : Player
     {
-        private const int ACTIONSTALLTIME_MSECS = 250; // Time to stall between sending actions
+        public const int ACTIONSTALLTIME_MSECS = 250; // Time to stall between sending actions
         private AIState state;
         private Haxxit.Maps.Map map;
         private Queue<NotifyArgs> turnActions; // Queue of planned actions
         private bool waitingToSend;
+        private bool pushedState;
         private int departureTime; // Time to send next action
         private List<Haxxit.Maps.ProgramHeadNode> friendlyPrograms;
         private List<Haxxit.Maps.ProgramHeadNode> enemyPrograms;
         private AINodeData[,] mapData; // A restructured grid of Map data pulled from Haxxit.Maps
+        private GameStates.MapPlayGameState backgroundState;
 
         private enum MoveCode
         {
@@ -65,17 +67,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             map = null;
             turnActions = new Queue<NotifyArgs>();
             waitingToSend = false;
+            pushedState = false;
             departureTime = 0;
             friendlyPrograms = new List<Haxxit.Maps.ProgramHeadNode>();
             enemyPrograms = new List<Haxxit.Maps.ProgramHeadNode>();
             mapData = null;
+            backgroundState = null;
         }
 
         // This is the entry point to all AI routines.  It may be called multiple times
         // concurrently by the engine, so an AIState variable is used to direct execution
         // flow after each call and prevent duplicate calculations.
-        public void HandleAITurn(Haxxit.Maps.Map currentMap)
+        public void HandleAITurn(Haxxit.Maps.Map currentMap, GameStates.MapPlayGameState newBackgroundState)
         {
+            backgroundState = newBackgroundState;
             if(state == AIState.Planning)
             {
                 return; // Let the AI finish planning the turn
@@ -197,7 +202,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
 
             // Signals end of AI turn after executing each program's calculated behavior function
-            turnActions.Enqueue(new NotifyArgs("haxxit.map.turn_done", this, new EventArgs()));
+            turnActions.Enqueue(new NotifyArgs("haxxit.map.turn_done", this, new EventArgs(), NotifyArgs.ArgType.TurnDone));
         }
 
         // Not currently implemented.  Will check mapData to determine appropriate behavior for programs
@@ -433,7 +438,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mapData[movedHead.X - 1, head.Y].canHoldCurrentProgram(program))
                 {
                     Haxxit.Maps.MoveEventArgs moveHeadLeft = new Haxxit.Maps.MoveEventArgs(movedHead, moveLeft);
-                    turnActions.Enqueue(new NotifyArgs("haxxit.map.move", this, moveHeadLeft));
+                    turnActions.Enqueue(new NotifyArgs("haxxit.map.move", this, moveHeadLeft, NotifyArgs.ArgType.Move));
                 }
             }
         }
@@ -779,7 +784,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 movesLeft--;
                 programPoints.Add(destination);
                 Haxxit.Maps.MoveEventArgs nextMove = new Haxxit.Maps.MoveEventArgs(currentHead, direction);
-                turnActions.Enqueue(new NotifyArgs("haxxit.map.move", this, nextMove));
+                turnActions.Enqueue(new NotifyArgs("haxxit.map.move", this, nextMove, NotifyArgs.ArgType.Move));
                 currentHead = destination;
             }
             int index = 0;
@@ -834,7 +839,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
 
             Haxxit.Maps.CommandEventArgs commandArgs = new Haxxit.Maps.CommandEventArgs(target, source, command.Name);
-            turnActions.Enqueue(new NotifyArgs("haxxit.map.command", this, commandArgs));
+            turnActions.Enqueue(new NotifyArgs("haxxit.map.command", this, commandArgs, NotifyArgs.ArgType.Command));
             if(command.GetType() == typeof(Commands.DamageCommand))
             {
                 int damage = ((Commands.DamageCommand)command).Strength;
@@ -883,15 +888,44 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     // We're ready to send an action to the engine
                     waitingToSend = false;
-                    NotifyArgs args = turnActions.Dequeue();
-                    _notifiable_manager.Notify(args.EventItem, args.ObjectItem, args.EventArgsItem);
+                    NotifyArgs args = turnActions.Peek();
+
+                    // If we have an AI move, we need to push the MapMovementGameState so that the player has an indication before the actual move is issued
+                    if (!pushedState && args.ArgsType == NotifyArgs.ArgType.Move)
+                    {
+                        pushedState = true;
+                        Haxxit.Maps.MoveEventArgs moveEventArgs = (Haxxit.Maps.MoveEventArgs)args.EventArgsItem;
+                        GameStates.MapMovementGameState new_state = new GameStates.MapMovementGameState(backgroundState, moveEventArgs.Start);
+                        new_state.MoveAI = true;
+                        _notifiable_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+                    }
+
+                    // If we have an AI command, we need to push the MapAttackGameState so that the player has an indication before the actual command is issued
+                    else if (!pushedState && args.ArgsType == NotifyArgs.ArgType.Command)
+                    {
+                        pushedState = true;
+                        Haxxit.Maps.CommandEventArgs commandEventArgs = (Haxxit.Maps.CommandEventArgs)args.EventArgsItem;
+                        GameStates.MapAttackGameState new_state = new GameStates.MapAttackGameState(backgroundState, commandEventArgs.AttackerPoint, commandEventArgs.Command);
+                        new_state.CommandAI = true;
+                        _notifiable_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+                    }
+
+                    // We're either following up an overlayed state push with the actual event (move or command) or we're signalying the end of the AI's turn
+                    else
+                    {
+                        pushedState = false;
+                        args = turnActions.Dequeue();
+                        _notifiable_manager.Notify(args.EventItem, args.ObjectItem, args.EventArgsItem);
+                    }
                 }
             }
             else if (turnActions.Any())
             {
                 // We're ready to retrieve the next action
                 waitingToSend = true;
-                departureTime = System.Environment.TickCount + ACTIONSTALLTIME_MSECS;
+
+                // Now handled A.S.A.P. since ACTIONSTALLTIME is used in move/command states
+                departureTime = System.Environment.TickCount + 0;
             }
             else
             {
