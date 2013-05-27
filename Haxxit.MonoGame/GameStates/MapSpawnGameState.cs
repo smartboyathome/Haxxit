@@ -21,7 +21,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Vector2 finished_text_size;
         DrawableRectangle finished_button, leave_map_button;
 
-        List<DrawableRectangle> spawns;
+        //List<DrawableRectangle> spawns;
+        Dictionary<Haxxit.Maps.Point, DrawableRectangle> spawns;
 
         public MapSpawnGameState(Haxxit.Maps.Map map)
         {
@@ -41,7 +42,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public override void Init()
         {
             display_map_state.Init();
-            spawns = new List<DrawableRectangle>();
+            //spawns = new List<DrawableRectangle>();
+            spawns = new Dictionary<Haxxit.Maps.Point, DrawableRectangle>();
         }
 
         public void OnSpawnClick(DrawableRectangle rectangle)
@@ -99,7 +101,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     DrawableRectangle spawn =
                         new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.White);
                     spawn.OnMouseLeftClick += OnSpawnClick;
-                    spawns.Add(spawn);
+                    spawns.Add(p, spawn);
                 }
             }
         }
@@ -125,7 +127,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
 
-            foreach (DrawableRectangle spawn in spawns)
+            _mediator_manager.Notify("haxxit.map.nodes.changed", this, new Haxxit.Maps.MapChangedEventArgs(spawns.Keys));
+
+            foreach (DrawableRectangle spawn in spawns.Values)
             {
                 spawn.Update();
             }
@@ -149,7 +153,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 leave_map_button.Area.Y + (leave_map_button.Area.Height - leave_map_text_size.Y) / 2);
             sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);
 
-            foreach (DrawableRectangle spawn in spawns)
+            foreach (DrawableRectangle spawn in spawns.Values)
             {
                 spawn.Draw(sprite_batch);
             }
