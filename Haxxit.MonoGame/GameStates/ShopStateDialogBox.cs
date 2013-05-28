@@ -116,8 +116,38 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             backgroundState.Draw(sprite_batch);
 
-            sprite_batch.Draw(blankRectTexture, mDialogMessageRect, Color.Silver);
-            sprite_batch.DrawString(PlayerUISpriteFont, dialogMessageString, dialogMessagePos, Color.Black);
+            sprite_batch.Draw(blankRectTexture, mDialogMessageRect, Color.Silver * .95f);
+
+            //for displaying story one char at a time
+            Vector2 length;
+            Vector2 charPos;
+            charPos.X = (int)dialogMessagePos.X;
+            charPos.Y = (int)dialogMessagePos.Y;
+
+            //displaying the string one char at a time to depict someone is typing story
+            for (int i = 0; i < dialogMessageString.Count(); i++)
+            {
+                length = PlayerUISpriteFont.MeasureString(dialogMessageString.ElementAt(i).ToString());
+
+                sprite_batch.DrawString(PlayerUISpriteFont, dialogMessageString.ElementAt(i).ToString(), charPos + (Vector2.One * 2), Color.Black);
+                //sprite_batch.DrawString(PlayerUISpriteFont, dialogMessageString.ElementAt(i).ToString(), charPos, Color.White);
+
+                charPos.X += (int)length.X;
+
+                //go to next line
+                if (charPos.X > 700 && dialogMessageString.ElementAt(i).ToString() == " ")
+                {
+                    charPos.X = (int)dialogMessagePos.X;
+                    charPos.Y += (int)length.Y;
+                }
+                else if (dialogMessageString.ElementAt(i).ToString() == "\n")
+                {
+                    charPos.X = (int)dialogMessagePos.X;
+                    charPos.Y += (int)length.Y / 2;
+                }
+            }
+
+            //sprite_batch.DrawString(PlayerUISpriteFont, dialogMessageString, dialogMessagePos, Color.Black);
 
             if (isOkayButtonClicked)
             {

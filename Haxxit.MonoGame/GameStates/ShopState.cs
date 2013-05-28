@@ -49,6 +49,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Vector2 YourProgramsInfoStringPos;
         Rectangle YourProgramsInfoContainerRect;
 
+        //More info container
+        Rectangle YourProgramsMoreInfoContainerRect;
+        String YourProgramsMoreInfoContainerRectString = "";
+        Vector2 YourProgramsMoreInfoContainerRectStringPos;
+        SpriteFont mPlayerMoreInfoSpriteFont;
+
         //displaying program images
         List<Texture2D> mPlayerProgramImages;
         Rectangle mProgramImageRect, mAvailImageRect;
@@ -77,6 +83,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Vector2 AvailProgramsInfoStringPos;
         Rectangle AvailProgramsInfoContainerRect;
 
+        //available More info container
+        Rectangle AvailProgramsMoreInfoContainerRect;
+        String AvailProgramsMoreInfoContainerRectString = "";
+        Vector2 AvailProgramsMoreInfoContainerRectStringPos;
+
         //For Displaying Player options at bottom
         Rectangle PlayerOptions;
         Vector2 PlayerNamePos, PlayerSilicoinPos;
@@ -87,7 +98,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         bool isExitButtonClicked;
 
         //dialog box
-        bool isDialogMessageOpen;
         bool isOkayButtonClicked;
 
         public ShopState()
@@ -112,20 +122,24 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             YourProgramsInfoTitleRect = new Rectangle(xOffset / 2 * 5 + 5, yOffset, 2 * xOffset, yOffset);
             YourProgramsInfoContainerRect = new Rectangle(xOffset / 2 * 5 + 5, 2 * yOffset, 2 * xOffset, 7 * yOffset);
 
+            YourProgramsMoreInfoContainerRect = new Rectangle(xOffset / 2, 9 * yOffset + 5, 4 * xOffset + 5, 3 * yOffset);
+            YourProgramsMoreInfoContainerRectStringPos = new Vector2(YourProgramsMoreInfoContainerRect.X + 5, YourProgramsMoreInfoContainerRect.Y + 5);
+
             AvailProgramsTitleRect = new Rectangle(mWindowWidth / 2 + xOffset / 2, yOffset, 2 * xOffset, yOffset);
             AvailProgramsContainerRect = new Rectangle(mWindowWidth / 2 + xOffset / 2, 2 * yOffset, 2 * xOffset, 7 * yOffset);
 
             AvailProgramsInfoTitleRect = new Rectangle(mWindowWidth / 2 + xOffset / 2 * 5 + 5, yOffset, 2 * xOffset, yOffset);
             AvailProgramsInfoContainerRect = new Rectangle(mWindowWidth / 2 + xOffset / 2 * 5 + 5, 2 * yOffset, 2 * xOffset, 7 * yOffset);
 
-            BuyButtonRect = new Rectangle(mWindowWidth / 2 + xOffset / 2, 2 * yOffset + 7 * yOffset + 5, 2 * xOffset, yOffset);
+            AvailProgramsMoreInfoContainerRect = new Rectangle(mWindowWidth / 2 + xOffset / 2, 9 * yOffset + 5, 4 * xOffset + 5, 3 * yOffset);
+            AvailProgramsMoreInfoContainerRectStringPos = new Vector2(AvailProgramsMoreInfoContainerRect.X + 5, AvailProgramsMoreInfoContainerRect.Y + 5);
+
+            BuyButtonRect = new Rectangle(mWindowWidth / 2 + xOffset / 2, 12 * yOffset + 10, 2 * xOffset, yOffset);
 
             PlayerOptions = new Rectangle(0, mWindowHeight - yOffset, mWindowWidth, yOffset);
 
             ExitButtonRect = new Rectangle(mWindowWidth - xOffset, mWindowHeight - yOffset, xOffset, yOffset);
-            isExitButtonClicked = isBuyButtonClicked = false;
-
-            isOkayButtonClicked = isDialogMessageOpen = false;
+            isExitButtonClicked = isBuyButtonClicked = isOkayButtonClicked = false;
 
             //Anytime changes are made should update back into Global Accessors
             mPlayer1InShop = GlobalAccessors.mPlayer1;
@@ -165,6 +179,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             mBackgroundTexture = content.Load<Texture2D>("Grid2D");
 
             PlayerUISpriteFont = content.Load<SpriteFont>("Arial-12px-Regular");
+            mPlayerMoreInfoSpriteFont = content.Load<SpriteFont>("Arial-10px-Regular");
 
             buttonPressed = content.Load<Texture2D>("blackButtonPressed");
             buttonReleased = content.Load<Texture2D>("blackButtonReleased");
@@ -234,14 +249,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             MouseState mouse_state = Mouse.GetState(); // Gets the mouse state object
             Point mouse_position = new Point(mouse_state.X, mouse_state.Y); // creates a point for the mouse's position
 
-            if (isDialogMessageOpen)
-            {
-                if (isOkayButtonClicked && mouse_state.LeftButton == ButtonState.Released)
-                {
-                    isDialogMessageOpen = false;
-                }
-            }
-
             if (isExitButtonClicked)
             {
                 if (mouse_state.LeftButton == ButtonState.Released)
@@ -251,6 +258,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
             }
 
+            //buy/download button
             if (isBuyButtonClicked && mAvailSingleProgramSelectedIndex != -1 && mAvailSingleProgramSelectedIndex < mBuyablePrograms.Count())
             {
                 if (mouse_state.LeftButton == ButtonState.Released)
@@ -270,7 +278,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                         else
                         {
                             //if they do display to user they already have program
-                            isDialogMessageOpen = true;
                             ShopStateDialogBox new_state = new ShopStateDialogBox(this, "You already have that program.");
                             Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                         }
@@ -278,7 +285,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     else
                     {
                         //if not display to user they don't have enough silicoins
-                        isDialogMessageOpen = true;
                         ShopStateDialogBox new_state = new ShopStateDialogBox(this, "You don't have enough silicoins.");
                         Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                     }
@@ -452,8 +458,48 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     containerYOffset += 7 * yOffset / 10;
                     pos.Y = YourProgramsContainerRect.Y + containerYOffset + 2;
                 }
+
+                YourProgramsMoreInfoContainerRectString = "";
+                //extra info
+                for (int i = 0; i < mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).Commands.Count(); i++)
+                {
+                    YourProgramsMoreInfoContainerRectString += mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).Commands.ElementAt(i).Name
+                        + ": " + mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).Commands.ElementAt(i).Description
+                        + "   Range: " + mPlayer1InShop.GetPrograms().ElementAt(mPlayerSingleProgramSelectedIndex).Commands.ElementAt(i).Range + "\n";
+                }
             }
             containerYOffset = 0;
+
+            //more program info container and string
+            sprite_batch.Draw(blankRectTexture, YourProgramsMoreInfoContainerRect, Color.Black * .75f);
+
+            //for displaying story one char at a time
+            Vector2 length;
+            Vector2 charPos;
+            charPos.X = (int)YourProgramsMoreInfoContainerRectStringPos.X;
+            charPos.Y = (int)YourProgramsMoreInfoContainerRectStringPos.Y;
+
+            //displaying the string one char at a time to depict someone is typing story
+            for (int i = 0; i < YourProgramsMoreInfoContainerRectString.Count(); i++)
+            {
+                length = mPlayerMoreInfoSpriteFont.MeasureString(YourProgramsMoreInfoContainerRectString.ElementAt(i).ToString());
+
+                sprite_batch.DrawString(mPlayerMoreInfoSpriteFont, YourProgramsMoreInfoContainerRectString.ElementAt(i).ToString(), charPos, Color.White);
+
+                charPos.X += (int)length.X;
+
+                //go to next line
+                if (charPos.X > 750 && YourProgramsMoreInfoContainerRectString.ElementAt(i).ToString() == " ")
+                {
+                    charPos.X = (int)YourProgramsMoreInfoContainerRectStringPos.X;
+                    charPos.Y += (int)length.Y;
+                }
+                else if (YourProgramsMoreInfoContainerRectString.ElementAt(i).ToString() == "\n")
+                {
+                    charPos.X = (int)YourProgramsMoreInfoContainerRectStringPos.X;
+                    charPos.Y += (int)length.Y / 2;
+                }
+            }
 
             //displaying buyable programs
             sprite_batch.Draw(blankRectTexture, AvailProgramsContainerRect, Color.Black * .75f);
@@ -545,8 +591,46 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     containerYOffset += 7 * yOffset / 10;
                     pos.Y = YourProgramsContainerRect.Y + containerYOffset + 2;
                 }
+
+                AvailProgramsMoreInfoContainerRectString = "";
+                //extra info
+                for (int i = 0; i < mBuyablePrograms.ElementAt(mAvailSingleProgramSelectedIndex).Commands.Count(); i++)
+                {
+                    AvailProgramsMoreInfoContainerRectString += mBuyablePrograms.ElementAt(mAvailSingleProgramSelectedIndex).Commands.ElementAt(i).Name
+                        + ": " + mBuyablePrograms.ElementAt(mAvailSingleProgramSelectedIndex).Commands.ElementAt(i).Description
+                        + "   Range: " + mBuyablePrograms.ElementAt(mAvailSingleProgramSelectedIndex).Commands.ElementAt(i).Range + "\n";
+                }
             }
             containerYOffset = 0;
+
+            //more program info container and string
+            sprite_batch.Draw(blankRectTexture, AvailProgramsMoreInfoContainerRect, Color.Black * .75f);
+
+            //for displaying story one char at a time
+            charPos.X = (int)AvailProgramsMoreInfoContainerRectStringPos.X;
+            charPos.Y = (int)AvailProgramsMoreInfoContainerRectStringPos.Y;
+
+            //displaying the string one char at a time to depict someone is typing story
+            for (int i = 0; i < AvailProgramsMoreInfoContainerRectString.Count(); i++)
+            {
+                length = mPlayerMoreInfoSpriteFont.MeasureString(AvailProgramsMoreInfoContainerRectString.ElementAt(i).ToString());
+
+                sprite_batch.DrawString(mPlayerMoreInfoSpriteFont, AvailProgramsMoreInfoContainerRectString.ElementAt(i).ToString(), charPos, Color.White);
+
+                charPos.X += (int)length.X;
+
+                //go to next line
+                if (charPos.X > 750 && AvailProgramsMoreInfoContainerRectString.ElementAt(i).ToString() == " ")
+                {
+                    charPos.X = (int)AvailProgramsMoreInfoContainerRectStringPos.X;
+                    charPos.Y += (int)length.Y;
+                }
+                else if (AvailProgramsMoreInfoContainerRectString.ElementAt(i).ToString() == "\n")
+                {
+                    charPos.X = (int)AvailProgramsMoreInfoContainerRectStringPos.X;
+                    charPos.Y += (int)length.Y / 2;
+                }
+            }
 
             //buy button
             if (isBuyButtonClicked)
