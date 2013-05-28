@@ -14,6 +14,7 @@ using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 using SmartboyDevelopments.Haxxit.MonoGame.Maps;
 using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
+using SmartboyDevelopments.Haxxit.Programs;
 #endregion
 
 
@@ -229,7 +230,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 else if (shop == true)
                 {
-                    ShopState new_state = new ShopState();
+                    //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
+                    List<ProgramFactory> tempShopList = new List<ProgramFactory>();
+
+                    tempShopList.Add(new SniperFactory());
+                    tempShopList.Add(new HackerFactory());
+                    tempShopList.Add(new MemManFactory());
+                    tempShopList.Add(new TrojanFactory());
+                    tempShopList.Add(new Sniper2Factory());
+
+                    ShopState new_state = new ShopState(tempShopList);
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else

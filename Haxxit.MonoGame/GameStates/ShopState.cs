@@ -103,7 +103,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         public ShopState()
             : base()
         {
+            //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
+            mBuyablePrograms = new List<ProgramFactory>();
 
+            mBuyablePrograms.Add(new SniperFactory());
+            mBuyablePrograms.Add(new HackerFactory());
+            mBuyablePrograms.Add(new MemManFactory());
+            mBuyablePrograms.Add(new TrojanFactory());
+            mBuyablePrograms.Add(new Sniper2Factory());
+        }
+
+        public ShopState(List<ProgramFactory> mListOfAvailShopProgs)
+            : base()
+        {
+            mBuyablePrograms = mListOfAvailShopProgs;
         }
 
         public override void Init()
@@ -220,15 +233,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             length = PlayerUISpriteFont.MeasureString(BuyButtonString);
             BuyButtonStringPos.X = BuyButtonRect.X + ((BuyButtonRect.Width - length.X) / 2);
             BuyButtonStringPos.Y = BuyButtonRect.Y + ((BuyButtonRect.Height - length.Y) / 2);
-
-            //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
-            mBuyablePrograms = new List<ProgramFactory>();
-
-            mBuyablePrograms.Add(new SniperFactory());
-            mBuyablePrograms.Add(new HackerFactory());
-            mBuyablePrograms.Add(new MemManFactory());
-            mBuyablePrograms.Add(new TrojanFactory());
-            mBuyablePrograms.Add(new Sniper2Factory());
 
             //for displaying program images
             mPlayerProgramImages = new List<Texture2D>();
