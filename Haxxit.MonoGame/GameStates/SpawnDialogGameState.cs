@@ -18,9 +18,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         HaxxitGameState background_state;
         Haxxit.Maps.Map map;
         Haxxit.Maps.Point spawn_point;
-        Dictionary<Haxxit.Programs.ProgramFactory, DrawableRectangle> program_rectangles;
+        //Dictionary<Haxxit.Programs.ProgramFactory, DrawableRectangle> program_rectangles;
+        List<Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>> program_rectangles;
         int totalPrograms;
         int currentScrollLevel;
+        int total_spawn_points;
 
         public SpawnDialogGameState(HaxxitGameState background_state, Haxxit.Maps.Map map, Haxxit.Maps.Point spawn_point) :
             base()
@@ -34,7 +36,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             totalPrograms = 0;
             currentScrollLevel = 0;
-            program_rectangles = new Dictionary<Haxxit.Programs.ProgramFactory, DrawableRectangle>();
+            //program_rectangles = new Dictionary<Haxxit.Programs.ProgramFactory, DrawableRectangle>();
+            program_rectangles = new List<Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>>();
+            total_spawn_points = 0;
+
+            foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
+            {
+                if (p != spawn_point && map.NodeIsType<Haxxit.Maps.SpawnNode>(p) && map.GetNode<Haxxit.Maps.SpawnNode>(p).program != null)
+                {
+                    total_spawn_points += map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
+                }
+            }
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
@@ -51,6 +63,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             arial_14px_regular = content.Load<SpriteFont>("Arial-14px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
             arial_10px_regular = content.Load<SpriteFont>("Arial-10px-Regular");
+
+            List<Haxxit.Programs.ProgramFactory> programs = new List<Haxxit.Programs.ProgramFactory>();
+            programs.Add(null);
+            foreach (Haxxit.Programs.ProgramFactory program in programs.Concat(map.CurrentPlayer.GetPrograms()))
+            {
+                Rectangle program_location = new Rectangle(popup_window.Area.X + 10,
+                    popup_window.Area.Y + program_rectangles.Count * 72 + 48, popup_window.Area.Width - 20, 60);
+                DrawableRectangle program_rectangle = new DrawableRectangle(rectangle_texture, program_location, Color.White * 0.2f);
+                program_rectangle.OnMouseLeftClick += OnProgramSelect;
+                program_rectangles.Add(new Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>(program, program_rectangle));
+                totalPrograms++;
+            }
             
         }
 
@@ -71,9 +95,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             if (currentScrollLevel > 0)
             {
-                foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
+                foreach (DrawableRectangle program_rectangle in program_rectangles.Select(x => x.Item2))
                 {
-                    DrawableRectangle program_rectangle = pair.Value;
                     Rectangle area = program_rectangle.Area;
                     area.Y += 72;
                     program_rectangle.Area = area;
@@ -86,9 +109,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             if (currentScrollLevel < totalPrograms - 4)
             {
-                foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
+                foreach (DrawableRectangle program_rectangle in program_rectangles.Select(x => x.Item2))
                 {
-                    DrawableRectangle program_rectangle = pair.Value;
                     Rectangle area = program_rectangle.Area;
                     area.Y -= 72;
                     program_rectangle.Area = area;
@@ -99,11 +121,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         private void OnProgramSelect(DrawableRectangle rectangle)
         {
-            foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
+            foreach (Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle> tuple in program_rectangles)
             {
-                if (Object.ReferenceEquals(pair.Value, rectangle))
+                if (Object.ReferenceEquals(tuple.Item2, rectangle))
                 {
-                    map.SpawnProgram(pair.Key, spawn_point);
+                    map.SpawnProgram(tuple.Item1, spawn_point);
                     break;
                 }
             }
@@ -118,19 +140,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
             scrollUpButton.Update();
             scrollDownButton.Update();
-            foreach (Haxxit.Programs.ProgramFactory program in map.CurrentPlayer.GetPrograms())
+            foreach (DrawableRectangle program_rectangle in program_rectangles.Select(x => x.Item2))
             {
-                if (!program_rectangles.ContainsKey(program))
-                {
-                    Rectangle program_location = new Rectangle(popup_window.Area.X + 10,
-                        popup_window.Area.Y + program_rectangles.Count * 72 + 48, popup_window.Area.Width - 20, 60);
-                    DrawableRectangle program_rectangle = new DrawableRectangle(rectangle_texture, program_location, Color.White * 0.2f);
-                    program_rectangle.OnMouseLeftClick += OnProgramSelect;
-                    program_rectangles.Add(program, program_rectangle);
-                    totalPrograms++;
-                }
-                program_rectangles[program].Update();
+                program_rectangle.Update();
             }
+            MouseState mouse_state = Mouse.GetState();
+            Point mouse_position = new Point(mouse_state.X, mouse_state.Y);
+            bool mouse_within_element = scrollDownButton.Area.Contains(mouse_position) || scrollUpButton.Area.Contains(mouse_position)
+                || popup_window.Area.Contains(mouse_position);
+            if (!mouse_within_element && mouse_state.LeftButton == ButtonState.Pressed)
+                _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
         }
 
         public override void Draw(SpriteBatch sprite_batch)
@@ -146,28 +165,43 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Vector2 title_location = new Vector2(popup_window.Area.X + (popup_window.Area.Width - title_size.X)/2, popup_window.Area.Y + 10);
             sprite_batch.DrawString(arial_16px_regular, "Select a program", title_location, Color.White);
             int currentProgram = 0;
-            foreach (KeyValuePair<Haxxit.Programs.ProgramFactory, DrawableRectangle> pair in program_rectangles)
+            foreach (Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle> tuple in program_rectangles)
             {
                 if (currentProgram >= currentScrollLevel && currentProgram < currentScrollLevel + 4)
                 {
-                    pair.Value.Draw(sprite_batch);
-                    Vector2 name_size = arial_16px_regular.MeasureString(pair.Key.TypeName);
-                    Vector2 name_location = new Vector2(pair.Value.Area.X + 2, pair.Value.Area.Y + 2);
-                    sprite_batch.DrawString(arial_16px_regular, pair.Key.TypeName, name_location, Color.White);
-                    string info = "Moves: " + pair.Key.Moves.ToString() + "   Size: " + pair.Key.Size.ToString()
-                        + "   Spawn Weight: " + pair.Key.SpawnWeight.ToString() + "\nCommands: ";
-                    bool first = true;
-                    foreach (Haxxit.Commands.Command command in pair.Key.Commands)
+                    tuple.Item2.Draw(sprite_batch);
+                    string type_name = tuple.Item1 == null ? "None" : tuple.Item1.TypeName;
+                    int spawn_weight = tuple.Item1 == null ? 0 : tuple.Item1.SpawnWeight;
+                    int moves = tuple.Item1 == null ? 0 : tuple.Item1.Moves;
+                    int size = tuple.Item1 == null ? 0 : tuple.Item1.Size;
+                    Vector2 name_size = arial_16px_regular.MeasureString(type_name);
+                    Vector2 name_location = new Vector2(tuple.Item2.Area.X + 2, tuple.Item2.Area.Y + 2);
+                    if(spawn_weight <= map.TotalSpawnWeights - total_spawn_points)
+                        sprite_batch.DrawString(arial_16px_regular, type_name, name_location, Color.White);
+                    else
+                        sprite_batch.DrawString(arial_16px_regular, type_name, name_location, Color.Gray);
+                    string info = "Moves: " + moves.ToString() + "   Size: " + size.ToString()
+                        + "   Spawn Weight: " + spawn_weight.ToString();
+                    if (tuple.Item1 != null)
                     {
-                        if (!first)
-                            info += ", ";
-                        else
-                            first = false;
-                        info += command.Name;
-                        //info += " (Range: " + command.Range.ToString() + "; " + command.Description + ")";
+                        info += "\nCommands: ";
+                        bool first = true;
+                        foreach (Haxxit.Commands.Command command in tuple.Item1.Commands)
+                        {
+                            if (!first)
+                                info += ", ";
+                            else
+                                first = false;
+                            info += command.Name;
+                            //info += " (Range: " + command.Range.ToString() + "; " + command.Description + ")";
+                        }
+                    }
+                    else
+                    {
+                        info += "\nRemoves the current program from the spawn.";
                     }
                     Vector2 move_size = arial_10px_regular.MeasureString(info);
-                    Vector2 move_location = new Vector2(pair.Value.Area.X + 2, pair.Value.Area.Y + 24);
+                    Vector2 move_location = new Vector2(tuple.Item2.Area.X + 2, tuple.Item2.Area.Y + 24);
                     sprite_batch.DrawString(arial_10px_regular, info, move_location, Color.White);
                 }
                 currentProgram++;

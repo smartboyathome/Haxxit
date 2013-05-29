@@ -21,14 +21,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Haxxit.Maps.Point selected_program;
         int popTime; // Scheduled time to pop this overlay state and return to AI handler
 
-        bool moveAI; // prevents onClick handlers from being assigned during AI turn
-        public bool MoveAI { get { return moveAI; } set { moveAI = value; } }
+        public bool MoveAI 
+        { 
+            get; 
+            set; 
+        }
 
         public MapMovementGameState(MapPlayGameState background_state, Haxxit.Maps.Point selected_program)
         {
             user_map_state = background_state;
             this.selected_program = selected_program;
-            moveAI = false;
+            MoveAI = false;
             popTime = -1;
         }
 
@@ -98,7 +101,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     DrawableRectangle move =
                         new DrawableRectangle(rectangle_texture, user_map_state.display_map_state.HaxxitPointToXnaRectangle(p),
                             Color.White * 0.5f);
-                    if (!moveAI)
+                    if (!MoveAI)
                     {
                         move.OnMouseLeftClick += OnMoveClick;
                     }
@@ -116,7 +119,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                             new Rectangle(780 - (int)Math.Floor(text_size.X), 10 + ((int)Math.Floor(text_size.Y) + 15) * attacks.Count,
                                 (int)Math.Floor(text_size.X) + 10, (int)Math.Floor(text_size.Y) + 10),
                             Color.Red);
-                    if (!moveAI)
+                    if (!MoveAI)
                     {
                         rectangle.OnMouseLeftClick += OnAttackClick;
                     }
@@ -124,7 +127,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 }
             }
 
-            if (moveAI)
+            if (MoveAI)
             {
                 popTime = System.Environment.TickCount + PlayerAI.ACTIONSTALLTIME_MSECS;
             }
@@ -169,13 +172,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
 
             // Player uses mouse to control when to end movement state
-            if (mouse_state.LeftButton == ButtonState.Pressed && !within_others && !moveAI)
+            if (mouse_state.LeftButton == ButtonState.Pressed && !within_others && !MoveAI)
             {
                 _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
             }
 
             // These buttons are for the player only
-            if (!moveAI)
+            if (!MoveAI)
             {
                 user_map_state.turn_done_button.Update();
                 user_map_state.undo_button.Update();

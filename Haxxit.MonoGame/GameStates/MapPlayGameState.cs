@@ -40,7 +40,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             Haxxit.Maps.Point haxxit_location = display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
             if (display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(haxxit_location)
-               && !display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(haxxit_location).Program.AlreadyRanCommand())
+                && !display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(haxxit_location).Program.AlreadyRanCommand())
             {
                 MapMovementGameState new_state = new MapMovementGameState(this, haxxit_location);
                 _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
@@ -83,8 +83,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
             {
-                if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p) 
-                    && map.GetNode<Haxxit.Maps.ProgramHeadNode>(p).Player == map.CurrentPlayer)
+                if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
                     head_nodes[p] =
                         new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);

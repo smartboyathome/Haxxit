@@ -134,10 +134,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
             rectangles.Add(new DrawableRectangle(rectangle_texture, square, Color.LightBlue * 0.5f));
+            int extra_width = square.Width / 2;
+            int extra_height = square.Height / 2;
+            int extra_x = square.X + (square.Width - extra_width)/2;
+            int extra_y = square.Y + (square.Height - extra_height)/2;
             if (Map.NodeIsType<Haxxit.Maps.SilicoinNode>(p))
-                rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(square.X + 10, square.Y + 10, 4, 4), Color.Green));
+                rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(extra_x, extra_y, extra_width, extra_height), Color.Green));
             else if (Map.NodeIsType<Haxxit.Maps.DataNode>(p))
-                rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(square.X + 10, square.Y + 10, 4, 4), Color.Red));
+                rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(extra_x, extra_y, extra_width, extra_height), Color.Red));
             return rectangles;
         }
 

@@ -439,11 +439,12 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 return false;
             if (total_spawn_weights != 0)
             {
+                int factory_weight = factory == null ? 0 : factory.SpawnWeight;
                 ushort spawn_weight_sum = 0;
                 foreach (Point point in Low.IterateOverRange(High))
                     if (p != point && NodeIsType<SpawnNode>(point) && GetNode<SpawnNode>(point).program != null)
                         spawn_weight_sum += GetNode<SpawnNode>(point).program.SpawnWeight;
-                if (spawn_weight_sum + factory.SpawnWeight > total_spawn_weights)
+                if (spawn_weight_sum + factory_weight > total_spawn_weights)
                     return false;
             }
             SpawnNode spawn = (SpawnNode)map[p.X, p.Y];
