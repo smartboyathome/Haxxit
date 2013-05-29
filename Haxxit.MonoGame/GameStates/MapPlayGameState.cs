@@ -70,9 +70,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             DrawableRectangle retval;
             if (head_node.Program.AlreadyRanCommand())
-                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.Red);
+                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Black * (2.0f / 3.0f));
             else if (!head_node.Program.Moves.CanMove())
-                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.Turquoise);
+                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Black * (1.0f / 3.0f));
             else
                 retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
             retval.OnMouseLeftClick += OnProgramClick;
@@ -118,7 +118,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 if (head_nodes.ContainsKey(p) && !display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                     head_nodes.Remove(p);
-                else if (!head_nodes.ContainsKey(p) && display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
+                else if (display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
                     head_nodes[p] = DrawProgramHead(p, display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(p));
                 }
@@ -143,7 +143,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
             foreach (DrawableRectangle rectangle in head_nodes.Values)
             {
-                rectangle.BorderSize = 0;
+                rectangle.FillColor = Color.Transparent;
             }
             _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
         }

@@ -52,7 +52,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_program)
                 && map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program.AlreadyRanCommand())
             {
-                map.MapChanged(selected_program);
+                List<Haxxit.Maps.Point> changed = new List<Haxxit.Maps.Point>();
+                changed.Add(selected_program);
+                _mediator_manager.Notify("haxxit.map.nodes.changed", this, new Haxxit.Maps.MapChangedEventArgs(changed));
                 _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
             }
         }
