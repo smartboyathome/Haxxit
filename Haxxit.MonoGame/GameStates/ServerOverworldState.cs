@@ -217,7 +217,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 else if (firstLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node1";
-                    MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    //MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new FirstMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (secondLevel == true)

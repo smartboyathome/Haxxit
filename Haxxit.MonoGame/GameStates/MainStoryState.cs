@@ -25,7 +25,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Texture2D blankTexture;
 
         //story synopsis
-        //String storyString = "The year is 2029.\nA rogue AI, known as the Sentient Autonomous Network Traffic Analyzer, has taken over most of the computers on the internet. Only a small number of computers have not been hacked.\nAs part of the Elite Liberation Force, you are tasked with taking back the net and shutting down S.A.N.T.A.\nHurry, there's no time to lose! . . . . . ";
         String storyString;
         Vector2 storyPos;
         SpriteFont storyStringSpriteFont;
