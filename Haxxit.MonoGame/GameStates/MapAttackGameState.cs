@@ -49,12 +49,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Haxxit.Maps.Point haxxit_location = user_map_state.display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
             _mediator_manager.Notify("haxxit.map.command", this,
                 new Haxxit.Maps.CommandEventArgs(haxxit_location, selected_program, selected_attack));
-            bool is_still_program_node = map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_program);
-            bool has_ran_command = map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program.AlreadyRanCommand();
-            bool a = is_still_program_node && has_ran_command;
-            if(map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_program)
+            if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_program)
                 && map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program.AlreadyRanCommand())
+            {
+                map.MapChanged(selected_program);
                 _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+            }
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)

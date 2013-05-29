@@ -66,6 +66,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.clear_change", this, new ChangeStateEventArgs(new_state));
         }
 
+        public DrawableRectangle DrawProgramHead(Haxxit.Maps.Point p, Haxxit.Maps.ProgramHeadNode head_node)
+        {
+            DrawableRectangle retval;
+            if (head_node.Program.AlreadyRanCommand())
+                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.Red);
+            else if (!head_node.Program.Moves.CanMove())
+                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.Turquoise);
+            else
+                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
+            retval.OnMouseLeftClick += OnProgramClick;
+            return retval;
+        }
+
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
@@ -85,9 +98,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
-                    head_nodes[p] =
-                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
-                    head_nodes[p].OnMouseLeftClick += OnProgramClick;
+                    head_nodes[p] = DrawProgramHead(p, map.GetNode<Haxxit.Maps.ProgramHeadNode>(p));
                 }
             }
         }
@@ -109,9 +120,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     head_nodes.Remove(p);
                 else if (!head_nodes.ContainsKey(p) && display_map_state.Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
                 {
-                    head_nodes[p] =
-                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
-                    head_nodes[p].OnMouseLeftClick += OnProgramClick;
+                    head_nodes[p] = DrawProgramHead(p, display_map_state.Map.GetNode<Haxxit.Maps.ProgramHeadNode>(p));
                 }
             }
         }
@@ -131,6 +140,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 new_state = new TempDialogGameState(this, "Your turn", 1000);
                 is_ai_turn = false;
+            }
+            foreach (DrawableRectangle rectangle in head_nodes.Values)
+            {
+                rectangle.BorderSize = 0;
             }
             _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
         }
