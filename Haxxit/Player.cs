@@ -35,6 +35,18 @@ namespace SmartboyDevelopments.Haxxit
             set;
         }
 
+        public bool SpawnTutorial
+        {
+            get;
+            set;
+        }
+
+        public bool level2Tutorial
+        {
+            get;
+            set;
+        }
+
         /* Depricated Code
         public bool IsHacked
         {

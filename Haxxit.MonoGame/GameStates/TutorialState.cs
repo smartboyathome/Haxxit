@@ -92,7 +92,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             ContinueButtonStringPos.Y = ContinueButtonRect.Y + ((ContinueButtonRect.Height - length.Y) / 2);
 
             //-------------------------------------------------------------------------
-            storyString = "This is only a placeholder.";
+
+            if (mPlayer1Tutorial.SpawnTutorial == true)
+            {
+                storyString = "Spawn Tutorial";
+            }
+            else if (mPlayer1Tutorial.CurrentNode == "Node1")
+            {
+                storyString = "Level 1 Tutorial";
+            }
+            else if (mPlayer1Tutorial.CurrentNode == "Node2")
+            {
+                storyString = "Level 2 Tutorial";
+            }
+            //storyString = "This is only a placeholder.";
 
         }
 
@@ -118,8 +131,24 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             {
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
-                    MapPlayGameState new_state = new MapPlayGameState(display_map_state);
-                    _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                    if (mPlayer1Tutorial.SpawnTutorial == true)
+                    {
+                        mPlayer1Tutorial.SpawnTutorial = false;
+                        TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState(display_map_state);
+                        _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                    }
+                    else if (mPlayer1Tutorial.level2Tutorial == true)
+                    {
+                        mPlayer1Tutorial.level2Tutorial = false;
+                        TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState(display_map_state);
+                        _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+
+                    }
+                    else
+                    {
+                        MapPlayGameState new_state = new MapPlayGameState(display_map_state);
+                        _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                    }
                 }
             }
 
