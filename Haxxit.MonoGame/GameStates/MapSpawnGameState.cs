@@ -14,15 +14,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     {
         const string finished_text = "Finished";
 
-        MapDisplayGameState display_map_state;
+        protected MapDisplayGameState display_map_state;
         Texture2D rectangle_texture;
 
         SpriteFont arial_16px_regular, arial_12px_regular;
         Vector2 finished_text_size;
-        DrawableRectangle finished_button, leave_map_button;
+        protected DrawableRectangle finished_button, leave_map_button;
 
         //List<DrawableRectangle> spawns;
-        Dictionary<Haxxit.Maps.Point, DrawableRectangle> spawns;
+        protected Dictionary<Haxxit.Maps.Point, DrawableRectangle> spawns;
+
+        public MapSpawnGameState()
+        {
+        }
 
         public MapSpawnGameState(Haxxit.Maps.Map map)
         {
@@ -53,7 +57,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
         }
 
-        public void OnFinishedClick(DrawableRectangle rectangle)
+        public virtual void OnFinishedClick(DrawableRectangle rectangle)
         {
             display_map_state.Map.FinishedSpawning();
             //UserMapGameState new_state = new UserMapGameState(user_map_state.Map);

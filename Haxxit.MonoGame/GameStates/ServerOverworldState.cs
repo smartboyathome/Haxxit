@@ -1,5 +1,6 @@
 ﻿#region Using Statements
 using System;
+using System.Text;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -14,6 +15,7 @@ using HaxxitMap = SmartboyDevelopments.Haxxit.Maps;
 using SmartboyDevelopments.Haxxit.MonoGame.Programs;
 using SmartboyDevelopments.Haxxit.MonoGame.Maps;
 using SmartboyDevelopments.Haxxit.MonoGame.GameStates;
+using SmartboyDevelopments.Haxxit.Programs;
 #endregion
 
 
@@ -36,7 +38,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Texture2D rectTexture, backgroundTexture, availableTexture, availableTextureShadow,
             hackedTexture, hackedTextureShadow, unAvailableTexture, unAvailableTextureShadow,
             shopTexture, shopTextureShadow, serverIconTexture;
-        Rectangle backgroundRect;
+        Texture2D blankTexture;
+        Rectangle backgroundRect, tutorialRect, tutorialEdgeRect;
 
         Color rectanglesGreenColor = Color.Green;
         Color rectanglesRedColor = Color.Red;
@@ -45,6 +48,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         SpriteBatch sprite_Batch;
         SpriteFont ArialFontSize14;
         SpriteFont ArialFontSize12;
+
+        String tutorial1, tutorial2;
 
         String[] mPlayerProgramNames = new String[5];
         Texture2D[] mPlayerProgramImages = new Texture2D[5];
@@ -69,11 +74,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle tier3Node1;
         Rectangle tier3Node1Shadow;
         Rectangle tier3Node2;
-
-        Rectangle connector1;
-        Rectangle connector2;
-        Rectangle connector3;
-        Rectangle connector4;
 
         Rectangle[] nodeArray;
         bool[] isNodeHacked;
@@ -134,7 +134,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             shopTexture = CreateBG(graphics, columnWidth, columnWidth, "purple");
             shopTextureShadow = CreateBG(graphics, columnWidth, columnWidth, "darkpurple");
 
-
+            blankTexture = new Texture2D(graphics, 1, 1);
+            blankTexture.SetData(new Color[] { Color.White });
 
             int yPos = (mWindowHeight / 2) - (columnWidth / 2);
             startNode = new Rectangle(column2, yPos, columnWidth, columnWidth);
@@ -155,8 +156,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             int yPos5 = (mWindowHeight / 2) + (columnWidth * 3 / 2) - 10;
             tier3Node2 = new Rectangle(column6, yPos5, columnWidth, columnWidth);
 
-            connector1 = new Rectangle(3, 3, 3, 3);
-            connector2 = new Rectangle(startNode.Center.X, startNode.Center.Y, tier2Node2.Center.X - startNode.Center.X, 10);
+            int yPosTutorial = (mWindowHeight / 2);
+            tutorialRect = new Rectangle(column7, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
+            tutorialEdgeRect = new Rectangle(column7 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
 
             PlayerOptions = new Rectangle(0, 0, mWindowWidth, 30);
 
@@ -189,6 +191,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isNodeClickable[j] = false;
             }
 
+            tutorial1 = "This is the server navigation map.  You'll notice there are three nodes displayed, one blue and two red.  Red nodes are nodes that we know about but cannont access, blue nodes are nodes that are available to be hacked. Select the Blue node now.";
+            tutorial2 = "The two red nodes are now available to us, and what's this, one of them is a black market node.  The purple node can be used to access the black market to purchase new programs to aid you in your fight.";
+
         }
 
         public override void SubscribeAll()
@@ -212,13 +217,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 else if (firstLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node1";
-                    MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    mPlayer1InOverWorld.SpawnTutorial = true;
+                    //MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    //TutorialState new_state = new TutorialState((new FirstMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (secondLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node2";
-                    MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
+                    mPlayer1InOverWorld.level2Tutorial = true;
+                    //MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
+                    TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new SecondMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (thirdLevel == true)
@@ -229,7 +239,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 else if (shop == true)
                 {
-                    ShopState new_state = new ShopState();
+                    //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
+                    List<ProgramFactory> tempShopList = new List<ProgramFactory>();
+
+                    tempShopList.Add(new SniperFactory());
+                    tempShopList.Add(new HackerFactory());
+                    tempShopList.Add(new MemManFactory());
+                    tempShopList.Add(new TrojanFactory());
+                    tempShopList.Add(new Sniper2Factory());
+
+                    ShopState new_state = new ShopState(tempShopList);
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else
@@ -345,6 +364,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isNodeClickable[0] = true;
                 isNodeClickable[1] = true;
                 isNodeClickable[2] = true;
+
+                //------Tutorial Code----------------------------------
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect, Color.Black * .75f);
+                String temp;
+                temp = WrapText(ArialFontSize12, tutorial2, tutorialRect.Width);
+                sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect.X, tutorialRect.Y + 5), Color.White);
                 
             }
             else
@@ -361,105 +387,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(unAvailableTexture, tier2Node1, Color.White);
                 sprite_batch.Draw(unAvailableTexture, tier2Node2, Color.White);
                 isNodeClickable[0] = true;
-            }
-            //-----------------------------------------------------------------------------------------------
-            /*
-            if (mPlayer1InOverWorld.IsNodeHacked("Node1") == false)
-            {
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Cadet", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-            }
 
-            if (mPlayer1InOverWorld.IsNodeHacked("Node1") == true)
-            {
-                sprite_batch.Draw(hackedTextureShadow, startNodeShadow, Color.White);
-                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
-                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
-                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
-                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
-                sprite_batch.Draw(hackedTexture, startNode, Color.White);
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-                isNodeClickable[1] = true;
-                isNodeClickable[2] = true;
+                //------Tutorial Code----------------------------------
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect, Color.Black * .75f);
+                String temp;
+                temp = WrapText(ArialFontSize12, tutorial1, tutorialRect.Width);
+                sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect.X, tutorialRect.Y + 5), Color.White);
             }
-            else
-            {
-                sprite_batch.Draw(availableTextureShadow, startNodeShadow, Color.White);
-                sprite_batch.Draw(unAvailableTextureShadow, tier2Node2Shadow, Color.White);
-                sprite_batch.Draw(unAvailableTextureShadow, tier2Node1Shadow, Color.White);
-                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
-                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
-                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
-                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
-                sprite_batch.Draw(availableTexture, startNode, Color.White);
-                sprite_batch.Draw(unAvailableTexture, tier2Node1, Color.White);
-                sprite_batch.Draw(unAvailableTexture, tier2Node2, Color.White);
-            }
-
-            if (isNodeClickable[1] == true && isNodeHacked[1] == false)
-            {
-                sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
-                sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
-                //PrimiviteDrawing.DrawCircle(test_text, sprite_batch, new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), 50, Color.White, 2, 16);
-            }
-            else if (isNodeClickable[1] == true && isNodeHacked[1] == true)
-            {
-                //sprite_batch.Draw(test_text, new Vector2(tier2Node1.X, tier2Node1.Y), tier2Node1, Color.Red);
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Private", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-            }
-
-            if (isNodeClickable[2] == true && mPlayer1InOverWorld.IsNodeHacked("Node2") == false)
-            {
-                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y),
-                   new Vector2(tier3Node1.Center.X, tier3Node1.Center.Y), Color.Violet, 10);
-                sprite_batch.Draw(availableTextureShadow, tier3Node1Shadow, Color.White);
-                sprite_batch.Draw(availableTexture, tier3Node1, Color.White);
-                sprite_batch.Draw(availableTextureShadow, tier2Node2Shadow, Color.White);
-                sprite_batch.Draw(availableTexture, tier2Node2, Color.White);
-            }
-            else if (isNodeClickable[2] == true && mPlayer1InOverWorld.IsNodeHacked("Node2") == true)
-            {
-                sprite_batch.Draw(test_text, new Vector2(tier2Node2.X, tier2Node2.Y), tier2Node2, Color.Red);
-                isNodeClickable[3] = true;
-                //isNodeClickable[4] = true;
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Sergeant", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-            }
-            */
-
-            /*
-            if (isNodeClickable[3] == true && isNodeHacked[3] == false)
-            {
-                sprite_batch.Draw(test_text, new Vector2(tier3Node1.X, tier3Node1.Y), tier3Node1, Color.Black);
-            }
-            else if (isNodeClickable[3] == true && isNodeHacked[3] == true)
-            {
-                sprite_batch.Draw(test_text, new Vector2(tier3Node1.X, tier3Node1.Y), tier3Node1, Color.Red);
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Captain", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-            }
-
-            if (isNodeClickable[4] == true && isNodeHacked[4] == false)
-            {
-                sprite_batch.Draw(test_text, new Vector2(tier3Node2.X, tier3Node2.Y), tier3Node2, Color.Black);
-            }
-            else if (isNodeClickable[4] == true && isNodeHacked[4] == true)
-            {
-                sprite_batch.Draw(test_text, new Vector2(tier3Node2.X, tier3Node2.Y), tier3Node2, Color.Red);
-                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Captain", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-            }
-             * */
-
-            //sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Cadet", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
-
-            /*
-            float angle = 15;
-            Matrix rotate = Matrix.CreateRotationZ(angle);
-            Vector2 original = new Vector2(connector2.X, connector2.Y);
-            Vector2 temp = Vector2.Normalize(original) * 100.0f;
-            Vector2 transformedPoint = Vector2.Transform(original, rotate);
-
-            sprite_batch.Draw(test_text, transformedPoint, connector2, Color.Yellow);
-
-            sprite_batch.Draw(test_text, temp, Color.Yellow);
-             * */
         }
 
         //---------------------------------------------------------------------------------------------
@@ -518,6 +453,37 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
             backgroundTex.SetData(bgc);
             return backgroundTex;
+        }
+
+        //Code for text wrapping used from:
+        //http://www.xnawiki.com/index.php/Basic_Word_Wrapping
+        public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
+        {
+            string[] words = text.Split(' ');
+
+            StringBuilder sb = new StringBuilder();
+
+            float lineWidth = 0f;
+
+            float spaceWidth = spriteFont.MeasureString(" ").X;
+
+            foreach (string word in words)
+            {
+                Vector2 size = spriteFont.MeasureString(word);
+
+                if (lineWidth + size.X < maxLineWidth)
+                {
+                    sb.Append(word + " ");
+                    lineWidth += size.X + spaceWidth;
+                }
+                else
+                {
+                    sb.Append("\n" + word + " ");
+                    lineWidth = size.X + spaceWidth;
+                }
+            }
+
+            return sb.ToString();
         }
         //-------------------------------------------------------------------------------------------
 
