@@ -12,7 +12,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 {
     class OptionsGameState : HaxxitGameState
     {
-        //silly white pixel thing for drawable rectangle
+        //silly white pixel thing required for using DrawableRectangle
         Texture2D white_pixel;
 
         //title
@@ -25,6 +25,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Texture2D blankTexture, backgroundTexture;
 
         //options
+        String tutorialString = "Show Tutorials";
+        Vector2 tutorialStringPos;
+        Color tutorialOptionBackgroundRectColor;
+        Rectangle tutorialOptionBackgroundRect, tutorialOptionRect;
+        DrawableRectangle drawableTutorialOptionRect;
         SpriteFont optionSpriteFont;
         Texture2D optionSelectedTexture, optionNotSelectedTexture;
         String kelvinString = "Kelvin Mode";
@@ -79,9 +84,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             titleStringPos = new Vector2(0, 0);
 
-            kelvinStringPos = new Vector2(mWindowWidth / 2 - 95, 190);
-            soundStringPos = new Vector2(mWindowWidth / 2 - 95, 250);
-            musicStringPos = new Vector2(mWindowWidth / 2 - 95, 310);
+            tutorialStringPos = new Vector2(mWindowWidth / 2 - 95, 180);
+            kelvinStringPos = new Vector2(mWindowWidth / 2 - 95, 230);
+            soundStringPos = new Vector2(mWindowWidth / 2 - 95, 280);
+            musicStringPos = new Vector2(mWindowWidth / 2 - 95, 330);
+            tutorialOptionBackgroundRectColor = Color.White;
+            tutorialOptionBackgroundRect = new Rectangle((int)tutorialStringPos.X + 148, (int)tutorialStringPos.Y, 24, 24);
+            tutorialOptionRect = new Rectangle((int)tutorialStringPos.X + 150, (int)tutorialStringPos.Y + 2, 20, 20);
+            drawableTutorialOptionRect = new DrawableRectangle(white_pixel, tutorialOptionRect, Color.White);
+            drawableTutorialOptionRect.OnMouseInside += delegate { tutorialOptionBackgroundRectColor = Color.Cyan; };
+            drawableTutorialOptionRect.OnMouseOutside += delegate { tutorialOptionBackgroundRectColor = Color.White; };
+            drawableTutorialOptionRect.OnMouseLeftClick += OnTutorialOptionClick;
             kelvinOptionBackgroundRectColor = Color.White;
             kelvinOptionBackgroundRect = new Rectangle((int)kelvinStringPos.X + 148, (int)kelvinStringPos.Y, 24, 24);
             kelvinOptionRect = new Rectangle((int)kelvinStringPos.X + 150, (int)kelvinStringPos.Y + 2, 20, 20);
@@ -103,6 +116,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             drawableMusicOptionRect.OnMouseInside += delegate { musicOptionBackgroundRectColor = Color.Cyan; };
             drawableMusicOptionRect.OnMouseOutside += delegate { musicOptionBackgroundRectColor = Color.White; };
             drawableMusicOptionRect.OnMouseLeftClick += OnMusicOptionClick;
+        }
+
+        private void OnTutorialOptionClick(DrawableRectangle rectangle)
+        {
+            if (player.TutorialMode)
+            {
+                player.TutorialMode = false;
+            }
+            else
+            {
+                player.TutorialMode = true;
+            }
         }
 
         private void OnKelvinOptionClick(DrawableRectangle rectangle)
@@ -178,6 +203,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Update()
         {
+            drawableTutorialOptionRect.Update();
             drawableKelvinOptionRect.Update();
             drawableSoundOptionRect.Update();
             drawableMusicOptionRect.Update();
@@ -223,6 +249,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             sprite_batch.Draw(blankTexture, displayRect, Color.Black * .75f);
 
             //draw options
+            sprite_batch.DrawString(optionSpriteFont, tutorialString, tutorialStringPos + (Vector2.One * 2), Color.Black); //pop out effect
+            sprite_batch.DrawString(optionSpriteFont, tutorialString, tutorialStringPos, Color.White);
+            sprite_batch.Draw(blankTexture, tutorialOptionBackgroundRect, tutorialOptionBackgroundRectColor);
+            if (player.TutorialMode)
+            {
+                sprite_batch.Draw(optionSelectedTexture, tutorialOptionRect, Color.White);
+            }
+            else
+            {
+                sprite_batch.Draw(optionNotSelectedTexture, tutorialOptionRect, Color.White);
+            }
             sprite_batch.DrawString(optionSpriteFont, kelvinString, kelvinStringPos + (Vector2.One * 2), Color.Black); //pop out effect
             sprite_batch.DrawString(optionSpriteFont, kelvinString, kelvinStringPos, Color.White);
             sprite_batch.Draw(blankTexture, kelvinOptionBackgroundRect, kelvinOptionBackgroundRectColor);

@@ -18,7 +18,6 @@ namespace SmartboyDevelopments.Haxxit
         private List<ProgramFactory> owned_programs;
         private List<String> hackedNodes;
         private List<String> stories_played;
-
         
         /// <summary>
         /// The total number of silicoins the player has earned so far.
@@ -54,6 +53,12 @@ namespace SmartboyDevelopments.Haxxit
             set;
         }
          * */
+
+        public bool TutorialMode
+        {
+            get;
+            set;
+        }
 
         public bool KelvinMode
         {
@@ -119,6 +124,7 @@ namespace SmartboyDevelopments.Haxxit
             _notifiable_manager = new NotifiableManager();
             Name = name;
             //_guid = Guid.NewGuid();
+            TutorialMode = true;
             KelvinMode = false;
             Sound = true;
             Music = true;

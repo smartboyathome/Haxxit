@@ -12,20 +12,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
     public class SpawnDialogGameState : HaxxitGameState
     {
-        const int SCROLLBARHEIGHT = 100;
-        const int SCROLLBARWIDTH = 10;
-
-        Texture2D rectangle_texture;
-        DrawableRectangle overlay, popup_window, scrollUpButton, scrollDownButton, scrollBar, scrollGrip;
+        Texture2D rectangle_texture, scrollUpTexture, scrollDownTexture, scrollGripTexture;
+        DrawableRectangle overlay, popup_window, scrollUpButton, scrollDownButton, scrollBar, scrollGrip, aboveGrip, belowGrip;
         SpriteFont arial_16px_regular, arial_14px_regular, arial_12px_regular, arial_10px_regular;
         HaxxitGameState background_state;
         Haxxit.Maps.Map map;
         Haxxit.Maps.Point spawn_point;
-        //Dictionary<Haxxit.Programs.ProgramFactory, DrawableRectangle> program_rectangles;
         List<Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>> program_rectangles;
         int totalPrograms;
         int currentScrollLevel;
         int total_spawn_points;
+        int interval;
+        int lastScrollWheelValue;
+        int[] scrollGripPositions;
+        bool mouseIsDraggingGrip;
 
         public SpawnDialogGameState(HaxxitGameState background_state, Haxxit.Maps.Map map, Haxxit.Maps.Point spawn_point) :
             base()
@@ -39,7 +39,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             totalPrograms = 0;
             currentScrollLevel = 0;
-            //program_rectangles = new Dictionary<Haxxit.Programs.ProgramFactory, DrawableRectangle>();
             program_rectangles = new List<Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>>();
             total_spawn_points = 0;
 
@@ -50,6 +49,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     total_spawn_points += map.GetNode<Haxxit.Maps.SpawnNode>(p).program.SpawnWeight;
                 }
             }
+            lastScrollWheelValue = int.MinValue;
+            mouseIsDraggingGrip = false;
         }
 
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
@@ -57,14 +58,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             overlay = new DrawableRectangle(rectangle_texture, new Rectangle(0, 0, 800, 480), Color.Black * 0.5f);
-            popup_window = new DrawableRectangle(rectangle_texture, new Rectangle(200, 90, 400, 350), Color.DarkBlue);
-            scrollUpButton = new DrawableRectangle(rectangle_texture, new Rectangle(610, 90, 50, 50), Color.Yellow);
-            scrollUpButton.OnMouseLeftClick += OnScrollUp;
-            scrollDownButton = new DrawableRectangle(rectangle_texture, new Rectangle(610, 150, 50, 50), Color.Yellow);
-            scrollDownButton.OnMouseLeftClick += OnScrollDown;
-
-            scrollBar = new DrawableRectangle(rectangle_texture, new Rectangle(700, 90, 10, 100), Color.DarkGray);
-            scrollGrip = new DrawableRectangle(rectangle_texture, new Rectangle(700, 90, 10, 10), Color.Yellow);
+            popup_window = new DrawableRectangle(rectangle_texture, new Rectangle(350, 20, 400, 350), Color.DarkBlue);
 
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_14px_regular = content.Load<SpriteFont>("Arial-14px-Regular");
@@ -82,7 +76,36 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 program_rectangles.Add(new Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>(program, program_rectangle));
                 totalPrograms++;
             }
-            
+
+            // If there are enough programs that we'll need to support scrolling...
+            if (totalPrograms > 4)
+            {
+                scrollUpTexture = content.Load<Texture2D>("ArrowUp");
+                scrollUpButton = new DrawableRectangle(rectangle_texture, new Rectangle(750, 20, 50, 50), Color.White);
+                scrollUpButton.OnMouseLeftClick += OnScrollUp;
+
+                scrollDownTexture = content.Load<Texture2D>("ArrowDown");
+                scrollDownButton = new DrawableRectangle(rectangle_texture, new Rectangle(750, 320, 50, 50), Color.White);
+                scrollDownButton.OnMouseLeftClick += OnScrollDown;
+
+                scrollGripTexture = content.Load<Texture2D>("ScrollGrip");
+                scrollBar = new DrawableRectangle(rectangle_texture, new Rectangle(760, 70, 30, 250), Color.DimGray);
+                scrollGrip = new DrawableRectangle(rectangle_texture, new Rectangle(760, 70, 30, 50), Color.White);
+                aboveGrip = new DrawableRectangle(rectangle_texture, new Rectangle(760, 70, 30, 0), Color.Red);
+                aboveGrip.OnMouseLeftClick += OnScrollUp;
+                belowGrip = new DrawableRectangle(rectangle_texture, new Rectangle(760, 120, 30, 200), Color.Green);
+                belowGrip.OnMouseLeftClick += OnScrollDown;
+
+                // Determine scroll grip positions for future use
+                scrollGripPositions = new int[totalPrograms - 3];
+                int startingPosition = scrollGrip.Area.Location.Y;
+                int endingPosition = startingPosition + scrollBar.Area.Height - scrollGrip.Area.Height;
+                interval = (endingPosition - startingPosition) / (totalPrograms - 4);
+                for (int i = 0; i < totalPrograms - 3; i++)
+                {
+                    scrollGripPositions[i] = startingPosition + interval * i;
+                }
+            }
         }
 
         public override void SubscribeAll()
@@ -109,6 +132,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     program_rectangle.Area = area;
                 }
                 currentScrollLevel--;
+                Rectangle scrollGripPosition = scrollGrip.Area;
+                scrollGripPosition.Y = scrollGripPositions[currentScrollLevel];
+                scrollGrip.Area = scrollGripPosition;
+
+                Rectangle modifyAboveRectangle = aboveGrip.Area;
+                modifyAboveRectangle.Height = scrollGrip.Area.Y - scrollBar.Area.Y;
+                aboveGrip.Area = modifyAboveRectangle;
+
+                Rectangle modifyBelowRectangle = belowGrip.Area;
+                modifyBelowRectangle.Y = scrollGrip.Area.Y + scrollGrip.Area.Height;
+                modifyBelowRectangle.Height = scrollBar.Area.Y + scrollBar.Area.Height - (scrollGrip.Area.Y + scrollGrip.Area.Height);
+                belowGrip.Area = modifyBelowRectangle;
             }
         }
 
@@ -123,6 +158,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     program_rectangle.Area = area;
                 }
                 currentScrollLevel++;
+                Rectangle scrollGripPosition = scrollGrip.Area;
+                scrollGripPosition.Y = scrollGripPositions[currentScrollLevel];
+                scrollGrip.Area = scrollGripPosition;
+
+                Rectangle modifyAboveRectangle = aboveGrip.Area;
+                modifyAboveRectangle.Height = scrollGrip.Area.Y - scrollBar.Area.Y;
+                aboveGrip.Area = modifyAboveRectangle;
+
+                Rectangle modifyBelowRectangle = belowGrip.Area;
+                modifyBelowRectangle.Y = scrollGrip.Area.Y + scrollGrip.Area.Height;
+                modifyBelowRectangle.Height = scrollBar.Area.Y + scrollBar.Area.Height - (scrollGrip.Area.Y + scrollGrip.Area.Height);
+                belowGrip.Area = modifyBelowRectangle;
             }
         }
 
@@ -145,18 +192,75 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
-            scrollUpButton.Update();
-            scrollDownButton.Update();
+
+            MouseState mouse_state = Mouse.GetState(); // Gets the mouse state object
+            Point mouse_position = new Point(mouse_state.X, mouse_state.Y); // creates a point for the mouse's position
+
+            // If there are enough programs that we need to support scrolling...
+            if (totalPrograms > 4)
+            {
+                // Track whether the user is dragging the scrollGrip or not
+                if (mouse_state.LeftButton == ButtonState.Released)
+                {
+                    mouseIsDraggingGrip = false;
+                }
+                else if (scrollGrip.Area.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+                {
+                    mouseIsDraggingGrip = true;
+                }
+
+                // Scroll the list according to the mouse and grip positions
+                if (mouseIsDraggingGrip)
+                {
+                    int intervals = (mouse_position.Y - scrollGrip.Area.Y) / interval;
+                    if (intervals < 0)
+                    {
+                        for (int i = 0; i > intervals; i--)
+                        {
+                            OnScrollUp(scrollGrip);
+                        }
+                    }
+                    else if (intervals > 0)
+                    {
+                        for (int i = 0; i < intervals; i++)
+                        {
+                            OnScrollDown(scrollGrip);
+                        }
+                    }
+                }
+
+                // Scroll the list using the mousewheel
+                if (mouse_state.ScrollWheelValue > lastScrollWheelValue)
+                {
+                    OnScrollUp(scrollGrip);
+                    lastScrollWheelValue = mouse_state.ScrollWheelValue;
+                }
+                else if (mouse_state.ScrollWheelValue < lastScrollWheelValue)
+                {
+                    OnScrollDown(scrollGrip);
+                    lastScrollWheelValue = mouse_state.ScrollWheelValue;
+                }
+
+                // Scroll the list by up and down buttons
+                scrollUpButton.Update();
+                scrollDownButton.Update();
+
+                // Scroll the list by clicking on the void space between the grip and the tops and bottoms of the scroll bar
+                aboveGrip.Update();
+                belowGrip.Update();
+            }
+
             foreach (DrawableRectangle program_rectangle in program_rectangles.Select(x => x.Item2))
             {
                 program_rectangle.Update();
             }
-            MouseState mouse_state = Mouse.GetState();
-            Point mouse_position = new Point(mouse_state.X, mouse_state.Y);
+
+            /*
             bool mouse_within_element = scrollDownButton.Area.Contains(mouse_position) || scrollUpButton.Area.Contains(mouse_position)
                 || popup_window.Area.Contains(mouse_position);
             if (!mouse_within_element && mouse_state.LeftButton == ButtonState.Pressed)
                 _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+            */
         }
 
         public override void Draw(SpriteBatch sprite_batch)
@@ -164,12 +268,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             background_state.Draw(sprite_batch);
             overlay.Draw(sprite_batch);
             popup_window.Draw(sprite_batch);
-            scrollUpButton.Draw(sprite_batch);
-            sprite_batch.DrawString(arial_12px_regular, "Scroll\nUp", new Vector2(scrollUpButton.Area.X + 5, scrollUpButton.Area.Y + 5), Color.Black);
-            scrollDownButton.Draw(sprite_batch);
-            sprite_batch.DrawString(arial_12px_regular, "Scroll\nDown", new Vector2(scrollDownButton.Area.X + 5, scrollDownButton.Area.Y + 5), Color.Black);
-            scrollBar.Draw(sprite_batch);
-            scrollGrip.Draw(sprite_batch);
+
+            // If there are enough programs that we need to support scrolling...
+            if (totalPrograms > 4)
+            {
+                scrollBar.Draw(sprite_batch);
+                //aboveGrip.Draw(sprite_batch); // Shows up red.  Useful for testing.
+                //belowGrip.Draw(sprite_batch); // Shows up green.  Useful for testing.
+                sprite_batch.Draw(scrollGripTexture, scrollGrip.Area, Color.White);
+                sprite_batch.Draw(scrollUpTexture, scrollUpButton.Area, Color.White);
+                sprite_batch.Draw(scrollDownTexture, scrollDownButton.Area, Color.White);
+            }
+
             Vector2 title_size = arial_16px_regular.MeasureString("Select a program");
             Vector2 title_location = new Vector2(popup_window.Area.X + (popup_window.Area.Width - title_size.X)/2, popup_window.Area.Y + 10);
             sprite_batch.DrawString(arial_16px_regular, "Select a program", title_location, Color.White);
