@@ -106,11 +106,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
             mBuyablePrograms = new List<ProgramFactory>();
 
-            mBuyablePrograms.Add(new SniperFactory());
             mBuyablePrograms.Add(new HackerFactory());
+            mBuyablePrograms.Add(new Hacker2Factory());
             mBuyablePrograms.Add(new MemManFactory());
-            mBuyablePrograms.Add(new TrojanFactory());
+            mBuyablePrograms.Add(new SniperFactory());
             mBuyablePrograms.Add(new Sniper2Factory());
+            mBuyablePrograms.Add(new TrojanFactory());
+            mBuyablePrograms.Add(new Trojan2Factory());
         }
 
         public ShopState(List<ProgramFactory> mListOfAvailShopProgs)

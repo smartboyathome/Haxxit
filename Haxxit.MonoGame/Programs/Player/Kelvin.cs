@@ -7,17 +7,17 @@ using SmartboyDevelopments.Haxxit.Programs;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.Programs
 {
-    class TesterFactory : ProgramFactory
+    class KelvinFactory : ProgramFactory
     {
-        public TesterFactory()
+        public KelvinFactory()
         {
             Moves = 99;
             Size = 99;
             SpawnWeight = 1;
             ProgramCost = 1;
-            TypeName = "Tester";
+            TypeName = "Kelvin";
             List<Command> commands = new List<Command>();
-            commands.Add(new DamageCommand("Cheat", "Deletes target.", 99, 99));
+            commands.Add(new DamageCommand("Nuke", "Deletes target.", 99, 99));
             commands.Add(new RemoveNodeCommand("Corrupt", "Deletes one cell from the map.", 1));
             commands.Add(new AddNodeCommand("Fix", "Adds one cell to the map.", 1));
             Commands = commands;

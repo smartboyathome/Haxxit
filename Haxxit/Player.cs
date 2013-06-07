@@ -55,6 +55,24 @@ namespace SmartboyDevelopments.Haxxit
         }
          * */
 
+        public bool KelvinMode
+        {
+            get;
+            set;
+        }
+
+        public bool Sound
+        {
+            get;
+            set;
+        }
+
+        public bool Music
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// The NotifiableManager to be used for mediating notifications between parts of the game.
         /// </summary>
@@ -101,6 +119,9 @@ namespace SmartboyDevelopments.Haxxit
             _notifiable_manager = new NotifiableManager();
             Name = name;
             //_guid = Guid.NewGuid();
+            KelvinMode = false;
+            Sound = true;
+            Music = true;
         }
 
         /// <summary>

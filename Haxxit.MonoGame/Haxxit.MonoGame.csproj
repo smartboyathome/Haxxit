@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GameStates\MainStoryState.cs" />
+    <Compile Include="GameStates\OptionsGameState.cs" />
     <Compile Include="GameStates\TempDialogGameState.cs" />
     <Compile Include="GameStates\CreditsGameState.cs" />
     <Compile Include="GameStates\MapAttackGameState.cs" />
@@ -98,7 +99,7 @@
     <Compile Include="HaxxitGameState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Programs\AI\Swarmer.cs" />
-    <Compile Include="Programs\Player\Tester.cs" />
+    <Compile Include="Programs\Player\Kelvin.cs" />
     <Compile Include="Programs\Player\Trojan2.cs" />
     <Compile Include="Programs\AI\Watcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

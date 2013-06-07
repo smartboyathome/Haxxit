@@ -12,8 +12,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
     public class SpawnDialogGameState : HaxxitGameState
     {
+        const int SCROLLBARHEIGHT = 100;
+        const int SCROLLBARWIDTH = 10;
+
         Texture2D rectangle_texture;
-        DrawableRectangle overlay, popup_window, scrollUpButton, scrollDownButton;
+        DrawableRectangle overlay, popup_window, scrollUpButton, scrollDownButton, scrollBar, scrollGrip;
         SpriteFont arial_16px_regular, arial_14px_regular, arial_12px_regular, arial_10px_regular;
         HaxxitGameState background_state;
         Haxxit.Maps.Map map;
@@ -59,6 +62,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             scrollUpButton.OnMouseLeftClick += OnScrollUp;
             scrollDownButton = new DrawableRectangle(rectangle_texture, new Rectangle(610, 150, 50, 50), Color.Yellow);
             scrollDownButton.OnMouseLeftClick += OnScrollDown;
+
+            scrollBar = new DrawableRectangle(rectangle_texture, new Rectangle(700, 90, 10, 100), Color.DarkGray);
+            scrollGrip = new DrawableRectangle(rectangle_texture, new Rectangle(700, 90, 10, 10), Color.Yellow);
+
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_14px_regular = content.Load<SpriteFont>("Arial-14px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
@@ -161,6 +168,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             sprite_batch.DrawString(arial_12px_regular, "Scroll\nUp", new Vector2(scrollUpButton.Area.X + 5, scrollUpButton.Area.Y + 5), Color.Black);
             scrollDownButton.Draw(sprite_batch);
             sprite_batch.DrawString(arial_12px_regular, "Scroll\nDown", new Vector2(scrollDownButton.Area.X + 5, scrollDownButton.Area.Y + 5), Color.Black);
+            scrollBar.Draw(sprite_batch);
+            scrollGrip.Draw(sprite_batch);
             Vector2 title_size = arial_16px_regular.MeasureString("Select a program");
             Vector2 title_location = new Vector2(popup_window.Area.X + (popup_window.Area.Width - title_size.X)/2, popup_window.Area.Y + 10);
             sprite_batch.DrawString(arial_16px_regular, "Select a program", title_location, Color.White);

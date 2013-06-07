@@ -114,13 +114,17 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
                     mStartPlayer = GlobalAccessors.mPlayer1;
-                    //mStartPlayer.AddProgram(new HackerFactory());
-                    //mStartPlayer.AddProgram(new Hacker2Factory());
-                    //mStartPlayer.AddProgram(new MemManFactory());
+                    mStartPlayer.AddProgram(new HackerFactory());
+                    mStartPlayer.AddProgram(new Hacker2Factory());
+                    mStartPlayer.AddProgram(new MemManFactory());
                     mStartPlayer.AddProgram(new SniperFactory());
-                    //mStartPlayer.AddProgram(new Sniper2Factory());
-                    //mStartPlayer.AddProgram(new TrojanFactory());
-                    //mStartPlayer.AddProgram(new Trojan2Factory());
+                    mStartPlayer.AddProgram(new Sniper2Factory());
+                    if (mStartPlayer.KelvinMode)
+                    {
+                        mStartPlayer.AddProgram(new KelvinFactory());
+                    }
+                    mStartPlayer.AddProgram(new TrojanFactory());
+                    mStartPlayer.AddProgram(new Trojan2Factory());
                     //mStartPlayer.IsHacked = false;
                     StoryTellingGameState new_state = new StoryTellingGameState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
@@ -138,6 +142,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 if (mouse_state.LeftButton == ButtonState.Released)
                 {
                     CreditsGameState new_state = new CreditsGameState();
+                    Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
+                }
+            }
+
+            if (isOptionsButtonClicked)
+            {
+                if (mouse_state.LeftButton == ButtonState.Released)
+                {
+                    OptionsGameState new_state = new OptionsGameState();
                     Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
                 }
             }
