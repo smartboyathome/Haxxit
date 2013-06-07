@@ -653,7 +653,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
             if (end_was_tail_node && head_node.Tail != null) // If the Program originally moved over a tail node
             {
-                ProgramTailNode end_node = head_node.Tail;
+                ProgramNode end_node = head_node;
                 while (end_node.Tail != null)
                 {
                     end_node = end_node.Tail;
@@ -662,6 +662,8 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 map[end.X, end.Y].coordinate = end;
                 end_node.Tail = (ProgramTailNode)map[end.X, end.Y];
                 ((ProgramTailNode)map[end.X, end.Y]).Head = end_node;
+                ((ProgramTailNode)map[end.X, end.Y]).Notifiable = Mediator;
+                ((ProgramTailNode)map[end.X, end.Y]).Player = head_node.Player;
                 changed_nodes.Add(end);
             }
             else if (!program_resized) // If the Program wasn't resized

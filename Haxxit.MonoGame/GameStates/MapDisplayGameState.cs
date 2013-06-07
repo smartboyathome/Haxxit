@@ -168,7 +168,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         private IEnumerable<DrawableRectangle> DrawProgramNode(Haxxit.Maps.Point p)
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
-            Haxxit.Maps.ProgramNode program_node = (Haxxit.Maps.ProgramNode)Map.GetNode(p);
+            Haxxit.Maps.ProgramNode program_node = Map.GetNode<Haxxit.Maps.ProgramNode>(p);
             Tuple<Color, Color> player_color;
             if (!players.TryGetValue(program_node.Player, out player_color))
                 player_color = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
