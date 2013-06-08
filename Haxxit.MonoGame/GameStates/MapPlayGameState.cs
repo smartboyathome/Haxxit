@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public MapDisplayGameState display_map_state;
         public DrawableRectangle turn_done_button, undo_button, leave_map_button;
 
-        Texture2D rectangle_texture;
+        Texture2D rectangle_texture, rounded_rect_back;
         SpriteFont arial_16px_regular, arial_12px_regular;
         Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
         bool is_ai_turn;
@@ -70,11 +70,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             DrawableRectangle retval;
             if (head_node.Program.AlreadyRanCommand())
-                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Black * (2.0f / 3.0f));
+                retval = new DrawableRectangle(rounded_rect_back, display_map_state.HaxxitPointToXnaRectangle(p), Color.Black * (2.0f / 3.0f));
             else if (!head_node.Program.Moves.CanMove())
-                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Black * (1.0f / 3.0f));
+                retval = new DrawableRectangle(rounded_rect_back, display_map_state.HaxxitPointToXnaRectangle(p), Color.Black * (1.0f / 3.0f));
             else
-                retval = new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
+                retval = new DrawableRectangle(rounded_rect_back, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent);
             retval.OnMouseLeftClick += OnProgramClick;
             return retval;
         }
@@ -83,6 +83,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
+            rounded_rect_back = content.Load<Texture2D>("Map-Square-Background");
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
 

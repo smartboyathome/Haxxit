@@ -13,7 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class MapAttackGameState : HaxxitGameState
     {
         MapPlayGameState user_map_state;
-        Texture2D rectangle_texture;
+        Texture2D rectangle_texture, rounded_rect_attack;
         SpriteFont arial_16px_regular, arial_12px_regular;
         List<DrawableRectangle> attack_nodes;
         DrawableRectangle selected_border;
@@ -47,15 +47,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             Haxxit.Maps.Map map = user_map_state.display_map_state.Map;
             Haxxit.Maps.Point haxxit_location = user_map_state.display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
-            _mediator_manager.Notify("haxxit.map.command", this,
-                new Haxxit.Maps.CommandEventArgs(haxxit_location, selected_program, selected_attack));
-            if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_program)
-                && map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program.AlreadyRanCommand())
+            if (map.CanRunCommand(selected_program, haxxit_location, selected_attack))
             {
-                List<Haxxit.Maps.Point> changed = new List<Haxxit.Maps.Point>();
-                changed.Add(selected_program);
-                _mediator_manager.Notify("haxxit.map.nodes.changed", this, new Haxxit.Maps.MapChangedEventArgs(changed));
-                _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+                _mediator_manager.Notify("haxxit.map.command", this,
+                    new Haxxit.Maps.CommandEventArgs(haxxit_location, selected_program, selected_attack));
+                if (map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(selected_program)
+                    && map.GetNode<Haxxit.Maps.ProgramHeadNode>(selected_program).Program.AlreadyRanCommand())
+                {
+                    List<Haxxit.Maps.Point> changed = new List<Haxxit.Maps.Point>();
+                    changed.Add(selected_program);
+                    _mediator_manager.Notify("haxxit.map.nodes.changed", this, new Haxxit.Maps.MapChangedEventArgs(changed));
+                    _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+                }
             }
         }
 
@@ -63,6 +66,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
+            rounded_rect_attack = content.Load<Texture2D>("Map-Square-Attack");
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
 
@@ -77,14 +81,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 if(attack_nodes.Count(x => x.Area == attack_rectangle) == 0 && map.IsInBounds(p))
                 {
                     DrawableRectangle attack_node = null;
+                    Color attack_color = Color.Red * 0.25f;
+                    if (map.CanRunCommand(selected_program, p, selected_attack))
+                        attack_color = Color.Red;
+                    attack_node = new DrawableRectangle(rounded_rect_attack, attack_rectangle, attack_color);
                     if (!commandAI)
                     {
-                        attack_node = new DrawableRectangle(rectangle_texture, attack_rectangle, Color.Green * 0.5f);
                         attack_node.OnMouseLeftClick += OnAttackNodeClick;
-                    }
-                    else
-                    {
-                        attack_node = new DrawableRectangle(rectangle_texture, attack_rectangle, Color.Red * 0.5f);
                     }
                     attack_nodes.Add(attack_node);
                 }

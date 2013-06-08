@@ -33,14 +33,22 @@ namespace SmartboyDevelopments.Haxxit.Commands
 
         public override UndoCommand Run(Map map, Point attacked_point)
         {
-            if (!map.NodeIsType<ProgramNode>(attacked_point))
+            if (!CanAttack(map, attacked_point))
                 return null;
-            ProgramNode attacked_node = (ProgramNode)map.GetNode(attacked_point);
-            if (map.CurrentPlayer != null && attacked_node.Player == map.CurrentPlayer)
-                return null;
+            ProgramNode attacked_node = map.GetNode<ProgramNode>(attacked_point);
             Program attacked_program = attacked_node.Program;
             IEnumerable<ProgramNode> removed_nodes = DamageProgram(map, attacked_node, Strength);
             return new UndoDamageCommand(removed_nodes);
+        }
+
+        public override bool CanAttack(Map map, Point attacked_point)
+        {
+            if (!map.NodeIsType<ProgramNode>(attacked_point))
+                return false;
+            ProgramNode attacked_node = (ProgramNode)map.GetNode(attacked_point);
+            if (map.CurrentPlayer != null && attacked_node.Player == map.CurrentPlayer)
+                return false;
+            return true;
         }
     }
 

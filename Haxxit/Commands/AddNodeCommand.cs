@@ -25,12 +25,15 @@ namespace SmartboyDevelopments.Haxxit.Commands
 
         public override UndoCommand Run(Map map, Point attacked_point)
         {
-            if (map.GetNode(attacked_point).GetType() == typeof(UnavailableNode))
-            {
-                map.CreateNode(new AvailableNodeFactory(), attacked_point);
-                return new UndoAddNodeCommand(attacked_point);
-            }
-            return null;
+            if (!CanAttack(map, attacked_point))
+                return null;
+            map.CreateNode(new AvailableNodeFactory(), attacked_point);
+            return new UndoAddNodeCommand(attacked_point);
+        }
+
+        public override bool CanAttack(Map map, Point attacked_point)
+        {
+            return map.GetNode(attacked_point).GetType() == typeof(UnavailableNode);
         }
     }
 

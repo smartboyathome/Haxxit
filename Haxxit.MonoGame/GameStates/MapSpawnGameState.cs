@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         const string finished_text = "Finished";
 
         protected MapDisplayGameState display_map_state;
-        Texture2D rectangle_texture;
+        Texture2D rectangle_texture, rounded_rect_border;
 
         SpriteFont arial_16px_regular, arial_12px_regular;
         Vector2 finished_text_size;
@@ -79,6 +79,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             display_map_state.LoadContent(graphics, sprite_batch, content);
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
+            rounded_rect_border = content.Load<Texture2D>("Map-Square-Border");
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
             finished_text_size = arial_16px_regular.MeasureString(finished_text);
@@ -103,7 +104,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                     && map.GetNode<Haxxit.Maps.SpawnNode>(p).Player == map.CurrentPlayer)
                 {
                     DrawableRectangle spawn =
-                        new DrawableRectangle(rectangle_texture, display_map_state.HaxxitPointToXnaRectangle(p), Color.Transparent, 2, Color.White);
+                        new DrawableRectangle(rounded_rect_border, display_map_state.HaxxitPointToXnaRectangle(p), Color.White);
                     spawn.OnMouseLeftClick += OnSpawnClick;
                     spawns.Add(p, spawn);
                 }

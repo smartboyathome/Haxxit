@@ -40,6 +40,27 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 (int)Math.Floor((p.Y / (rectangle_size + border_size)) - 1));
         }
 
+        public static Rectangle DeepCopy(this Rectangle rectangle)
+        {
+            return new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
+        public static Rectangle ScaleBy(this Rectangle rectangle, double scalar, bool ceiling=true)
+        {
+            double new_width = rectangle.Width * scalar;
+            double new_height = rectangle.Height * scalar;
+            rectangle.Width = ceiling ? (int)Math.Ceiling(new_width) : (int)Math.Floor(new_width);
+            rectangle.Height = ceiling ? (int)Math.Ceiling(new_height) : (int)Math.Floor(new_height);
+            return rectangle;
+        }
+
+        public static Rectangle CenterOn(this Rectangle rectangle, Rectangle other)
+        {
+            rectangle.X = other.X + (other.Width - rectangle.Width) / 2;
+            rectangle.Y = other.Y + (other.Height - rectangle.Height) / 2;
+            return rectangle;
+        }
+
         public static IEnumerable<T> ShallowCopy<T>(this IEnumerable<T> enumerable)
         {
             List<T> list = new List<T>();

@@ -700,6 +700,20 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return true;
         }
 
+        public bool CanRunCommand(Point attacker_point, Point attacked_point, string command)
+        {
+            if (!NodeIsType<ProgramHeadNode>(attacker_point))
+                return false;
+            ProgramHeadNode attacker_node = (ProgramHeadNode)GetNode(attacker_point);
+            if (attacker_node.Player != CurrentPlayer || !attacker_node.Program.HasCommand(command))
+                return false;
+            Point distance = attacker_point.DistanceBetween(attacked_point);
+            Command attack = attacker_node.Program.GetCommand(command);
+            if (distance.X + distance.Y > attack.Range)
+                return false;
+            return attacker_node.Program.CanAttack(this, attacked_point, command);
+        }
+
         /// <summary>
         /// Runs the specified Program's command directed at the attacked node.
         /// </summary>
@@ -709,15 +723,11 @@ namespace SmartboyDevelopments.Haxxit.Maps
         /// <returns>An UndoCommand that will undo the actions of the command that was run, or null if no command was run.</returns>
         public virtual UndoCommand RunCommand(Point attacker_point, Point attacked_point, string command)
         {
-            if (!NodeIsType<ProgramHeadNode>(attacker_point))
+            if (!CanRunCommand(attacker_point, attacked_point, command))
                 return null;
             ProgramHeadNode attacker_node = (ProgramHeadNode)GetNode(attacker_point);
-            if (attacker_node.Player != CurrentPlayer || !attacker_node.Program.HasCommand(command))
-                return null;
             Point distance = attacker_point.DistanceBetween(attacked_point);
             Command attack = attacker_node.Program.GetCommand(command);
-            if (distance.X + distance.Y > attack.Range)
-                return null;
             UndoCommand undo_command = attacker_node.Program.RunCommand(this, attacked_point, command);
             if(undo_command != null)
             {

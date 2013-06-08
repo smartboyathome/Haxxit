@@ -25,6 +25,7 @@ namespace SmartboyDevelopments.Haxxit.Commands
             protected set;
         }
         protected Program _current_program;
+        public abstract bool CanAttack(Map map, Point attacked_point);
         public abstract UndoCommand Run(Map map, Point attacked_point);
 
         protected IEnumerable<ProgramNode> GetProgramNodes(ProgramNode program_node)

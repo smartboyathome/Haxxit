@@ -33,12 +33,19 @@ namespace SmartboyDevelopments.Haxxit.Commands
 
         public override UndoCommand Run(Map map, Point attacked_point)
         {
-            if (!map.NodeIsType<ProgramNode>(attacked_point))
+            if (!CanAttack(map, attacked_point))
                 return null;
             ProgramNode attacked_node = (ProgramNode)map.GetNode(attacked_point);
             Program attacked_program = attacked_node.Program;
             DecreaseProgramSpeed(attacked_program, Speed);
             return null;
+        }
+
+        public override bool CanAttack(Map map, Point attacked_point)
+        {
+            if (!map.NodeIsType<ProgramNode>(attacked_point))
+                return false;
+            return true;
         }
     }
 

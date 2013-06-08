@@ -15,7 +15,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         const int map_rectangle_size = 28;
         const int map_border_size = 7;
 
-        Texture2D rectangle_texture, background;
+        Texture2D rectangle_texture, background, rounded_rect_back,
+            rounded_rect_border, rounded_rect_full, spawn_overlay;
         DrawableRectangle background_rectangle;
         Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>> map_squares;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
@@ -86,6 +87,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             background = content.Load<Texture2D>("Map-Background-1");
+            rounded_rect_back = content.Load<Texture2D>("Map-Square-Background");
+            rounded_rect_border = content.Load<Texture2D>("Map-Square-Border");
+            rounded_rect_full = content.Load<Texture2D>("Map-Square-Full");
+            spawn_overlay = content.Load<Texture2D>("Map-Square-Spawn");
             background_rectangle = new DrawableRectangle(background, new Rectangle(0, 0, 800, 480), Color.White);
             map_squares.Clear();
             foreach (SmartboyDevelopments.Haxxit.Maps.Point p in Map.Low.IterateOverRange(Map.High))
@@ -133,105 +138,112 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
-            rectangles.Add(new DrawableRectangle(rectangle_texture, square, Color.LightBlue * 0.5f));
-            int extra_width = square.Width / 2;
-            int extra_height = square.Height / 2;
-            int extra_x = square.X + (square.Width - extra_width)/2;
-            int extra_y = square.Y + (square.Height - extra_height)/2;
-            if (Map.NodeIsType<Haxxit.Maps.SilicoinNode>(p))
-                rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(extra_x, extra_y, extra_width, extra_height), Color.Green));
-            else if (Map.NodeIsType<Haxxit.Maps.DataNode>(p))
-                rectangles.Add(new DrawableRectangle(rectangle_texture, new Rectangle(extra_x, extra_y, extra_width, extra_height), Color.Red));
+            rectangles.Add(new DrawableRectangle(rounded_rect_back, square, new Color(52, 96, 141) * 0.5f));
+            rectangles.Add(new DrawableRectangle(rounded_rect_border, square, new Color(24, 202, 230)));
             return rectangles;
         }
 
-        private IEnumerable<DrawableRectangle> DrawSpawnNode(Haxxit.Maps.Point p)
+        private IEnumerable<DrawableRectangle> DrawSilicoinNode(Haxxit.Maps.Point p)
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
-            Haxxit.Maps.SpawnNode node = Map.GetNode<Haxxit.Maps.SpawnNode>(p);
-            if (node.program != null)
+            Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
+            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterOn(square);
+            rectangles.Add(new DrawableRectangle(rectangle_texture, extra, Color.Green));
+            return rectangles;
+        }
+
+        private IEnumerable<DrawableRectangle> DrawDataNode(Haxxit.Maps.Point p)
+        {
+            List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
+            Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
+            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterOn(square);
+            rectangles.Add(new DrawableRectangle(rectangle_texture, extra, Color.Red));
+            return rectangles;
+        }
+
+        private IEnumerable<DrawableRectangle> DrawSpawnNode(Haxxit.Maps.Point p, Haxxit.Player player, Haxxit.Programs.ProgramFactory program=null)
+        {
+            List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
+            if (program != null)
             {
-                Color node_color = players[node.Player].Item1;
-                rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size), node_color));
-                string programTextureName = node.program.TypeName;
-                if (!program_textures.ContainsKey(programTextureName))
-                    program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
-                rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, map_border_size), Color.White));
+                rectangles.AddRange(DrawProgramHeadNode(p, player, program.NewInstance()));
             }
             else
             {
-                rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size), Color.Purple));
+                rectangles.AddRange(DrawAvailableNode(p));
+                rectangles.Add(new DrawableRectangle(spawn_overlay, p.ToXNARectangle(map_rectangle_size, map_border_size), Color.Purple));
             }
             return rectangles;
         }
 
-        private IEnumerable<DrawableRectangle> DrawProgramNode(Haxxit.Maps.Point p)
+        private IEnumerable<DrawableRectangle> DrawProgramTailNode(Haxxit.Maps.Point p, Haxxit.Maps.Point connector_direction,
+            Haxxit.Player player, Haxxit.Programs.Program program)
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
-            Haxxit.Maps.ProgramNode program_node = Map.GetNode<Haxxit.Maps.ProgramNode>(p);
             Tuple<Color, Color> player_color;
-            if (!players.TryGetValue(program_node.Player, out player_color))
+            if (!players.TryGetValue(player, out player_color))
                 player_color = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
             Color node_color = player_color.Item2;
-            if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
+            rectangles.Add(new DrawableRectangle(rounded_rect_full, p.ToXNARectangle(map_rectangle_size, map_border_size), node_color));
+            // Used for drawing connectors between nodes.
+            if (!connector_direction.IsDirectional())
             {
-                node_color = player_color.Item1;
+                #if DEBUG
+                throw new Exception();
+                #else
+                return rectangles;
+                #endif
             }
-            rectangles.Add(new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size), node_color));
-            if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
+            DrawableRectangle connector = new DrawableRectangle(rectangle_texture,
+                p.ToXNARectangle(map_rectangle_size, map_border_size), node_color);
+            Rectangle area = connector.Area;
+            if (connector_direction == new Haxxit.Maps.Point(0, 1)) // Down
             {
-                string programTextureName = ((Haxxit.Maps.ProgramHeadNode)program_node).Program.TypeName;
-                if (!program_textures.ContainsKey(programTextureName))
-                    program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
-                rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, map_border_size), Color.White));
+                area.Y += map_rectangle_size;
+                area.Height /= (map_rectangle_size / map_border_size);
+                area.Width /= 2;
+                area.X += area.Width / 2;
             }
-            else if (Map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
+            else if (connector_direction == new Haxxit.Maps.Point(0, -1)) // Up
             {
-                // Used for drawing connectors between nodes.
-                Haxxit.Maps.ProgramTailNode this_node = Map.GetNode<Haxxit.Maps.ProgramTailNode>(p);
-                Haxxit.Maps.Point difference = this_node.Head.coordinate - this_node.coordinate;
-                if (!difference.IsDirectional())
-                {
-                    #if DEBUG
-                    throw new Exception();
-                    #endif
-                }
-                else
-                {
-                    DrawableRectangle connector = new DrawableRectangle(rectangle_texture, p.ToXNARectangle(map_rectangle_size, map_border_size), Color.Gray);
-                    Rectangle area = connector.Area;
-                    if (difference == new Haxxit.Maps.Point(0, 1)) // Down
-                    {
-                        area.Y += map_rectangle_size;
-                        area.Height /= (map_rectangle_size / map_border_size);
-                        area.Width /= 2;
-                        area.X += area.Width / 2;
-                    }
-                    else if (difference == new Haxxit.Maps.Point(0, -1)) // Up
-                    {
-                        area.Y -= map_border_size;
-                        area.Height /= (map_rectangle_size / map_border_size);
-                        area.Width /= 2;
-                        area.X += area.Width / 2;
-                    }
-                    else if (difference == new Haxxit.Maps.Point(1, 0)) // Right
-                    {
-                        area.X += map_rectangle_size;
-                        area.Width /= (map_rectangle_size / map_border_size);
-                        area.Height /= 2;
-                        area.Y += area.Height / 2;
-                    }
-                    else // Left
-                    {
-                        area.X -= map_border_size;
-                        area.Width /= (map_rectangle_size / map_border_size);
-                        area.Height /= 2;
-                        area.Y += area.Height / 2;
-                    }
-                    connector.Area = area;
-                    rectangles.Add(connector);
-                }
+                area.Y -= map_border_size;
+                area.Height /= (map_rectangle_size / map_border_size);
+                area.Width /= 2;
+                area.X += area.Width / 2;
             }
+            else if (connector_direction == new Haxxit.Maps.Point(1, 0)) // Right
+            {
+                area.X += map_rectangle_size;
+                area.Width /= (map_rectangle_size / map_border_size);
+                area.Height /= 2;
+                area.Y += area.Height / 2;
+            }
+            else // Left
+            {
+                area.X -= map_border_size;
+                area.Width /= (map_rectangle_size / map_border_size);
+                area.Height /= 2;
+                area.Y += area.Height / 2;
+            }
+            connector.Area = area;
+            rectangles.Add(connector);
+            return rectangles;
+        }
+
+        private IEnumerable<DrawableRectangle> DrawProgramHeadNode(Haxxit.Maps.Point p, Haxxit.Player player, Haxxit.Programs.Program program)
+        {
+            List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
+            Tuple<Color, Color> player_color;
+            if (!players.TryGetValue(player, out player_color))
+                player_color = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
+            Color node_color = player_color.Item1;
+            Rectangle rectangle = p.ToXNARectangle(map_rectangle_size, map_border_size);
+            rectangles.Add(new DrawableRectangle(rounded_rect_back, rectangle, node_color));
+            rectangles.Add(new DrawableRectangle(rounded_rect_border, rectangle, player_color.Item2));
+            string programTextureName = program.TypeName;
+            if (!program_textures.ContainsKey(programTextureName))
+                program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
+            rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, map_border_size), Color.White));
             return rectangles;
         }
 
@@ -240,15 +252,26 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             if (Map.NodeIsType<Haxxit.Maps.AvailableNode>(p))
             {
-                return DrawAvailableNode(p);
+                rectangles.AddRange(DrawAvailableNode(p));
+                if (Map.NodeIsType<Haxxit.Maps.SilicoinNode>(p))
+                    rectangles.AddRange(DrawSilicoinNode(p));
+                else if (Map.NodeIsType<Haxxit.Maps.DataNode>(p))
+                    rectangles.AddRange(DrawDataNode(p));
             }
             else if (Map.NodeIsType<Haxxit.Maps.SpawnNode>(p))
             {
-                return DrawSpawnNode(p);
+                Haxxit.Maps.SpawnNode node = Map.GetNode<Haxxit.Maps.SpawnNode>(p);
+                rectangles.AddRange(DrawSpawnNode(p, node.Player, node.program));
             }
-            else if (Map.NodeIsType<Haxxit.Maps.ProgramNode>(p))
+            else if (Map.NodeIsType<Haxxit.Maps.ProgramHeadNode>(p))
             {
-                return DrawProgramNode(p);
+                Haxxit.Maps.ProgramHeadNode node = Map.GetNode<Haxxit.Maps.ProgramHeadNode>(p);
+                rectangles.AddRange(DrawProgramHeadNode(p, node.Player, node.Program));
+            }
+            else if (Map.NodeIsType<Haxxit.Maps.ProgramTailNode>(p))
+            {
+                Haxxit.Maps.ProgramTailNode node = Map.GetNode<Haxxit.Maps.ProgramTailNode>(p);
+                rectangles.AddRange(DrawProgramTailNode(p, node.Head.coordinate - node.coordinate, node.Player, node.Program));
             }
             return rectangles;
         }

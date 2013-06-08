@@ -13,7 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class MapMovementGameState : HaxxitGameState
     {
         MapPlayGameState user_map_state;
-        Texture2D rectangle_texture;
+        Texture2D rectangle_texture, rounded_rect_full, rounded_rect_border;
         SpriteFont arial_16px_regular, arial_12px_regular;
         List<DrawableRectangle> movement;
         List<Tuple<DrawableRectangle, string>> attacks;
@@ -86,11 +86,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
+            rounded_rect_border = content.Load<Texture2D>("Map-Square-Border");
+            rounded_rect_full = content.Load<Texture2D>("Map-Square-Full");
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
 
-            selected_border = new DrawableRectangle(rectangle_texture,
-                user_map_state.display_map_state.HaxxitPointToXnaRectangle(selected_program), Color.Transparent, 2, Color.White);
+            selected_border = new DrawableRectangle(rounded_rect_border,
+                user_map_state.display_map_state.HaxxitPointToXnaRectangle(selected_program), Color.White);
 
             Haxxit.Maps.Map map = user_map_state.display_map_state.Map;
             foreach (Haxxit.Maps.Point p in selected_program.GetOrthologicalNeighbors())
@@ -99,7 +101,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 if (map.CanMoveProgram(selected_program, direction))
                 {
                     DrawableRectangle move =
-                        new DrawableRectangle(rectangle_texture, user_map_state.display_map_state.HaxxitPointToXnaRectangle(p),
+                        new DrawableRectangle(rounded_rect_full, user_map_state.display_map_state.HaxxitPointToXnaRectangle(p),
                             Color.White * 0.5f);
                     if (!MoveAI)
                     {
@@ -115,7 +117,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 foreach (string command in selected_node.Program.GetAllCommands())
                 {
                     Vector2 text_size = arial_16px_regular.MeasureString(command);
-                    DrawableRectangle rectangle = new DrawableRectangle(rectangle_texture,
+                    DrawableRectangle rectangle = new DrawableRectangle(rounded_rect_full,
                             new Rectangle(780 - (int)Math.Floor(text_size.X), 10 + ((int)Math.Floor(text_size.Y) + 15) * attacks.Count,
                                 (int)Math.Floor(text_size.X) + 10, (int)Math.Floor(text_size.Y) + 10),
                             Color.Red);

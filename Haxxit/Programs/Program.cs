@@ -63,6 +63,13 @@ namespace SmartboyDevelopments.Haxxit.Programs
         {
             return _commands.ContainsKey(command_name);
         }
+
+        public bool CanAttack(Map map, Point attacked_point, string command_name)
+        {
+            if (has_run_command || !HasCommand(command_name))
+                return false;
+            return GetCommand(command_name).CanAttack(map, attacked_point);
+        }
         
         public UndoCommand RunCommand(Map map, Point attacked_point, string command_name)
         {
