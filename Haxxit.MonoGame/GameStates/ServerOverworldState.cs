@@ -243,14 +243,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 if (mouse_state.LeftButton == ButtonState.Pressed)
                 {
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     return;
                 }
                 else if (firstLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node1";
                     mPlayer1InOverWorld.SpawnTutorial = true;
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     //MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
                     TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new FirstMapFactory()).NewInstance());
                     //TutorialState new_state = new TutorialState((new FirstMapFactory()).NewInstance());
@@ -260,7 +260,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node2";
                     mPlayer1InOverWorld.level2Tutorial = true;
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     //MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
                     TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new SecondMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
@@ -268,7 +268,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 else if (thirdLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node3";
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     MapSpawnGameState new_state = new MapSpawnGameState((new ThirdMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
@@ -283,32 +283,32 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     tempShopList.Add(new TrojanFactory());
                     tempShopList.Add(new Sniper2Factory());
 
-                    mouseClicked = false;
+                    //mouseClicked = false;
 
                     ShopState new_state = new ShopState(tempShopList);
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (fourthLevel == true)
                 {
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     mPlayer1InOverWorld.CurrentNode = "Node4";
                     MapSpawnGameState new_state = new MapSpawnGameState((new FourthMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (fifthLevel == true)
                 {
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     mPlayer1InOverWorld.CurrentNode = "Node5";
                     MapSpawnGameState new_state = new MapSpawnGameState((new FifthMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (shop2 == true)
                 {
-                    mouseClicked = false;
+                    //mouseClicked = false;
                 }
                 else if (bossLevel == true)
                 {
-                    mouseClicked = false;
+                    //mouseClicked = false;
                     MapSpawnGameState new_state = new MapSpawnGameState((new ThirdMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }

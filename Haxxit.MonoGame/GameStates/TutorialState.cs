@@ -30,7 +30,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         String storyString;
         Vector2 storyPos;
         SpriteFont storyStringSpriteFont;
-        int nextCharInString = 0;
 
         //Continue button
         int xOffset, yOffset;
