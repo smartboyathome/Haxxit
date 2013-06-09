@@ -2,10 +2,7 @@ I'm using this file as a place to store future tasks.  Feel free to add your own
 
 TO IMPLEMENT:
 *Functioning "Saved World" screen for end of game
-*Implement or remove options selection from main menu (any plans for this?)
-*Indicators when units are placed on spawns
 *Indicators when all spawns have been filled or weight limit reached
-*Indication when all actions have been used up for the turn
 *GUI method for players to observe enemy programs/names/abilities
 *Ability to save game progress to disk
 *Tutorial
