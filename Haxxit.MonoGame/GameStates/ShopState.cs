@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -43,6 +45,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         bool mIsAPlayerProgramSelected;
         const int MAX_SELECTABLE = 5;
 
+        //player scroll up and down thru list of programs bought
+        Rectangle mPlayerScrollUp, mPlayerScrollDown;
+        Texture2D arrowUpTexture, arrowDownTexture;
+        Rectangle playerArrowUpRect, playerArrowDownRect, availArrowUpRect, availArrowDownRect;
+        int selectorMinPos = 0;
+        bool isPlayerScrollUpButtonClicked, isPlayerScrollDownButtonClicked;
+
         //For Displaying Program Info
         Rectangle YourProgramsInfoTitleRect;
         String YourProgramsInfoString = "Info";
@@ -70,6 +79,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle[] mAvailProgramsSelectable;
         int mAvailSingleProgramSelectedIndex;
         bool mIsAnAvailProgramSelected;
+
+        //buyable programs scroll up and down thru list of programs available
+        Rectangle mAvailScrollUp, mAvailScrollDown;
+        //Texture2D arrowUpTexture, arrowDownTexture;
+        int selectorAvailMinPos = 0;
+        bool isAvailScrollUpButtonClicked, isAvailScrollDownButtonClicked;
 
         //Buy button
         Rectangle BuyButtonRect;
@@ -100,18 +115,20 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         //dialog box
         bool isOkayButtonClicked;
 
+        Song backgroundMusic;
+
         public ShopState()
             : base()
         {
             //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
             mBuyablePrograms = new List<ProgramFactory>();
 
-            mBuyablePrograms.Add(new HackerFactory());
-            mBuyablePrograms.Add(new Hacker2Factory());
-            mBuyablePrograms.Add(new MemManFactory());
             mBuyablePrograms.Add(new SniperFactory());
-            mBuyablePrograms.Add(new Sniper2Factory());
+            mBuyablePrograms.Add(new HackerFactory());
+            mBuyablePrograms.Add(new MemManFactory());
             mBuyablePrograms.Add(new TrojanFactory());
+            mBuyablePrograms.Add(new Sniper2Factory());
+            mBuyablePrograms.Add(new Hacker2Factory());
             mBuyablePrograms.Add(new Trojan2Factory());
         }
 
@@ -137,6 +154,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             YourProgramsInfoTitleRect = new Rectangle(xOffset / 2 * 5 + 5, yOffset, 2 * xOffset, yOffset);
             YourProgramsInfoContainerRect = new Rectangle(xOffset / 2 * 5 + 5, 2 * yOffset, 2 * xOffset, 7 * yOffset);
 
+            mPlayerScrollUp = new Rectangle(5, 2 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+            mPlayerScrollDown = new Rectangle(5, 8 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+
+            playerArrowUpRect = new Rectangle(5, 2 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+            playerArrowDownRect = new Rectangle(5, 8 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+
             YourProgramsMoreInfoContainerRect = new Rectangle(xOffset / 2, 9 * yOffset + 5, 4 * xOffset + 5, 3 * yOffset);
             YourProgramsMoreInfoContainerRectStringPos = new Vector2(YourProgramsMoreInfoContainerRect.X + 5, YourProgramsMoreInfoContainerRect.Y + 5);
 
@@ -146,6 +169,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             AvailProgramsInfoTitleRect = new Rectangle(mWindowWidth / 2 + xOffset / 2 * 5 + 5, yOffset, 2 * xOffset, yOffset);
             AvailProgramsInfoContainerRect = new Rectangle(mWindowWidth / 2 + xOffset / 2 * 5 + 5, 2 * yOffset, 2 * xOffset, 7 * yOffset);
 
+            mAvailScrollUp = new Rectangle(mWindowWidth / 2 + 5, 2 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+            mAvailScrollDown = new Rectangle(mWindowWidth / 2 + 5, 8 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+
+            availArrowUpRect = new Rectangle(mWindowWidth / 2 + 5, 2 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+            availArrowDownRect = new Rectangle(mWindowWidth / 2 + 5, 8 * yOffset, xOffset / 2 - 10, xOffset / 2 - 10);
+
             AvailProgramsMoreInfoContainerRect = new Rectangle(mWindowWidth / 2 + xOffset / 2, 9 * yOffset + 5, 4 * xOffset + 5, 3 * yOffset);
             AvailProgramsMoreInfoContainerRectStringPos = new Vector2(AvailProgramsMoreInfoContainerRect.X + 5, AvailProgramsMoreInfoContainerRect.Y + 5);
 
@@ -154,7 +183,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             PlayerOptions = new Rectangle(0, mWindowHeight - yOffset, mWindowWidth, yOffset);
 
             ExitButtonRect = new Rectangle(mWindowWidth - xOffset, mWindowHeight - yOffset, xOffset, yOffset);
-            isExitButtonClicked = isBuyButtonClicked = isOkayButtonClicked = false;
+            isExitButtonClicked = isBuyButtonClicked = isOkayButtonClicked = isPlayerScrollUpButtonClicked =
+                isPlayerScrollDownButtonClicked = isAvailScrollUpButtonClicked = isAvailScrollDownButtonClicked = false;
 
             //Anytime changes are made should update back into Global Accessors
             mPlayer1InShop = GlobalAccessors.mPlayer1;
@@ -187,6 +217,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             Init();
 
+            //backgroundMusic = content.Load<Song>("testBGMusic.wav");
+
             YourProgramsSpriteFont = content.Load<SpriteFont>("Arial-14px-Regular");
             blankRectTexture = new Texture2D(graphics, 1, 1);
             blankRectTexture.SetData(new Color[] { Color.White });
@@ -198,6 +230,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             buttonPressed = content.Load<Texture2D>("blackButtonPressed");
             buttonReleased = content.Load<Texture2D>("blackButtonReleased");
+
+            arrowDownTexture = content.Load<Texture2D>("ArrowDown");
+            arrowUpTexture = content.Load<Texture2D>("ArrowUp");
 
             mBackground = new Rectangle(0, 0, mWindowWidth, mWindowHeight);
 
@@ -304,6 +339,118 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isBuyButtonClicked = false;
             }
 
+            //update for player scroll up clicked
+            if (isPlayerScrollUpButtonClicked)
+            {
+                if (mouse_state.LeftButton == ButtonState.Released)
+                {
+                    if (selectorMinPos - 1 >= 0)// mPlayer1InShop.GetPrograms().Count())
+                    {
+                        selectorMinPos--;
+                    }
+
+                    isPlayerScrollUpButtonClicked = false;
+                }
+            }
+
+            //update for player scroll down clicked
+            if (isPlayerScrollDownButtonClicked)
+            {
+                if (mouse_state.LeftButton == ButtonState.Released)
+                {
+                    if (selectorMinPos + 1 <= mPlayer1InShop.GetPrograms().Count() - 5)
+                    {
+                        selectorMinPos++;
+                    }
+
+                    isPlayerScrollDownButtonClicked = false;
+                }
+            }
+
+            //update for available scroll up clicked
+            if (isAvailScrollUpButtonClicked)
+            {
+                if (mouse_state.LeftButton == ButtonState.Released)
+                {
+                    if (selectorAvailMinPos - 1 >= 0)// mPlayer1InShop.GetPrograms().Count())
+                    {
+                        selectorAvailMinPos--;
+                    }
+
+                    isAvailScrollUpButtonClicked = false;
+                }
+            }
+
+            //update for available scroll down clicked
+            if (isAvailScrollDownButtonClicked)
+            {
+                if (mouse_state.LeftButton == ButtonState.Released)
+                {
+                    if (selectorAvailMinPos + 1 <= mBuyablePrograms.Count - 5) 
+                    {
+                        selectorAvailMinPos++;
+                    }
+
+                    isAvailScrollDownButtonClicked = false;
+                }
+            }
+
+            //update for scroll up
+            if (mPlayerScrollUp.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+            {
+                isPlayerScrollUpButtonClicked = true;
+            }
+            // if hovering over rectangle
+            else if (mPlayerScrollUp.Contains(mouse_position))
+            {
+            }
+            else // neither clicking nor hovering over rectangle
+            {
+                isPlayerScrollUpButtonClicked = false;
+            }
+
+            //update for scroll down
+            if (mPlayerScrollDown.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+            {
+                isPlayerScrollDownButtonClicked = true;
+            }
+            // if hovering over rectangle
+            else if (mPlayerScrollDown.Contains(mouse_position))
+            {
+            }
+            else // neither clicking nor hovering over rectangle
+            {
+                isPlayerScrollDownButtonClicked = false;
+            }
+
+            //update for scroll up
+            if (mAvailScrollUp.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+            {
+                isAvailScrollUpButtonClicked = true;
+            }
+            // if hovering over rectangle
+            else if (mAvailScrollUp.Contains(mouse_position))
+            {
+            }
+            else // neither clicking nor hovering over rectangle
+            {
+                isAvailScrollUpButtonClicked = false;
+            }
+
+            //update for scroll down
+            if (mAvailScrollDown.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
+            {
+                isAvailScrollDownButtonClicked = true;
+            }
+            // if hovering over rectangle
+            else if (mAvailScrollDown.Contains(mouse_position))
+            {
+            }
+            else // neither clicking nor hovering over rectangle
+            {
+                isAvailScrollDownButtonClicked = false;
+            }
+
             //Update for Exit Button
             if (ExitButtonRect.Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
             {
@@ -333,14 +480,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
 
             //figuring out what program player selected out of their inventory
-            for (int i = 0; i < mPlayersProgramsSelectable.Count(); i++)
+            for (int i = 0; i < 5; i++) //mPlayersProgramsSelectable.Count(); i++)
             {
                 // if clicking within rectangle within players programs
                 if (mPlayersProgramsSelectable[i].Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
                 {
                     //Update Program Info
                     //Program 
-                    mPlayerSingleProgramSelectedIndex = i;
+                    mPlayerSingleProgramSelectedIndex = i + selectorMinPos;
                     mIsAPlayerProgramSelected = true;
                     return;
                 }
@@ -351,14 +498,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
 
             //figuring out what program player selected out of buyable programs
-            for (int i = 0; i < mBuyablePrograms.Count(); i++)
+            for (int i = 0; i < 5; i++) //mBuyablePrograms.Count(); i++)
             {
                 // if clicking within rectangle within players programs
                 if (mAvailProgramsSelectable[i].Contains(mouse_position) && mouse_state.LeftButton == ButtonState.Pressed)
                 {
                     //Update Program Info
                     //Program 
-                    mAvailSingleProgramSelectedIndex = i;
+                    mAvailSingleProgramSelectedIndex = i + selectorAvailMinPos;
                     mIsAnAvailProgramSelected = true;
                     return;
                 }
@@ -384,7 +531,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             //highlighting program selected by user from his/her inventory
             for (int i = 0; i < mPlayersProgramsSelectable.Length; i++)
             {
-                if (mPlayerSingleProgramSelectedIndex == i)
+                if (mPlayerSingleProgramSelectedIndex - selectorMinPos == i)
                 {
                     sprite_batch.Draw(blankRectTexture, mPlayersProgramsSelectable[i], Color.White * .25f);
                 }
@@ -398,7 +545,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             containerYOffset = 0;
             pos.X = YourProgramsContainerRect.X + 5;
 
-            for (int i = 0; i < mPlayer1InShop.GetPrograms().Count(); i++)
+            for (int i = 0 + selectorMinPos; i < mPlayer1InShop.GetPrograms().Count() && i < 5 + selectorMinPos; i++)
             {
                 pos.Y = YourProgramsContainerRect.Y + containerYOffset;
                 if (mPlayerSingleProgramSelectedIndex == i)
@@ -486,7 +633,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             charPos.Y = (int)YourProgramsMoreInfoContainerRectStringPos.Y;
 
             //displaying the string one char at a time to depict someone is typing story
-            for (int i = 0; i < YourProgramsMoreInfoContainerRectString.Count(); i++)
+            for (int i = 0; i < YourProgramsMoreInfoContainerRectString.Count() 
+                && mPlayer1InShop.GetPrograms().Count() > 0 && mPlayerSingleProgramSelectedIndex < mPlayer1InShop.GetPrograms().Count(); i++)
             {
                 length = mPlayerMoreInfoSpriteFont.MeasureString(YourProgramsMoreInfoContainerRectString.ElementAt(i).ToString());
 
@@ -507,6 +655,30 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
             }
 
+            //displaying player scroll up and down button
+            if (isPlayerScrollUpButtonClicked)
+            {
+                sprite_batch.Draw(buttonPressed, mPlayerScrollUp, Color.White);
+            }
+            else
+            {
+                sprite_batch.Draw(buttonReleased, mPlayerScrollUp, Color.White);
+            }
+
+            sprite_batch.Draw(arrowUpTexture, playerArrowUpRect, Color.White);
+            
+
+            if (isPlayerScrollDownButtonClicked)
+            {
+                sprite_batch.Draw(buttonPressed, mPlayerScrollDown, Color.White);
+            }
+            else
+            {
+                sprite_batch.Draw(buttonReleased, mPlayerScrollDown, Color.White);
+            }
+
+            sprite_batch.Draw(arrowDownTexture, playerArrowDownRect, Color.White);
+
             //displaying buyable programs
             sprite_batch.Draw(blankRectTexture, AvailProgramsContainerRect, Color.Black * .75f);
             sprite_batch.Draw(blankRectTexture, AvailProgramsTitleRect, Color.Black * .75f);
@@ -515,7 +687,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             //highlighting program selected by user from his/her inventory
             for (int i = 0; i < mAvailProgramsSelectable.Length; i++)
             {
-                if (mAvailSingleProgramSelectedIndex == i)
+                if (mAvailSingleProgramSelectedIndex - selectorAvailMinPos == i)
                 {
                     sprite_batch.Draw(blankRectTexture, mAvailProgramsSelectable[i], Color.White * .25f);
                 }
@@ -527,7 +699,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             //displaying available programs and silicoin amount
             containerYOffset = 0;
-            for (int i = 0; i < mBuyablePrograms.Count(); i++)
+            for (int i = 0 + selectorAvailMinPos; i < mBuyablePrograms.Count && i < selectorAvailMinPos + 5; i++)
             {
                 pos.X = AvailProgramsContainerRect.X + 5; 
                 pos.Y = AvailProgramsContainerRect.Y + containerYOffset;
@@ -564,7 +736,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
             //displaying Program Info of selected players program
             containerYOffset = 0;
-            if (mIsAnAvailProgramSelected)
+            if (mIsAnAvailProgramSelected && mAvailSingleProgramSelectedIndex < mBuyablePrograms.Count)
             {
                 sprite_batch.Draw(mPlayerProgramImages[mAvailSingleProgramSelectedIndex],
                     mAvailImageRect, Color.White);
@@ -617,7 +789,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             charPos.Y = (int)AvailProgramsMoreInfoContainerRectStringPos.Y;
 
             //displaying the string one char at a time to depict someone is typing story
-            for (int i = 0; i < AvailProgramsMoreInfoContainerRectString.Count(); i++)
+            for (int i = 0; i < AvailProgramsMoreInfoContainerRectString.Count() && mAvailSingleProgramSelectedIndex < mBuyablePrograms.Count; i++)
             {
                 length = mPlayerMoreInfoSpriteFont.MeasureString(AvailProgramsMoreInfoContainerRectString.ElementAt(i).ToString());
 
@@ -637,6 +809,29 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     charPos.Y += (int)length.Y / 2;
                 }
             }
+
+            //displaying available programs scroll up and down button
+            if (isAvailScrollUpButtonClicked)
+            {
+                sprite_batch.Draw(buttonPressed, mAvailScrollUp, Color.White);
+            }
+            else
+            {
+                sprite_batch.Draw(buttonReleased, mAvailScrollUp, Color.White);
+            }
+
+            sprite_batch.Draw(arrowUpTexture, availArrowUpRect, Color.White);
+
+            if (isAvailScrollDownButtonClicked)
+            {
+                sprite_batch.Draw(buttonPressed, mAvailScrollDown, Color.White);
+            }
+            else
+            {
+                sprite_batch.Draw(buttonReleased, mAvailScrollDown, Color.White);
+            }
+
+            sprite_batch.Draw(arrowDownTexture, availArrowDownRect, Color.White);
 
             //buy button
             if (isBuyButtonClicked)
