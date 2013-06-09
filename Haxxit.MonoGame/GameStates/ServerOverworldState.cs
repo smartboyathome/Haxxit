@@ -64,6 +64,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         int column6;
         int column7;
         int column8;
+        int column9;
+        int column10;
 
         Rectangle startNode;
         Rectangle startNodeShadow;
@@ -73,7 +75,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         Rectangle tier2Node2Shadow;
         Rectangle tier3Node1;
         Rectangle tier3Node1Shadow;
-        Rectangle tier3Node2;
+        Rectangle tier4Node1;
+        Rectangle tier4Node1Shadow;
+        Rectangle tier4Node2;
+        Rectangle tier4Node2Shadow;
+        Rectangle tier5Node1;
+        Rectangle tier5Node1Shadow;
+        Rectangle tier5Node2;
+        Rectangle tier5Node2Shadow;
 
         Rectangle[] nodeArray;
         bool[] isNodeHacked;
@@ -82,7 +91,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         bool firstLevel;
         bool secondLevel;
         bool thirdLevel;
-        bool shop;
+        bool fourthLevel;
+        bool fifthLevel;
+        bool bossLevel;
+        bool shop1;
+        bool shop2;
 
         #endregion
 
@@ -95,7 +108,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             firstLevel = false;
             secondLevel = false;
             thirdLevel = false;
-            shop = false;
+            fourthLevel = false;
+            fifthLevel = false;
+            bossLevel = false;
+            shop1 = false;
+            shop2 = false;
             mWindowWidth = GlobalAccessors.mGame.Window.ClientBounds.Width; //use to be 640
             mWindowHeight = GlobalAccessors.mGame.Window.ClientBounds.Height;
             backgroundRect = new Rectangle(0, 0, mWindowWidth, mWindowHeight);
@@ -116,7 +133,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             backgroundTexture = content.Load<Texture2D>("OverworldBackground");
             serverIconTexture = content.Load<Texture2D>("ServerIcon");
             //------------------------------------------------------------------------------------
-            columnWidth = mWindowWidth / 8;
+            columnWidth = mWindowWidth / 11;
             column1 = 0;
             column2 = columnWidth;
             column3 = columnWidth * 2;
@@ -124,6 +141,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             column5 = columnWidth * 4;
             column6 = columnWidth * 5;
             column7 = columnWidth * 6;
+            column8 = columnWidth * 7;
+            column9 = columnWidth * 8;
+            column10 = columnWidth * 9;
 
             availableTexture = CreateBG(graphics, columnWidth, columnWidth, "blue");
             availableTextureShadow = CreateBG(graphics, columnWidth, columnWidth, "darkblue");
@@ -137,38 +157,49 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             blankTexture = new Texture2D(graphics, 1, 1);
             blankTexture.SetData(new Color[] { Color.White });
 
-            int yPos = (mWindowHeight / 2) - (columnWidth / 2);
-            startNode = new Rectangle(column2, yPos, columnWidth, columnWidth);
-            startNodeShadow = new Rectangle(column2 + 5, yPos + 5, columnWidth, columnWidth);
+            int high = (mWindowHeight / 2) - (columnWidth * 3 / 2);
+            int mid = (mWindowHeight / 2) - (columnWidth / 2);
+            int low = (mWindowHeight / 2) + (columnWidth / 2);
 
-            int yPos2 = (mWindowHeight / 2) - (columnWidth * 3 / 2);
-            tier2Node1 = new Rectangle(column4, yPos2, columnWidth, columnWidth);
-            tier2Node1Shadow = new Rectangle(column4 + 5, yPos2 + 5, columnWidth, columnWidth);
+            startNode = new Rectangle(column2, mid, columnWidth, columnWidth);
+            startNodeShadow = new Rectangle(column2 + 5, mid + 5, columnWidth, columnWidth);
 
-            int yPos3 = (mWindowHeight / 2) + (columnWidth / 2);
-            tier2Node2 = new Rectangle(column4, yPos3, columnWidth, columnWidth);
-            tier2Node2Shadow = new Rectangle(column4 + 5, yPos3 + 5, columnWidth, columnWidth);
+            tier2Node1 = new Rectangle(column4, high, columnWidth, columnWidth);
+            tier2Node1Shadow = new Rectangle(column4 + 5, high + 5, columnWidth, columnWidth);
 
-            int yPos4 = (mWindowHeight / 2) - (columnWidth / 2);
-            tier3Node1 = new Rectangle(column6, yPos4, columnWidth, columnWidth);
-            tier3Node1Shadow = new Rectangle(column6 + 5, yPos4 + 5, columnWidth, columnWidth);
+            tier2Node2 = new Rectangle(column4, low, columnWidth, columnWidth);
+            tier2Node2Shadow = new Rectangle(column4 + 5, low + 5, columnWidth, columnWidth);
 
-            int yPos5 = (mWindowHeight / 2) + (columnWidth * 3 / 2) - 10;
-            tier3Node2 = new Rectangle(column6, yPos5, columnWidth, columnWidth);
+            tier3Node1 = new Rectangle(column6, mid, columnWidth, columnWidth);
+            tier3Node1Shadow = new Rectangle(column6 + 5, mid + 5, columnWidth, columnWidth);
+
+            tier4Node1 = new Rectangle(column8, high, columnWidth, columnWidth);
+            tier4Node1Shadow = new Rectangle(column8 + 5, high + 5, columnWidth, columnWidth);
+
+            tier4Node2 = new Rectangle(column8, low, columnWidth, columnWidth);
+            tier4Node2Shadow = new Rectangle(column8 + 5, low + 5, columnWidth, columnWidth);
+
+            tier5Node1 = new Rectangle(column10, high, columnWidth, columnWidth);
+            tier5Node1Shadow = new Rectangle(column10 + 5, high + 5, columnWidth, columnWidth);
+
+            tier5Node2 = new Rectangle(column10, low, columnWidth, columnWidth);
+            tier5Node2Shadow = new Rectangle(column10 + 5, low + 5, columnWidth, columnWidth);
 
             int yPosTutorial = (mWindowHeight / 2);
-            tutorialRect = new Rectangle(column7, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
-            tutorialEdgeRect = new Rectangle(column7 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
+            tutorialRect = new Rectangle(column9, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
+            tutorialEdgeRect = new Rectangle(column9 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
 
             PlayerOptions = new Rectangle(0, 0, mWindowWidth, 30);
 
-            nodeArray = new Rectangle[5];
+            nodeArray = new Rectangle[8];
             nodeArray[0] = startNode;
             nodeArray[1] = tier2Node1;
             nodeArray[2] = tier2Node2;
             nodeArray[3] = tier3Node1;
-            nodeArray[4] = tier3Node2;
-
+            nodeArray[4] = tier4Node1;
+            nodeArray[5] = tier4Node2;
+            nodeArray[6] = tier5Node1;
+            nodeArray[7] = tier5Node2;
 
             test_text = new Texture2D(graphics, 1, 1);
             test_text.SetData(new Color[] { Color.White });
@@ -178,15 +209,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             ArialFontSize14 = content.Load<SpriteFont>("Arial-16px-Regular");
             ArialFontSize12 = content.Load<SpriteFont>("Arial-12px-Regular");
 
-            isNodeHacked = new bool[5];
+            isNodeHacked = new bool[8];
             for (int i = 0; i < 5; i++)
             {
                 isNodeHacked[i] = false;
             }
 
-            isNodeClickable = new bool[5];
+            isNodeClickable = new bool[8];
             isNodeClickable[0] = true;
-            for (int j = 1; j < 5; j++)
+            for (int j = 1; j < 8; j++)
             {
                 isNodeClickable[j] = false;
             }
@@ -212,12 +243,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 if (mouse_state.LeftButton == ButtonState.Pressed)
                 {
+                    mouseClicked = false;
                     return;
                 }
                 else if (firstLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node1";
                     mPlayer1InOverWorld.SpawnTutorial = true;
+                    mouseClicked = false;
                     //MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
                     TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new FirstMapFactory()).NewInstance());
                     //TutorialState new_state = new TutorialState((new FirstMapFactory()).NewInstance());
@@ -227,6 +260,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node2";
                     mPlayer1InOverWorld.level2Tutorial = true;
+                    mouseClicked = false;
                     //MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
                     TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new SecondMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
@@ -234,10 +268,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 else if (thirdLevel == true)
                 {
                     mPlayer1InOverWorld.CurrentNode = "Node3";
+                    mouseClicked = false;
                     MapSpawnGameState new_state = new MapSpawnGameState((new ThirdMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
-                else if (shop == true)
+                else if (shop1 == true)
                 {
                     //Programs Available in the shop MIGHT NEED TO CHANGE INSTANTIATION LATER
                     List<ProgramFactory> tempShopList = new List<ProgramFactory>();
@@ -248,7 +283,31 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     tempShopList.Add(new TrojanFactory());
                     tempShopList.Add(new Sniper2Factory());
 
+                    mouseClicked = false;
+
                     ShopState new_state = new ShopState(tempShopList);
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (fourthLevel == true)
+                {
+                    mouseClicked = false;
+                    MapSpawnGameState new_state = new MapSpawnGameState((new FourthMapFactory()).NewInstance());
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (fifthLevel == true)
+                {
+                    mouseClicked = false;
+                    MapSpawnGameState new_state = new MapSpawnGameState((new FifthMapFactory()).NewInstance());
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+                }
+                else if (shop2 == true)
+                {
+                    mouseClicked = false;
+                }
+                else if (bossLevel == true)
+                {
+                    mouseClicked = false;
+                    MapSpawnGameState new_state = new MapSpawnGameState((new ThirdMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else
@@ -279,13 +338,22 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     //isNodeHacked[i] = true;
                     mouseClicked = true;
 
+                    firstLevel = false;
+                    secondLevel = false;
+                    thirdLevel = false;
+                    fourthLevel = false;
+                    fifthLevel = false;
+                    bossLevel = false;
+                    shop1 = false;
+                    shop2 = false;
+
                     if (i == 0 && mPlayer1InOverWorld.IsNodeHacked("Node1") == false)
                     {
                         firstLevel = true;
                     }
                     else if (i == 1)
                     {
-                        shop = true;
+                        shop1 = true;
                     }
                     else if (i == 2)
                     {
@@ -307,13 +375,45 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         {
             sprite_batch.Draw(backgroundTexture, backgroundRect, Color.White);
             sprite_batch.Draw(test_text, new Vector2(PlayerOptions.X, PlayerOptions.Y), PlayerOptions, Color.Green);
-
-            //REDO OF LOGIC TO ENHANCE DRAW PERFORMANCE
-            if (mPlayer1InOverWorld.IsNodeHacked("Node5") == true)
+            bool debug = true;
+            if (debug == true)
+            {
+                sprite_batch.DrawString(ArialFontSize12, "Rank: ELF Corporal", new Vector2(PlayerOptions.X, PlayerOptions.Y + 5), Color.White);
+                sprite_batch.Draw(hackedTextureShadow, startNodeShadow, Color.White);
+                sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
+                sprite_batch.Draw(hackedTextureShadow, tier2Node2Shadow, Color.White);
+                sprite_batch.Draw(availableTextureShadow, tier3Node1Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier4Node1Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier4Node2Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier5Node1Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier5Node2Shadow, Color.White);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                    new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+                PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y),
+                    new Vector2(tier3Node1.Center.X, tier3Node1.Center.Y), Color.Violet, 10);
+                sprite_batch.Draw(hackedTexture, startNode, Color.White);
+                sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
+                sprite_batch.Draw(hackedTexture, tier2Node2, Color.White);
+                sprite_batch.Draw(availableTexture, tier3Node1, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier4Node1, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier4Node2, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier5Node1, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier5Node2, Color.White);
+                isNodeClickable[0] = true;
+                isNodeClickable[1] = true;
+                isNodeClickable[2] = true;
+                isNodeClickable[3] = true;
+            }
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node5") == true && mPlayer1InOverWorld.IsNodeHacked("Node4") == true)
+            { 
+            }
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node5") == true && mPlayer1InOverWorld.IsNodeHacked("Node4") == false)
             {
 
             }
-            else if (mPlayer1InOverWorld.IsNodeHacked("Node4") == true)
+            else if (mPlayer1InOverWorld.IsNodeHacked("Node4") == true && mPlayer1InOverWorld.IsNodeHacked("Node5") == false)
             {
 
             }
@@ -371,7 +471,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 String temp;
                 temp = WrapText(ArialFontSize12, tutorial2, tutorialRect.Width);
                 sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect.X, tutorialRect.Y + 5), Color.White);
-                
+
             }
             else
             {
