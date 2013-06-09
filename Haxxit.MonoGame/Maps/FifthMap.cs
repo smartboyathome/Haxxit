@@ -15,7 +15,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
         {
             mapType = MapType.EnemyMap;
             width = 16;
-            height = 15;
+            height = 13;
             initial_silicoins = 250;
             total_spawn_weight = 40;
             player1 = GlobalAccessors.mPlayer1;
@@ -25,9 +25,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             player1_spawns.Add(new Point(0, 1));
             player1_spawns.Add(new Point(0, 2));
             BrawlerFactory brawlerFactory = new BrawlerFactory();
+            AddPlayer2Program(brawlerFactory, new Point(13, 12));
             AddPlayer2Program(brawlerFactory, new Point(14, 12));
-            AddPlayer2Program(brawlerFactory, new Point(14, 13));
-            AddPlayer2Program(brawlerFactory, new Point(14, 14));
+            AddPlayer2Program(brawlerFactory, new Point(15, 12));
             unavailableNodes = new List<Point>();
             unavailableNodes.Add(new Point(0, 4));
             unavailableNodes.Add(new Point(1, 4));
