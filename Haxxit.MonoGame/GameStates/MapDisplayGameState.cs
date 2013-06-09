@@ -180,10 +180,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Haxxit.Player player, Haxxit.Programs.Program program)
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
-            Tuple<Color, Color> player_color;
-            if (!players.TryGetValue(player, out player_color))
-                player_color = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
-            Color node_color = player_color.Item2;
+            Tuple<Color, Color> program_colors;
+            if (program.GetType() == typeof(Programs.MonoGameProgram))
+            {
+                Programs.MonoGameProgram monogame_program = (Programs.MonoGameProgram)program;
+                program_colors = new Tuple<Color, Color>(monogame_program.HeadColor, monogame_program.TailColor);
+            }
+            else if (!players.TryGetValue(player, out program_colors))
+                program_colors = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
+            Color node_color = program_colors.Item2;
             rectangles.Add(new DrawableRectangle(rounded_rect_full, p.ToXNARectangle(map_rectangle_size, map_border_size), node_color));
             // Used for drawing connectors between nodes.
             if (!connector_direction.IsDirectional())
@@ -233,13 +238,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         private IEnumerable<DrawableRectangle> DrawProgramHeadNode(Haxxit.Maps.Point p, Haxxit.Player player, Haxxit.Programs.Program program)
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
-            Tuple<Color, Color> player_color;
-            if (!players.TryGetValue(player, out player_color))
-                player_color = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
-            Color node_color = player_color.Item1;
+            Tuple<Color, Color> program_colors;
+            if (program.GetType() == typeof(Programs.MonoGameProgram))
+            {
+                Programs.MonoGameProgram monogame_program = (Programs.MonoGameProgram)program;
+                program_colors = new Tuple<Color, Color>(monogame_program.HeadColor, monogame_program.TailColor);
+            }
+            else if (!players.TryGetValue(player, out program_colors))
+                program_colors = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
+            Color node_color = program_colors.Item1;
             Rectangle rectangle = p.ToXNARectangle(map_rectangle_size, map_border_size);
             rectangles.Add(new DrawableRectangle(rounded_rect_back, rectangle, node_color));
-            rectangles.Add(new DrawableRectangle(rounded_rect_border, rectangle, player_color.Item2));
+            rectangles.Add(new DrawableRectangle(rounded_rect_border, rectangle, program_colors.Item2));
             string programTextureName = program.TypeName;
             if (!program_textures.ContainsKey(programTextureName))
                 program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
