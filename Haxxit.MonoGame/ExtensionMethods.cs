@@ -54,11 +54,49 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             return rectangle;
         }
 
-        public static Rectangle CenterOn(this Rectangle rectangle, Rectangle other)
+        public static Rectangle CenterAlignOn(this Rectangle rectangle, Rectangle other)
         {
             rectangle.X = other.X + (other.Width - rectangle.Width) / 2;
             rectangle.Y = other.Y + (other.Height - rectangle.Height) / 2;
             return rectangle;
+        }
+
+        public static Rectangle RightAlignOn(this Rectangle rectangle, Rectangle other)
+        {
+            rectangle.X = other.X - (other.Width - rectangle.Width);
+            return rectangle;
+        }
+
+        public static Rectangle LeftAlignOn(this Rectangle rectangle, Rectangle other)
+        {
+            rectangle.X = other.X + (other.Width - rectangle.Width);
+            return rectangle;
+        }
+
+        public static Rectangle OffsetBy(this Rectangle rectangle, int offset_x, int offset_y)
+        {
+            rectangle.X += offset_x;
+            rectangle.Y += offset_y;
+            return rectangle;
+        }
+
+        public static Rectangle BufferBy(this Rectangle rectangle, int buffer_size)
+        {
+            rectangle.X -= buffer_size / 2;
+            rectangle.Y -= buffer_size / 2;
+            rectangle.Width += buffer_size;
+            rectangle.Height += buffer_size;
+            return rectangle;
+        }
+
+        public static Point GetPosition(this Rectangle rectangle)
+        {
+            return new Point(rectangle.X, rectangle.Y);
+        }
+
+        public static Vector2 ToVector2(this Point point)
+        {
+            return new Vector2(point.X, point.Y);
         }
 
         public static IEnumerable<T> ShallowCopy<T>(this IEnumerable<T> enumerable)

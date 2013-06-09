@@ -10,12 +10,43 @@ using Haxxit = SmartboyDevelopments.Haxxit;
 
 namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 {
+    class ButtonHover
+    {
+        DrawableRectangle button_hover, tooltip_box;
+        string tooltip_text;
+        Point tooltip_text_position;
+        SpriteFont tooltip_font;
+        public ButtonHover(DrawableRectangle rectangle, Texture2D white_pixel, SpriteFont tooltip_font, string tooltip_text)
+        {
+            button_hover = new DrawableRectangle(rectangle.texture, rectangle.Area, Color.White * 0.5f);
+            this.tooltip_font = tooltip_font;
+            this.tooltip_text = tooltip_text;
+            Vector2 tooltip_text_size = tooltip_font.MeasureString(tooltip_text);
+            Rectangle tooltip_rect = new Rectangle(0, button_hover.Area.Y, (int)Math.Ceiling(tooltip_text_size.X), (int)Math.Ceiling(tooltip_text_size.Y));
+            tooltip_rect = tooltip_rect.LeftAlignOn(button_hover.Area).OffsetBy(0, -1 * tooltip_rect.Height - 4);
+            tooltip_text_position = tooltip_rect.GetPosition();
+            tooltip_rect = tooltip_rect.BufferBy(8);
+            tooltip_box = new DrawableRectangle(white_pixel, tooltip_rect, Color.White, 2, Color.Black);
+        }
+        public void Draw(SpriteBatch sprite_batch)
+        {
+            button_hover.Draw(sprite_batch);
+            if (tooltip_text != "")
+            {
+                tooltip_box.Draw(sprite_batch);
+                sprite_batch.DrawString(tooltip_font, tooltip_text, tooltip_text_position.ToVector2(), Color.Black);
+            }
+        }
+    }
+
     public class MapPlayGameState : HaxxitGameState
     {
         public MapDisplayGameState display_map_state;
         public DrawableRectangle turn_done_button, undo_button, leave_map_button;
+        ButtonHover button_hover;
 
-        Texture2D rectangle_texture, rounded_rect_back;
+        Texture2D rectangle_texture, rounded_rect_back, undo_button_texture,
+            turn_done_texture, leave_map_texture;
         SpriteFont arial_16px_regular, arial_12px_regular;
         Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
         bool is_ai_turn;
@@ -66,6 +97,28 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.clear_change", this, new ChangeStateEventArgs(new_state));
         }
 
+        public void OnButtonInside(DrawableRectangle rectangle)
+        {
+            //button_hover = new DrawableRectangle(rectangle.texture, rectangle.Area, Color.White * 0.5f);
+            string tooltip = "";
+            if (rectangle == turn_done_button)
+                tooltip = "Ends your turn.";
+            else if (rectangle == undo_button)
+                tooltip = "Undo previous action.";
+            else if (rectangle == leave_map_button)
+                tooltip = "Leave (exit) the current map.";
+            button_hover = new ButtonHover(rectangle, rectangle_texture, arial_12px_regular, tooltip);
+        }
+
+        public void OnButtonOutside(DrawableRectangle rectangle)
+        {
+            MouseState mouse_state = Mouse.GetState();
+            if(!undo_button.Area.Contains(mouse_state.X, mouse_state.Y)
+               && !leave_map_button.Area.Contains(mouse_state.X, mouse_state.Y)
+               && !turn_done_button.Area.Contains(mouse_state.X, mouse_state.Y))
+                button_hover = null;
+        }
+
         public DrawableRectangle DrawProgramHead(Haxxit.Maps.Point p, Haxxit.Maps.ProgramHeadNode head_node)
         {
             DrawableRectangle retval;
@@ -84,15 +137,33 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             rounded_rect_back = content.Load<Texture2D>("Map-Square-Background");
+            undo_button_texture = content.Load<Texture2D>("Map-Button-Undo");
+            turn_done_texture = content.Load<Texture2D>("Map-Button-TurnDone");
+            leave_map_texture = content.Load<Texture2D>("Map-Button-LeaveMap");
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
 
-            turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
+            int button_size = 32;
+            int buffer_size = 6;
+            //turn_done_button = new DrawableRectangle(rectangle_texture, new Rectangle(690, 440, 100, 30), Color.Green);
+            turn_done_button = new DrawableRectangle(turn_done_texture,
+                new Rectangle(788 - button_size, 468 - button_size, button_size, button_size), Color.Green);
             turn_done_button.OnMouseLeftClick += OnTurnDoneClick;
-            undo_button = new DrawableRectangle(rectangle_texture, new Rectangle(580, 440, 100, 30), Color.Orange);
+            turn_done_button.OnMouseInside += OnButtonInside;
+            turn_done_button.OnMouseOutside += OnButtonOutside;
+            //undo_button = new DrawableRectangle(rectangle_texture, new Rectangle(580, 440, 100, 30), Color.Orange);
+            undo_button = new DrawableRectangle(undo_button_texture,
+                new Rectangle(788 - buffer_size - button_size * 2, 468 - button_size, button_size, button_size), Color.Yellow);
             undo_button.OnMouseLeftClick += OnUndoClick;
-            leave_map_button = new DrawableRectangle(rectangle_texture, new Rectangle(675, 400, 115, 30), Color.Red);
+            undo_button.OnMouseInside += OnButtonInside;
+            undo_button.OnMouseOutside += OnButtonOutside;
+            //leave_map_button = new DrawableRectangle(rectangle_texture, new Rectangle(675, 400, 115, 30), Color.Red);
+            leave_map_button = new DrawableRectangle(leave_map_texture,
+                new Rectangle(788 - buffer_size * 2 - button_size * 3, 468 - button_size, button_size, button_size), Color.Red);
             leave_map_button.OnMouseLeftClick += OnLeaveMapClick;
+            leave_map_button.OnMouseInside += OnButtonInside;
+            leave_map_button.OnMouseOutside += OnButtonOutside;
+            button_hover = null;
 
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
@@ -195,22 +266,25 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             display_map_state.Draw(sprite_batch);
 
             turn_done_button.Draw(sprite_batch);
-            Vector2 turn_done_size = arial_16px_regular.MeasureString("Turn Done");
+            /*Vector2 turn_done_size = arial_16px_regular.MeasureString("Turn Done");
             Vector2 turn_done_position = new Vector2(turn_done_button.Area.X + (turn_done_button.Area.Width - turn_done_size.X) / 2,
                 turn_done_button.Area.Y + (turn_done_button.Area.Height - turn_done_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, "Turn Done", turn_done_position, Color.White);
+            sprite_batch.DrawString(arial_16px_regular, "Turn Done", turn_done_position, Color.White);*/
 
             undo_button.Draw(sprite_batch);
-            Vector2 undo_text_size = arial_16px_regular.MeasureString("Undo");
+            /*Vector2 undo_text_size = arial_16px_regular.MeasureString("Undo");
             Vector2 undo_text_position = new Vector2(undo_button.Area.X + (undo_button.Area.Width - undo_text_size.X) / 2,
                 undo_button.Area.Y + (undo_button.Area.Height - undo_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, "Undo", undo_text_position, Color.White);
+            sprite_batch.DrawString(arial_16px_regular, "Undo", undo_text_position, Color.White);*/
 
             leave_map_button.Draw(sprite_batch);
-            Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
+            /*Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
             Vector2 leave_map_text_position = new Vector2(leave_map_button.Area.X + (leave_map_button.Area.Width - leave_map_text_size.X) / 2,
                 leave_map_button.Area.Y + (leave_map_button.Area.Height - leave_map_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);
+            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);*/
+
+            if (button_hover != null)
+                button_hover.Draw(sprite_batch);
 
             foreach (DrawableRectangle head_node in head_nodes.Values)
             {

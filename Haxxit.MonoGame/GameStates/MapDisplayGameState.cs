@@ -147,7 +147,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
-            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterOn(square);
+            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterAlignOn(square);
             rectangles.Add(new DrawableRectangle(rectangle_texture, extra, Color.Green));
             return rectangles;
         }
@@ -156,7 +156,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
-            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterOn(square);
+            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterAlignOn(square);
             rectangles.Add(new DrawableRectangle(rectangle_texture, extra, Color.Red));
             return rectangles;
         }

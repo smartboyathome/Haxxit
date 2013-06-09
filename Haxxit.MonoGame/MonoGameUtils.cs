@@ -15,10 +15,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
     
     public abstract class DrawablePrimitive
     {
-        protected Texture2D white_pixel;
+        public Texture2D texture
+        {
+            get;
+            protected set;
+        }
         protected DrawablePrimitive(Texture2D white_pixel)
         {
-            this.white_pixel = white_pixel;
+            this.texture = white_pixel;
         }
         public abstract void Update();
         public abstract void Draw(SpriteBatch sprite_batch);
@@ -84,13 +88,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
 
         public override void Draw(SpriteBatch sprite_batch)
         {
-            sprite_batch.Draw(white_pixel, Area, FillColor);
+            sprite_batch.Draw(texture, Area, FillColor);
             if (BorderSize > 0)
             {
-                sprite_batch.Draw(white_pixel, new Rectangle(Area.X, Area.Y, Area.Width, BorderSize), BorderColor);
-                sprite_batch.Draw(white_pixel, new Rectangle(Area.X, Area.Y, BorderSize, Area.Height), BorderColor);
-                sprite_batch.Draw(white_pixel, new Rectangle(Area.X + Area.Width - BorderSize, Area.Y, BorderSize, Area.Height), BorderColor);
-                sprite_batch.Draw(white_pixel, new Rectangle(Area.X, Area.Y + Area.Height - BorderSize, Area.Width, BorderSize), BorderColor);
+                sprite_batch.Draw(texture, new Rectangle(Area.X, Area.Y, Area.Width, BorderSize), BorderColor);
+                sprite_batch.Draw(texture, new Rectangle(Area.X, Area.Y, BorderSize, Area.Height), BorderColor);
+                sprite_batch.Draw(texture, new Rectangle(Area.X + Area.Width - BorderSize, Area.Y, BorderSize, Area.Height), BorderColor);
+                sprite_batch.Draw(texture, new Rectangle(Area.X, Area.Y + Area.Height - BorderSize, Area.Width, BorderSize), BorderColor);
             }
         }
 
@@ -138,90 +142,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             }
         }
     }
-
-    /// <summary>
-    /// A drawable circle; note, DOESN'T WORK!
-    /// </summary>
-    /*public class DrawableCircle : DrawablePrimitive
-    {
-        public Vector2 Center
-        {
-            get;
-            set;
-        }
-        public float Radius
-        {
-            get;
-            set;
-        }
-        public Color FillColor
-        {
-            get;
-            set;
-        }
-        public int BorderSize
-        {
-            get;
-            set;
-        }
-        public Color BorderColor
-        {
-            get;
-            set;
-        }
-
-        public DrawableCircle(Texture2D white_pixel, Vector2 center, float radius, Color fill_color,
-            int border_size, Color border_color) :
-            base(white_pixel)
-        {
-            Center = center;
-            Radius = radius;
-            FillColor = fill_color;
-            BorderColor = border_color;
-            BorderSize = border_size;
-            RecalculateTexture();
-        }
-
-        public DrawableCircle(Texture2D white_pixel, Vector2 center, float radius, Color fill_color) :
-            this(white_pixel, center, radius, fill_color, 0, Color.White)
-        {
-
-        }
-
-        public void RecalculateTexture()
-        {
-            int width = (int)Math.Ceiling(2 * Radius);
-            white_pixel = new Texture2D(white_pixel.GraphicsDevice, width, width);
-            Color[][] texture_data = new Color[width][];
-            for (int i = 0; i < width; i++)
-            {
-                texture_data[i] = new Color[width];
-                for (int j = 0; j < width; j++)
-                {
-                    Vector2 point = new Vector2(i, j);
-                    if ((Center - point).Length() < Radius)
-                    {
-                        texture_data[i][j] = FillColor;
-                    }
-                    else
-                    {
-                        texture_data[i][j] = Color.Transparent;
-                    }
-                }
-                white_pixel.SetData(texture_data[i]);
-            }
-        }
-
-        public override void Draw(SpriteBatch sprite_batch)
-        {
-            sprite_batch.Draw(white_pixel, Center, FillColor);
-        }
-
-        public override void Update()
-        {
-            throw new NotImplementedException();
-        }
-    }*/
 
     static public class PrimiviteDrawing
     {
