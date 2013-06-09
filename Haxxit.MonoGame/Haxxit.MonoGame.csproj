@@ -74,11 +74,13 @@
     <Compile Include="Maps\FourthMap.cs" />
     <Compile Include="Maps\MonoGameDataMap.cs" />
     <Compile Include="Maps\SecondMap.cs" />
+    <Compile Include="Maps\SixthMap.cs" />
     <Compile Include="Maps\SpawnMap.cs" />
     <Compile Include="Maps\ThirdMap.cs" />
     <Compile Include="MonoGameMaps.cs" />
     <Compile Include="Programs\AI\Brawler.cs" />
     <Compile Include="Programs\MonoGameProgramFactory.cs" />
+    <Compile Include="Programs\AI\Santa.cs" />
     <Compile Include="Programs\Player\Hacker2.cs" />
     <Compile Include="Programs\Player\Sniper2.cs" />
     <Compile Include="Programs\Player\Trojan.cs" />
