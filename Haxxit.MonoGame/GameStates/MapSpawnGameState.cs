@@ -119,21 +119,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             leave_map_button.OnMouseOutside += OnButtonOutside;
             button_hover = null;
 
-            /*finished_text_size = arial_16px_regular.MeasureString(finished_text);
-            finished_button = new DrawableRectangle(
-                rectangle_texture,
-                new Rectangle(
-                    800 - (int)Math.Floor(finished_text_size.X) - 15,
-                    480 - (int)Math.Floor(finished_text_size.Y) - 15,
-                    (int)Math.Floor(finished_text_size.X) + 10,
-                    (int)Math.Floor(finished_text_size.Y) + 10
-                ),
-                Color.Green
-            );
-            finished_button.OnMouseLeftClick += OnFinishedClick;
-            leave_map_button = new DrawableRectangle(rectangle_texture, new Rectangle(675, 400, 115, 30), Color.Red);
-            leave_map_button.OnMouseLeftClick += OnLeaveMapClick;*/
-
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
             {
