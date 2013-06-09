@@ -23,7 +23,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             this.tooltip_text = tooltip_text;
             Vector2 tooltip_text_size = tooltip_font.MeasureString(tooltip_text);
             Rectangle tooltip_rect = new Rectangle(0, button_hover.Area.Y, (int)Math.Ceiling(tooltip_text_size.X), (int)Math.Ceiling(tooltip_text_size.Y));
-            tooltip_rect = tooltip_rect.LeftAlignOn(button_hover.Area).OffsetBy(0, -1 * tooltip_rect.Height - 4);
+            tooltip_rect = tooltip_rect.LeftAlignOn(button_hover.Area).OffsetBy(0, -1 * tooltip_rect.Height - 6);
             tooltip_text_position = tooltip_rect.GetPosition();
             tooltip_rect = tooltip_rect.BufferBy(8);
             tooltip_box = new DrawableRectangle(white_pixel, tooltip_rect, Color.White, 2, Color.Black);
@@ -49,7 +49,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             turn_done_texture, leave_map_texture;
         SpriteFont arial_16px_regular, arial_12px_regular;
         Dictionary<Haxxit.Maps.Point, DrawableRectangle> head_nodes;
-        bool is_ai_turn;
+        bool is_ai_turn, first_update;
 
         public MapPlayGameState(MapDisplayGameState background_state)
         {
@@ -65,6 +65,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             head_nodes = new Dictionary<Haxxit.Maps.Point, DrawableRectangle>();
             is_ai_turn = false;
+            first_update = true;
         }
 
         public void OnProgramClick(DrawableRectangle rectangle)
@@ -183,6 +184,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
+        private void SilicoinNodeListener(string channel, object sender, EventArgs args)
+        {
+            SilicoinEventArgs event_args = (SilicoinEventArgs)args;
+            TempDialogGameState new_state = new TempDialogGameState(this, "Added " + event_args.Silicoins.ToString() + " silicoins.", 500);
+            // This breaks everything for some reason.
+            //_mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
+        }
+
         private void MapChangedListener(string channel, object sender, EventArgs args)
         {
             Haxxit.Maps.MapChangedEventArgs event_args = (Haxxit.Maps.MapChangedEventArgs)args;
@@ -235,6 +244,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Subscribe("haxxit.map.hacked", MapHackedListener);
             _mediator_manager.Subscribe("haxxit.map.nodes.changed", MapChangedListener);
             _mediator_manager.Subscribe("haxxit.map.turn_done", TurnDoneListener);
+            _mediator_manager.Subscribe("haxxit.map.silicoins.add", SilicoinNodeListener);
         }
 
         public override void Update()
@@ -243,6 +253,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new OtherGameState()));
             // Mediator.Notify("haxxit.engine.state.pop", this, new EventArgs());
+
+            if (first_update)
+            {
+                _mediator_manager.Notify("haxxit.map.hacked.check", this, new EventArgs());
+                first_update = false;
+            }
 
             if (display_map_state.Map.CurrentPlayer.GetType() != typeof(Haxxit.MonoGame.PlayerAI))
             {

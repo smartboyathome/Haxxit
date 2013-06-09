@@ -197,6 +197,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public override void Draw(SpriteBatch sprite_batch)
         {
+
             user_map_state.Draw(sprite_batch);
 
             selected_border.Draw(sprite_batch);

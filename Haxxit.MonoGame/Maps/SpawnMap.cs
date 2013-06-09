@@ -22,7 +22,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
         protected List<Tuple<ProgramFactory, Point, IEnumerable<Point>>> player2_programs;
         protected Player player1, player2;
         protected List<Point> unavailableNodes;
-        protected List<Point> silicoinNodes;
+        protected Dictionary<Point, ushort> silicoinNodes;
         protected List<Point> dataNodes;
         protected MapType mapType;
 
@@ -38,7 +38,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             player1_spawns = new List<Point>();
             player2_programs = new List<Tuple<ProgramFactory, Point, IEnumerable<Point>>>();
             unavailableNodes = new List<Point>();
-            silicoinNodes = new List<Point>();
+            silicoinNodes = new Dictionary<Point, ushort>();
             dataNodes = new List<Point>();
         }
 
@@ -90,10 +90,9 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
                 map.CreateNode(unavailableNodeFactory, unavailableNode);
             }
 
-            SilicoinNodeFactory silicoinNodeFactory = new SilicoinNodeFactory(25);
-            foreach (Point silicoinNode in silicoinNodes)
+            foreach (Point node in silicoinNodes.Keys)
             {
-                map.CreateNode(silicoinNodeFactory, silicoinNode);
+                map.CreateNode(new SilicoinNodeFactory(silicoinNodes[node]), node);
             }
 
             DataNodeFactory dataNodeFactory = new DataNodeFactory();

@@ -65,10 +65,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             unavailableNodes.Add(new Point(8, 4));
             unavailableNodes.Add(new Point(8, 5));
             unavailableNodes.Add(new Point(8, 6));
-            silicoinNodes.Add(new Point(5, 0));
-            silicoinNodes.Add(new Point(6, 0));
-            silicoinNodes.Add(new Point(5, 6));
-            silicoinNodes.Add(new Point(6, 6));
+            silicoinNodes.Add(new Point(5, 0), 100);
+            silicoinNodes.Add(new Point(6, 0), 50);
+            silicoinNodes.Add(new Point(5, 6), 75);
+            silicoinNodes.Add(new Point(6, 6), 25);
             dataNodes.Add(new Point(10, 3));
         }
 

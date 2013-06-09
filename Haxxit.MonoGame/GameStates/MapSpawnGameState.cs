@@ -15,7 +15,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         const string finished_text = "Finished";
 
         protected MapDisplayGameState display_map_state;
-        Texture2D rectangle_texture, rounded_rect_border;
+        Texture2D rectangle_texture, rounded_rect_border, finished_texture, leave_map_texture;
+        ButtonHover button_hover;
 
         SpriteFont arial_16px_regular, arial_12px_regular;
         Vector2 finished_text_size;
@@ -74,15 +75,51 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.clear_change", this, new ChangeStateEventArgs(new_state));
         }
 
+        public void OnButtonInside(DrawableRectangle rectangle)
+        {
+            //button_hover = new DrawableRectangle(rectangle.texture, rectangle.Area, Color.White * 0.5f);
+            string tooltip = "";
+            if (rectangle == finished_button)
+                tooltip = "Finished spawning programs.";
+            else if (rectangle == leave_map_button)
+                tooltip = "Leave (exit) the current map.";
+            button_hover = new ButtonHover(rectangle, rectangle_texture, arial_12px_regular, tooltip);
+        }
+
+        public void OnButtonOutside(DrawableRectangle rectangle)
+        {
+            MouseState mouse_state = Mouse.GetState();
+            if (!leave_map_button.Area.Contains(mouse_state.X, mouse_state.Y)
+               && !finished_button.Area.Contains(mouse_state.X, mouse_state.Y))
+                button_hover = null;
+        }
+
         public override void LoadContent(GraphicsDevice graphics, SpriteBatch sprite_batch, ContentManager content)
         {
             display_map_state.LoadContent(graphics, sprite_batch, content);
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
             rounded_rect_border = content.Load<Texture2D>("Map-Square-Border");
+            finished_texture = content.Load<Texture2D>("Map-Button-TurnDone");
+            leave_map_texture = content.Load<Texture2D>("Map-Button-LeaveMap");
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_12px_regular = content.Load<SpriteFont>("Arial-12px-Regular");
-            finished_text_size = arial_16px_regular.MeasureString(finished_text);
+
+            int button_size = 32;
+            int buffer_size = 6;
+            finished_button = new DrawableRectangle(finished_texture,
+                new Rectangle(788 - button_size, 468 - button_size, button_size, button_size), Color.Green);
+            finished_button.OnMouseLeftClick += OnFinishedClick;
+            finished_button.OnMouseInside += OnButtonInside;
+            finished_button.OnMouseOutside += OnButtonOutside;
+            leave_map_button = new DrawableRectangle(leave_map_texture,
+                new Rectangle(788 - buffer_size - button_size * 2, 468 - button_size, button_size, button_size), Color.Red);
+            leave_map_button.OnMouseLeftClick += OnLeaveMapClick;
+            leave_map_button.OnMouseInside += OnButtonInside;
+            leave_map_button.OnMouseOutside += OnButtonOutside;
+            button_hover = null;
+
+            /*finished_text_size = arial_16px_regular.MeasureString(finished_text);
             finished_button = new DrawableRectangle(
                 rectangle_texture,
                 new Rectangle(
@@ -95,7 +132,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             );
             finished_button.OnMouseLeftClick += OnFinishedClick;
             leave_map_button = new DrawableRectangle(rectangle_texture, new Rectangle(675, 400, 115, 30), Color.Red);
-            leave_map_button.OnMouseLeftClick += OnLeaveMapClick;
+            leave_map_button.OnMouseLeftClick += OnLeaveMapClick;*/
 
             Haxxit.Maps.Map map = display_map_state.Map;
             foreach (Haxxit.Maps.Point p in map.Low.IterateOverRange(map.High))
@@ -148,15 +185,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             display_map_state.Draw(sprite_batch);
 
             finished_button.Draw(sprite_batch);
-            Vector2 finished_text_position = new Vector2(finished_button.Area.X + (finished_button.Area.Width - finished_text_size.X) / 2,
+            /*Vector2 finished_text_position = new Vector2(finished_button.Area.X + (finished_button.Area.Width - finished_text_size.X) / 2,
                 finished_button.Area.Y + (finished_button.Area.Height - finished_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, finished_text, finished_text_position, Color.White);
+            sprite_batch.DrawString(arial_16px_regular, finished_text, finished_text_position, Color.White);*/
 
             leave_map_button.Draw(sprite_batch);
-            Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
+            /*Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
             Vector2 leave_map_text_position = new Vector2(leave_map_button.Area.X + (leave_map_button.Area.Width - leave_map_text_size.X) / 2,
                 leave_map_button.Area.Y + (leave_map_button.Area.Height - leave_map_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);
+            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);*/
+
+            if (button_hover != null)
+                button_hover.Draw(sprite_batch);
 
             foreach (DrawableRectangle spawn in spawns.Values)
             {
