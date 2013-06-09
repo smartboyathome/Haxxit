@@ -277,13 +277,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Map-Square-Data.png">
-      <Name>Map-Square-Data</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Map-Square-Spawn.png">
       <Name>Map-Square-Spawn</Name>
       <Importer>TextureImporter</Importer>
@@ -342,6 +335,13 @@
   <ItemGroup>
     <Compile Include="Map-Square-Silicoin.png">
       <Name>Map-Square-Silicoin</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Map-Square-Data.png">
+      <Name>Map-Square-Data</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -16,7 +16,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         const int map_border_size = 7;
 
         Texture2D rectangle_texture, background, rounded_rect_back, rounded_rect_border,
-            rounded_rect_full, spawn_overlay, silicoin_overlay;
+            rounded_rect_full, spawn_overlay, silicoin_overlay, data_overlay;
         DrawableRectangle background_rectangle;
         Dictionary<Haxxit.Maps.Point, IEnumerable<DrawableRectangle>> map_squares;
         Dictionary<Haxxit.Player, Tuple<Color, Color>> players;
@@ -92,6 +92,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             rounded_rect_full = content.Load<Texture2D>("Map-Square-Full");
             spawn_overlay = content.Load<Texture2D>("Map-Square-Spawn");
             silicoin_overlay = content.Load<Texture2D>("Map-Square-Silicoin");
+            data_overlay = content.Load<Texture2D>("Map-Square-Data");
             background_rectangle = new DrawableRectangle(background, new Rectangle(0, 0, 800, 480), Color.White);
             map_squares.Clear();
             foreach (SmartboyDevelopments.Haxxit.Maps.Point p in Map.Low.IterateOverRange(Map.High))
@@ -157,8 +158,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             Rectangle square = p.ToXNARectangle(map_rectangle_size, map_border_size);
-            Rectangle extra = square.DeepCopy().ScaleBy(0.5).CenterAlignOn(square);
-            rectangles.Add(new DrawableRectangle(rectangle_texture, extra, Color.Red));
+            Rectangle extra = square.DeepCopy().ScaleBy(0.75).CenterAlignOn(square);
+            rectangles.Add(new DrawableRectangle(data_overlay, extra, Color.White));
             return rectangles;
         }
 
