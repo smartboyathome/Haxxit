@@ -17,7 +17,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.Maps
             width = 16;
             height = 13;
             initial_silicoins = 1500;
-            total_spawn_weight = 40;
+            total_spawn_weight = 80;
             player1 = GlobalAccessors.mPlayer1;
             player2 = new PlayerAI("AI");
             player1_spawns = new List<Point>();

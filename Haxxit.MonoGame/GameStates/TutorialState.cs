@@ -255,7 +255,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             else if (mPlayer1Tutorial.CurrentNode == "Node2")
             {
                 String box1 = "Get a program to this node to retrieve the data and beat the level.";
-                String box2 = "Use Memman's fix ability to create new map cells to build be able to reach the data on the other side..";
+                String box2 = "Use Memman's fix ability to create new map cells to be able to reach the data on the other side.";
                 String box3 = "Move a program onto a node containing silicoins to earn extra silicions to purchase more programs.";
                 sprite_batch.Draw(blankTexture, tutorialEdgeRect4, Color.Silver * .75f);
                 sprite_batch.Draw(blankTexture, tutorialRect4, Color.Black * .75f);

@@ -80,27 +80,27 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             //TODO turn these into a resource file for easier editing
             if (mPlayer1Story.CurrentNode == "Node1")
             {
-                storyString = "Excellent work Cadet.  Your next mission will be to retrieve a piece of critical data for us from the node you just gained access to.  Our snooper programs are reporting that this node has two lines of defenses, the first are powerful stationary defense programs, and second is intentional memory corruption that has isolated the information we need from the rest of the node.  You will need to procure new programs from the black market store node you also gained access to.  You will need a MemMan program to repair the corruption to gain access to the data.";
+                storyString = "Excellent work Cadet.  Your next mission will be to retrieve a piece of critical data for us from the node you just gained access to.  Our snooper programs are reporting that this node has two lines of defenses, the first are powerful stationary defense programs, and the second is intentional memory corruption that has isolated the information we need from the rest of the node.  You will need to procure new programs from the black market store node you also gained access to.  You will need a MemMan program to repair the corruption to gain access to the data.";
             }
             else if (mPlayer1Story.CurrentNode == "Node2")
             {
-                storyString = "This is it; the data you acquired for us has given us our chance.  We have found a weakness in S.A.N.T.A's AI, if we can take the node that the data server is connected to handles most of S.A.N.T.A's higher functions.  If we can take this node we will be able to end this war.  Purchase the heaviest hitting programs you can, this node is defending by multiple heavy duty defense programs; you're going to have to wipe them all out to take the node.  Happy Hunting.";
+                storyString = "Magnificent job, we've got our techs analyzing the data you retrieved for us as we speak.  Your next mission will be to brute force your way through the next node to get us closer to where we think S.A.N.T.A is holed up.";
             }
             else if (mPlayer1Story.CurrentNode == "Node3")
             {
-                storyString = "Congratulations, you defeated S.A.N.T.A and freed the internet.";
+                storyString = "Alright, you have a choice to make here.  You could either got through the data node and retrieve the information to open up that black market shop, or go straight for the brute force node and head straight for S.A.N.T.A";
             }
             else if (mPlayer1Story.CurrentNode == "Node4")
             {
-                storyString = "FIX THIS";
+                storyString = "Head over to the shop you just opened and see if you can procure some more powerful programs to help you take down S.A.N.T.A";
             }
             else if (mPlayer1Story.CurrentNode == "Node5")
             {
-                storyString = "Fix this";
+                storyString = "This is it, what we've worked for all these years.  We've got S.A.N.T.A trapped and we want you to move in for the kill.  Don't hold back; hit him with everything you've got.";
             }
             else if (mPlayer1Story.CurrentNode == "Node6")
             {
-                storyString = "Congratulations, you defeated S.A.N.T.A and freed the internet.";
+                storyString = "Congratulations, you defeated S.A.N.T.A and freed the internet.  You now can go back and replay any level you wish.";
             }
             else
             {
