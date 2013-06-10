@@ -304,7 +304,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 }
                 else if (shop2 == true)
                 {
+                    List<ProgramFactory> tempShopList = new List<ProgramFactory>();
+
+                    tempShopList.Add(new SniperFactory());
+                    tempShopList.Add(new HackerFactory());
+                    tempShopList.Add(new MemManFactory());
+                    tempShopList.Add(new TrojanFactory());
+                    tempShopList.Add(new Sniper2Factory());
+
                     //mouseClicked = false;
+
+                    ShopState new_state = new ShopState(tempShopList);
+                    Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (bossLevel == true)
                 {
@@ -401,10 +412,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
                 sprite_batch.Draw(hackedTextureShadow, tier2Node2Shadow, Color.White);
                 sprite_batch.Draw(hackedTextureShadow, tier3Node1Shadow, Color.White);
-                sprite_batch.Draw(availableTextureShadow, tier4Node1Shadow, Color.White);
+                sprite_batch.Draw(hackedTextureShadow, tier4Node1Shadow, Color.White);
                 sprite_batch.Draw(availableTextureShadow, tier4Node2Shadow, Color.White);
                 sprite_batch.Draw(shopTextureShadow, tier5Node1Shadow, Color.White);
-                sprite_batch.Draw(availableTextureShadow, tier5Node2Shadow, Color.White);
+                sprite_batch.Draw(unAvailableTextureShadow, tier5Node2Shadow, Color.White);
                 PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
                     new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
                 PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
@@ -423,10 +434,10 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
                 sprite_batch.Draw(hackedTexture, tier2Node2, Color.White);
                 sprite_batch.Draw(hackedTexture, tier3Node1, Color.White);
-                sprite_batch.Draw(availableTexture, tier4Node1, Color.White);
+                sprite_batch.Draw(hackedTexture, tier4Node1, Color.White);
                 sprite_batch.Draw(availableTexture, tier4Node2, Color.White);
                 sprite_batch.Draw(shopTexture, tier5Node1, Color.White);
-                sprite_batch.Draw(availableTexture, tier5Node2, Color.White);
+                sprite_batch.Draw(unAvailableTexture, tier5Node2, Color.White);
                 isNodeClickable[0] = true;
                 isNodeClickable[1] = true;
                 isNodeClickable[2] = true;
@@ -434,7 +445,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isNodeClickable[4] = true;
                 isNodeClickable[5] = true;
                 isNodeClickable[6] = true;
-                isNodeClickable[7] = true;
             }
             else if (mPlayer1InOverWorld.IsNodeHacked("Node5") == true && mPlayer1InOverWorld.IsNodeHacked("Node4") == true)
             {
@@ -486,7 +496,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(hackedTextureShadow, tier2Node2Shadow, Color.White);
                 sprite_batch.Draw(hackedTextureShadow, tier3Node1Shadow, Color.White);
                 sprite_batch.Draw(availableTextureShadow, tier4Node1Shadow, Color.White);
-                sprite_batch.Draw(availableTextureShadow, tier4Node2Shadow, Color.White);
+                sprite_batch.Draw(hackedTextureShadow, tier4Node2Shadow, Color.White);
                 sprite_batch.Draw(unAvailableTextureShadow, tier5Node1Shadow, Color.White);
                 sprite_batch.Draw(availableTextureShadow, tier5Node2Shadow, Color.White);
                 PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
@@ -508,7 +518,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(hackedTexture, tier2Node2, Color.White);
                 sprite_batch.Draw(hackedTexture, tier3Node1, Color.White);
                 sprite_batch.Draw(availableTexture, tier4Node1, Color.White);
-                sprite_batch.Draw(availableTexture, tier4Node2, Color.White);
+                sprite_batch.Draw(hackedTexture, tier4Node2, Color.White);
                 sprite_batch.Draw(unAvailableTexture, tier5Node1, Color.White);
                 sprite_batch.Draw(availableTexture, tier5Node2, Color.White);
                 isNodeClickable[0] = true;
@@ -526,7 +536,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(shopTextureShadow, tier2Node1Shadow, Color.White);
                 sprite_batch.Draw(hackedTextureShadow, tier2Node2Shadow, Color.White);
                 sprite_batch.Draw(hackedTextureShadow, tier3Node1Shadow, Color.White);
-                sprite_batch.Draw(availableTextureShadow, tier4Node1Shadow, Color.White);
+                sprite_batch.Draw(hackedTextureShadow, tier4Node1Shadow, Color.White);
                 sprite_batch.Draw(availableTextureShadow, tier4Node2Shadow, Color.White);
                 sprite_batch.Draw(shopTextureShadow, tier5Node1Shadow, Color.White);
                 sprite_batch.Draw(unAvailableTextureShadow, tier5Node2Shadow, Color.White);
@@ -548,7 +558,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
                 sprite_batch.Draw(hackedTexture, tier2Node2, Color.White);
                 sprite_batch.Draw(hackedTexture, tier3Node1, Color.White);
-                sprite_batch.Draw(availableTexture, tier4Node1, Color.White);
+                sprite_batch.Draw(hackedTexture, tier4Node1, Color.White);
                 sprite_batch.Draw(availableTexture, tier4Node2, Color.White);
                 sprite_batch.Draw(shopTexture, tier5Node1, Color.White);
                 sprite_batch.Draw(unAvailableTexture, tier5Node2, Color.White);
