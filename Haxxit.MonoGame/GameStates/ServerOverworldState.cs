@@ -39,7 +39,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             hackedTexture, hackedTextureShadow, unAvailableTexture, unAvailableTextureShadow,
             shopTexture, shopTextureShadow, serverIconTexture;
         Texture2D blankTexture;
-        Rectangle backgroundRect, tutorialRect, tutorialEdgeRect;
+        Rectangle backgroundRect, tutorialRect1, tutorialEdgeRect1, tutorialRect2, tutorialEdgeRect2,
+            tutorialRect3, tutorialEdgeRect3, tutorialRect4, tutorialEdgeRect4, tutorialRect5, tutorialEdgeRect5;
 
         Color rectanglesGreenColor = Color.Green;
         Color rectanglesRedColor = Color.Red;
@@ -49,7 +50,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         SpriteFont ArialFontSize14;
         SpriteFont ArialFontSize12;
 
-        String tutorial1, tutorial2;
+        String tutorialString1, tutorialString2, tutorialString3, tutorialString4, tutorialString5, tutorialString6;
 
         String[] mPlayerProgramNames = new String[5];
         Texture2D[] mPlayerProgramImages = new Texture2D[5];
@@ -186,8 +187,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             tier5Node2Shadow = new Rectangle(column10 + 5, low + 5, columnWidth, columnWidth);
 
             int yPosTutorial = (mWindowHeight / 2);
-            tutorialRect = new Rectangle(column9, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
-            tutorialEdgeRect = new Rectangle(column9 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
+            tutorialRect1 = new Rectangle(column1 + 20, mWindowHeight - 10 - (columnWidth * 2), (columnWidth * 2) - 10, (columnWidth * 2)  - 10);
+            tutorialEdgeRect1 = new Rectangle(column1 + 10, mWindowHeight - 20 - (columnWidth * 2), (columnWidth * 2) + 10, (columnWidth* 2) + 10);
+            tutorialRect2 = new Rectangle(column6, yPosTutorial - columnWidth, (columnWidth * 2) - 10, (columnWidth * 2) - 10);
+            tutorialEdgeRect2 = new Rectangle(column6 - 10, yPosTutorial - columnWidth - 10, (columnWidth * 2) + 10, (columnWidth * 2) + 10);
+            tutorialRect3 = new Rectangle(column9, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
+            tutorialEdgeRect3 = new Rectangle(column9 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
+            tutorialRect4 = new Rectangle(column9, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
+            tutorialEdgeRect4 = new Rectangle(column9 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
+            tutorialRect5 = new Rectangle(column9, yPosTutorial, (columnWidth * 2) - 10, yPosTutorial - 10);
+            tutorialEdgeRect5 = new Rectangle(column9 - 10, yPosTutorial - 10, (columnWidth * 2) + 10, yPosTutorial + 10);
 
             PlayerOptions = new Rectangle(0, 0, mWindowWidth, 30);
 
@@ -222,9 +231,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isNodeClickable[j] = false;
             }
 
-            tutorial1 = "This is the server navigation map.  You'll notice there are three nodes displayed, one blue and two red.  Red nodes are nodes that we know about but cannont access, blue nodes are nodes that are available to be hacked. Select the Blue node now.";
-            tutorial2 = "The two red nodes are now available to us, and what's this, one of them is a black market node.  The purple node can be used to access the black market to purchase new programs to aid you in your fight.";
-
+            tutorialString1 = "This is the server navigation map.  You'll notice there are three nodes displayed, one blue and two red.  Red nodes are nodes that we know about but cannont access, blue nodes are nodes that are available to be hacked. Select the Blue node now.";
+            tutorialString2 = "The two red nodes are now available to us, and what's this, one of them is a black market node.  The purple node can be used to access the black market to purchase new programs to aid you in your fight.";
+            tutorialString3 = "blank";
+            tutorialString4 = "blank";
+            tutorialString5 = "blank";
+            tutorialString6 = "blank";
         }
 
         public override void SubscribeAll()
@@ -251,9 +263,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     mPlayer1InOverWorld.CurrentNode = "Node1";
                     mPlayer1InOverWorld.SpawnTutorial = true;
                     //mouseClicked = false;
-                    //MapSpawnGameState new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
-                    TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new FirstMapFactory()).NewInstance());
-                    //TutorialState new_state = new TutorialState((new FirstMapFactory()).NewInstance());
+                    MapSpawnGameState new_state;
+                    if (mPlayer1InOverWorld.TutorialMode == true)
+                    {
+                        new_state = new TutorialMapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    }
+                    else
+                    {
+                        new_state = new MapSpawnGameState((new FirstMapFactory()).NewInstance());
+                    }
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (secondLevel == true)
@@ -261,8 +279,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     mPlayer1InOverWorld.CurrentNode = "Node2";
                     mPlayer1InOverWorld.level2Tutorial = true;
                     //mouseClicked = false;
-                    //MapSpawnGameState new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
-                    TutorialMapSpawnGameState new_state = new TutorialMapSpawnGameState((new SecondMapFactory()).NewInstance());
+                    MapSpawnGameState new_state;
+                    if (mPlayer1InOverWorld.TutorialMode == true)
+                    {
+                        new_state = new TutorialMapSpawnGameState((new SecondMapFactory()).NewInstance());
+                    }
+                    else
+                    {
+                        new_state = new MapSpawnGameState((new SecondMapFactory()).NewInstance());
+                    }
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else if (thirdLevel == true)
@@ -654,6 +679,12 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
                 PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y),
                     new Vector2(tier3Node1.Center.X, tier3Node1.Center.Y), Color.Violet, 10);
+
+                if (mPlayer1InOverWorld.TutorialMode == true)
+                {
+
+                }
+
                 sprite_batch.Draw(hackedTexture, startNode, Color.White);
                 sprite_batch.Draw(shopTexture, tier2Node1, Color.White);
                 sprite_batch.Draw(availableTexture, tier2Node2, Color.White);
@@ -663,11 +694,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 isNodeClickable[2] = true;
 
                 //------Tutorial Code----------------------------------
-                sprite_batch.Draw(blankTexture, tutorialEdgeRect, Color.Silver * .75f);
-                sprite_batch.Draw(blankTexture, tutorialRect, Color.Black * .75f);
-                String temp;
-                temp = WrapText(ArialFontSize12, tutorial2, tutorialRect.Width);
-                sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect.X, tutorialRect.Y + 5), Color.White);
+                if (mPlayer1InOverWorld.TutorialMode == true)
+                {
+                    /*
+                    sprite_batch.Draw(blankTexture, tutorialEdgeRect, Color.Silver * .75f);
+                    sprite_batch.Draw(blankTexture, tutorialRect, Color.Black * .75f);
+                    String temp;
+                    temp = WrapText(ArialFontSize12, tutorial1, tutorialRect.Width);
+                    sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect.X, tutorialRect.Y + 5), Color.White);
+                    */
+                }
 
             }
             else
@@ -680,17 +716,36 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                     new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Violet, 10);
                 PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
                     new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Violet, 10);
+
+                if (mPlayer1InOverWorld.TutorialMode == true)
+                {
+                    PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(startNode.Center.X, startNode.Center.Y),
+                        new Vector2(tutorialRect1.Center.X, tutorialEdgeRect1.Top), Color.Gold, 5);
+                    PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialRect2.Center.Y),
+                        new Vector2(tier2Node1.Center.X, tier2Node1.Center.Y), Color.Gold, 5);
+                    PrimiviteDrawing.DrawLineSegment(test_text, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialRect2.Center.Y),
+                        new Vector2(tier2Node2.Center.X, tier2Node2.Center.Y), Color.Gold, 5);
+                }
+
                 sprite_batch.Draw(availableTexture, startNode, Color.White);
                 sprite_batch.Draw(unAvailableTexture, tier2Node1, Color.White);
                 sprite_batch.Draw(unAvailableTexture, tier2Node2, Color.White);
                 isNodeClickable[0] = true;
 
                 //------Tutorial Code----------------------------------
-                sprite_batch.Draw(blankTexture, tutorialEdgeRect, Color.Silver * .75f);
-                sprite_batch.Draw(blankTexture, tutorialRect, Color.Black * .75f);
-                String temp;
-                temp = WrapText(ArialFontSize12, tutorial1, tutorialRect.Width);
-                sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect.X, tutorialRect.Y + 5), Color.White);
+                if (mPlayer1InOverWorld.TutorialMode == true)
+                {
+                    sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
+                    sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
+                    sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
+                    sprite_batch.Draw(blankTexture, tutorialRect2, Color.Black * .75f);
+                    String temp;
+                    String temp2;
+                    temp = WrapText(ArialFontSize12, "blank", tutorialRect1.Width);
+                    temp2 = WrapText(ArialFontSize12, "blank", tutorialRect2.Width);
+                    sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(tutorialRect1.X, tutorialRect1.Y + 5), Color.White);
+                    sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect2.X, tutorialRect2.Y + 5), Color.White);
+                }
             }
         }
 
