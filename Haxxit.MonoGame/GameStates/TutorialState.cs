@@ -205,16 +205,15 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect3.X, tutorialRect3.Y + 5), Color.White);
                 PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect1.Center.X, tutorialEdgeRect1.Top),
                     new Vector2(40, 120), Color.Gold, 5);
-
                 PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialEdgeRect2.Center.Y),
                     new Vector2(260, 160), Color.Gold, 5);
                 
             }
             else if (mPlayer1Tutorial.CurrentNode == "Node1")
             {
-                String box1 = "Purple squares represent locations that you can spawn units in, left click on them to spawn a program.";
-                String box2 = "You can see where the enemy units begin the game, they are represented by icons that look like this.";
-                String box3 = "When spawning units you must also take into account the spawn weights, each map has a spawn weight limit and each program has a spawn weight, your spawned units must be equal to or less than the spawn weight.";
+                String box1 = "Left click on your units to move them to an adjacent square or to use one of their abilites or attacks.";
+                String box2 = "Left clicking on enemy units will show how many moves they have and what attack and abilites they can use.";
+                String box3 = "The objective of this level is to wipe out all enemy units, move your programs around the map to get them into range to defeat the enemy program.";
                 sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
                 sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
                 sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
