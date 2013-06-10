@@ -118,7 +118,13 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             Haxxit.Maps.MapChangedEventArgs event_args = (Haxxit.Maps.MapChangedEventArgs)args;
             foreach (Haxxit.Maps.Point p in event_args.ChangedNodes)
+            {
                 map_squares[p] = MapNodeToRectangle(p);
+                // This is needed to fix display issues with connectors for ProgramNodes
+                foreach(Haxxit.Maps.Point neighbor in p.GetOrthologicalNeighbors())
+                    if(Map.IsInBounds(neighbor))
+                        map_squares[neighbor] = MapNodeToRectangle(neighbor);
+            }
         }
 
         public override void SubscribeAll()
@@ -193,12 +199,55 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             Color node_color = program_colors.Item2;
             rectangles.Add(new DrawableRectangle(rounded_rect_full, p.ToXNARectangle(map_rectangle_size, map_border_size), node_color));
             // Used for drawing connectors between nodes.
+            foreach (Haxxit.Maps.Point neighbor in p.GetOrthologicalNeighbors())
+            {
+                if (Map.NodeIsType<Haxxit.Maps.ProgramNode>(neighbor)
+                    && Map.GetNode<Haxxit.Maps.ProgramNode>(neighbor).Player == player
+                    && Object.ReferenceEquals(Map.GetNode<Haxxit.Maps.ProgramNode>(neighbor).Program, program))
+                    rectangles.AddRange(DrawProgramNodeConnector(p, neighbor - p, node_color));
+            }
+            return rectangles;
+        }
+
+        private IEnumerable<DrawableRectangle> DrawProgramHeadNode(Haxxit.Maps.Point p, Haxxit.Player player, Haxxit.Programs.Program program)
+        {
+            List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
+            Tuple<Color, Color> program_colors;
+            if (program.GetType() == typeof(Programs.MonoGameProgram))
+            {
+                Programs.MonoGameProgram monogame_program = (Programs.MonoGameProgram)program;
+                program_colors = new Tuple<Color, Color>(monogame_program.HeadColor, monogame_program.TailColor);
+            }
+            else if (!players.TryGetValue(player, out program_colors))
+                program_colors = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
+            Color node_color = program_colors.Item1;
+            Rectangle rectangle = p.ToXNARectangle(map_rectangle_size, map_border_size);
+            rectangles.Add(new DrawableRectangle(rounded_rect_back, rectangle, node_color));
+            rectangles.Add(new DrawableRectangle(rounded_rect_border, rectangle, program_colors.Item2));
+            string programTextureName = program.TypeName;
+            if (!program_textures.ContainsKey(programTextureName))
+                program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
+            rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, map_border_size), Color.White));
+            foreach (Haxxit.Maps.Point neighbor in p.GetOrthologicalNeighbors())
+            {
+                if (Map.NodeIsType<Haxxit.Maps.ProgramNode>(neighbor)
+                    && Map.GetNode<Haxxit.Maps.ProgramNode>(neighbor).Player == player
+                    && Object.ReferenceEquals(Map.GetNode<Haxxit.Maps.ProgramNode>(neighbor).Program, program))
+                    rectangles.AddRange(DrawProgramNodeConnector(p, neighbor - p, program_colors.Item2));
+            }
+            return rectangles;
+        }
+
+        private IEnumerable<DrawableRectangle> DrawProgramNodeConnector(Haxxit.Maps.Point p, Haxxit.Maps.Point connector_direction,
+            Color node_color)
+        {
+            List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
             if (!connector_direction.IsDirectional())
             {
                 #if DEBUG
-                throw new Exception();
+                    throw new Exception();
                 #else
-                return rectangles;
+                    return rectangles;
                 #endif
             }
             DrawableRectangle connector = new DrawableRectangle(rectangle_texture,
@@ -234,28 +283,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
             connector.Area = area;
             rectangles.Add(connector);
-            return rectangles;
-        }
-
-        private IEnumerable<DrawableRectangle> DrawProgramHeadNode(Haxxit.Maps.Point p, Haxxit.Player player, Haxxit.Programs.Program program)
-        {
-            List<DrawableRectangle> rectangles = new List<DrawableRectangle>();
-            Tuple<Color, Color> program_colors;
-            if (program.GetType() == typeof(Programs.MonoGameProgram))
-            {
-                Programs.MonoGameProgram monogame_program = (Programs.MonoGameProgram)program;
-                program_colors = new Tuple<Color, Color>(monogame_program.HeadColor, monogame_program.TailColor);
-            }
-            else if (!players.TryGetValue(player, out program_colors))
-                program_colors = new Tuple<Color, Color>(Color.Transparent, Color.Transparent);
-            Color node_color = program_colors.Item1;
-            Rectangle rectangle = p.ToXNARectangle(map_rectangle_size, map_border_size);
-            rectangles.Add(new DrawableRectangle(rounded_rect_back, rectangle, node_color));
-            rectangles.Add(new DrawableRectangle(rounded_rect_border, rectangle, program_colors.Item2));
-            string programTextureName = program.TypeName;
-            if (!program_textures.ContainsKey(programTextureName))
-                program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
-            rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, map_border_size), Color.White));
             return rectangles;
         }
 
