@@ -428,8 +428,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 }
                 sprite_batch.DrawString(arial_12px_regular, commandInfo, new Vector2(12, 385), Color.White);
             }
-
-
             if (buttonHover != null)
             {
                 buttonHover.Draw(sprite_batch);
