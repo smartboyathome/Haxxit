@@ -227,7 +227,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             string programTextureName = program.TypeName;
             if (!program_textures.ContainsKey(programTextureName))
                 program_textures.Add(programTextureName, content.Load<Texture2D>(programTextureName));
-            rectangles.Add(new DrawableRectangle(program_textures[programTextureName], p.ToXNARectangle(map_rectangle_size, map_border_size), Color.White));
+            rectangles.Add(new DrawableRectangle(program_textures[programTextureName],
+                p.ToXNARectangle(map_rectangle_size, map_border_size).ScaleBy(0.75).CenterAlignOn(rectangle), Color.White));
             foreach (Haxxit.Maps.Point neighbor in p.GetOrthologicalNeighbors())
             {
                 if (Map.NodeIsType<Haxxit.Maps.ProgramNode>(neighbor)

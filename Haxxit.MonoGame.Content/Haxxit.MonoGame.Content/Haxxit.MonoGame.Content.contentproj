@@ -159,62 +159,62 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Brawler.png">
-      <Name>Brawler</Name>
+    <Compile Include="Brawler.old.png">
+      <Name>Brawler.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Hacker.png">
-      <Name>Hacker</Name>
+    <Compile Include="Hacker.old.png">
+      <Name>Hacker.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MemMan.png">
-      <Name>MemMan</Name>
+    <Compile Include="MemMan.old.png">
+      <Name>MemMan.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Sentry.png">
-      <Name>Sentry</Name>
+    <Compile Include="Sentry.old.png">
+      <Name>Sentry.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Sniper.png">
-      <Name>Sniper</Name>
+    <Compile Include="Sniper.old.png">
+      <Name>Sniper.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Swarmer.png">
-      <Name>Swarmer</Name>
+    <Compile Include="Swarmer.old.png">
+      <Name>Swarmer.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Trojan.png">
-      <Name>Trojan</Name>
+    <Compile Include="Trojan.old.png">
+      <Name>Trojan.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Watcher.png">
-      <Name>Watcher</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Hacker2.png">
-      <Name>Hacker2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sniper2.png">
-      <Name>Sniper2</Name>
+    <Compile Include="Watcher.old.png">
+      <Name>Watcher.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Trojan2.png">
-      <Name>Trojan2</Name>
+    <Compile Include="Hacker2.old.png">
+      <Name>Hacker2.old</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Sniper2.old.png">
+      <Name>Sniper2.old</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Trojan2.old.png">
+      <Name>Trojan2.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -326,8 +326,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Santa.png">
-      <Name>Santa</Name>
+    <Compile Include="Santa.old.png">
+      <Name>Santa.old</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -342,6 +342,68 @@
   <ItemGroup>
     <Compile Include="Map-Square-Data.png">
       <Name>Map-Square-Data</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Brawler.png">
+      <Name>Brawler</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Hacker2.png">
+      <Name>Hacker2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Hacker.png">
+      <Name>Hacker</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="MemMan.png">
+      <Name>MemMan</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Santa.png">
+      <Name>Santa</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Sentry.png">
+      <Name>Sentry</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Sniper2.png">
+      <Name>Sniper2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Sniper.png">
+      <Name>Sniper</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Swarmer.png">
+      <Name>Swarmer</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Trojan2.png">
+      <Name>Trojan2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Trojan.png">
+      <Name>Trojan</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Watcher.png">
+      <Name>Watcher</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
