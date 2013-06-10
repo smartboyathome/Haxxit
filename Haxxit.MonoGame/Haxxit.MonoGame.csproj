@@ -52,6 +52,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BoolWrapper.cs" />
     <Compile Include="GameStates\MainStoryState.cs" />
     <Compile Include="GameStates\OptionsGameState.cs" />
     <Compile Include="GameStates\TempDialogGameState.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="GameStates\MapPlayGameState.cs" />
     <Compile Include="GameStates\MapSpawnGameState.cs" />
     <Compile Include="GameStates\MapDisplayGameState.cs" />
-    <Compile Include="GameStates\OLD_MapSpawnGameState.cs" />
     <Compile Include="GameStates\ShopStateDialogBox.cs" />
     <Compile Include="GameStates\SpawnDialogGameState.cs" />
     <Compile Include="GameStates\TutorialMapSpawnGameState.cs" />
@@ -91,7 +91,6 @@
     <Compile Include="GameStates\WinGameState.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MonoGameUtils.cs" />
-    <Compile Include="GameStates\OLD_UserMapGameState.cs" />
     <Compile Include="GameStates\DefaultGameState.cs" />
     <Compile Include="AI\AINodeData.cs" />
     <Compile Include="AI\CommandInfo.cs" />

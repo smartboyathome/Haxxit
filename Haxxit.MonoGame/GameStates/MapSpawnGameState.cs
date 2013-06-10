@@ -13,6 +13,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class MapSpawnGameState : HaxxitGameState
     {
         const string finished_text = "Finished";
+        BoolWrapper displayingSpawnDialog;
 
         protected MapDisplayGameState display_map_state;
         Texture2D rectangle_texture, rounded_rect_border, finished_texture, leave_map_texture;
@@ -27,16 +28,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
         public MapSpawnGameState()
         {
+            displayingSpawnDialog = false;
         }
 
         public MapSpawnGameState(Haxxit.Maps.Map map)
         {
             display_map_state = new MapDisplayGameState(map);
+            displayingSpawnDialog = false;
         }
 
         public MapSpawnGameState(MapDisplayGameState background_state)
         {
             display_map_state = background_state;
+            displayingSpawnDialog = false;
         }
 
         public override void NewMediator(SimplePubSub.IMediator mediator)
@@ -47,21 +51,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public override void Init()
         {
             display_map_state.Init();
-            //spawns = new List<DrawableRectangle>();
             spawns = new Dictionary<Haxxit.Maps.Point, DrawableRectangle>();
         }
 
         public void OnSpawnClick(DrawableRectangle rectangle)
         {
             Haxxit.Maps.Point haxxit_location = display_map_state.XnaPointToHaxxitPoint(rectangle.Area.Center);
-            SpawnDialogGameState new_state = new SpawnDialogGameState(this, display_map_state.Map, haxxit_location);
+            SpawnDialogGameState new_state = new SpawnDialogGameState(this, display_map_state.Map, haxxit_location, displayingSpawnDialog);
             _mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
         }
 
         public virtual void OnFinishedClick(DrawableRectangle rectangle)
         {
             display_map_state.Map.FinishedSpawning();
-            //UserMapGameState new_state = new UserMapGameState(user_map_state.Map);
             MapPlayGameState new_state = new MapPlayGameState(display_map_state);
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
@@ -144,7 +146,6 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // being the object that sent the notification, and EventArgs being the
             // arguments for the listener. If you need arguments, create a subclass of
             // EventArgs with the arguments as properties.
-
         }
 
         public override void Update()
@@ -169,19 +170,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             display_map_state.Draw(sprite_batch);
 
-            finished_button.Draw(sprite_batch);
-            /*Vector2 finished_text_position = new Vector2(finished_button.Area.X + (finished_button.Area.Width - finished_text_size.X) / 2,
-                finished_button.Area.Y + (finished_button.Area.Height - finished_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, finished_text, finished_text_position, Color.White);*/
-
-            leave_map_button.Draw(sprite_batch);
-            /*Vector2 leave_map_text_size = arial_16px_regular.MeasureString("Leave Map");
-            Vector2 leave_map_text_position = new Vector2(leave_map_button.Area.X + (leave_map_button.Area.Width - leave_map_text_size.X) / 2,
-                leave_map_button.Area.Y + (leave_map_button.Area.Height - leave_map_text_size.Y) / 2);
-            sprite_batch.DrawString(arial_16px_regular, "Leave Map", leave_map_text_position, Color.White);*/
-
             if (button_hover != null)
                 button_hover.Draw(sprite_batch);
+
+            if (!displayingSpawnDialog)
+            {
+                finished_button.Draw(sprite_batch);
+                leave_map_button.Draw(sprite_batch);
+            }
 
             foreach (DrawableRectangle spawn in spawns.Values)
             {
