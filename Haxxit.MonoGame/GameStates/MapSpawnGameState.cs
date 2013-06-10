@@ -170,14 +170,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             display_map_state.Draw(sprite_batch);
 
-            if (button_hover != null)
-                button_hover.Draw(sprite_batch);
-
             if (!displayingSpawnDialog)
             {
                 finished_button.Draw(sprite_batch);
                 leave_map_button.Draw(sprite_batch);
             }
+            
+            if (button_hover != null)
+                button_hover.Draw(sprite_batch);
 
             foreach (DrawableRectangle spawn in spawns.Values)
             {
