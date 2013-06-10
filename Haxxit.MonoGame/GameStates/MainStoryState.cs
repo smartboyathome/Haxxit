@@ -90,6 +90,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
             {
                 storyString = "Congratulations, you defeated S.A.N.T.A and freed the internet.";
             }
+            else if (mPlayer1Story.CurrentNode == "Node4")
+            {
+                storyString = "FIX THIS";
+            }
+            else if (mPlayer1Story.CurrentNode == "Node5")
+            {
+                storyString = "Fix this";
+            }
+            else if (mPlayer1Story.CurrentNode == "Node6")
+            {
+                storyString = "Congratulations, you defeated S.A.N.T.A and freed the internet.";
+            }
             else
             {
                 storyString = "Welcome to ELF, Cadet.  Your first task will be to break into a low security server node as a staging point to infiltrate S.A.N.T.A's network.  You have been outfit with a simple attack program to deal with this node's defenses.  Remember in this struggle to take back the internet some sacrifices will be required.  Good Luck.";

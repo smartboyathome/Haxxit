@@ -320,7 +320,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
                 else if (bossLevel == true)
                 {
                     //mouseClicked = false;
-                    MapSpawnGameState new_state = new MapSpawnGameState((new ThirdMapFactory()).NewInstance());
+                    mPlayer1InOverWorld.CurrentNode = "Node6";
+                    MapSpawnGameState new_state = new MapSpawnGameState((new SixthMapFactory()).NewInstance());
                     Mediator.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
                 }
                 else
