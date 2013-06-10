@@ -25,6 +25,8 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         //black rect
         Rectangle displayRect, displayOutterEdgeRect;
         Texture2D blankTexture;
+        Rectangle tutorialRect1, tutorialEdgeRect1, tutorialRect2, tutorialEdgeRect2,
+            tutorialRect3, tutorialEdgeRect3, tutorialRect4, tutorialEdgeRect4, tutorialRect5, tutorialEdgeRect5;
 
         //story synopsis
         String storyString;
@@ -81,8 +83,18 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
             storyPos = new Vector2(mWindowWidth / 2 - 200, 100);
 
+            
             displayRect = new Rectangle(mWindowWidth / 2 - 210, 90, 420, 235);
             displayOutterEdgeRect = new Rectangle(mWindowWidth / 2 - 220, 80, 440, 255);
+
+            tutorialRect1 = new Rectangle(mWindowWidth - 700, mWindowHeight - 170, 170, 110);
+            tutorialEdgeRect1 = new Rectangle(mWindowWidth - 710, mWindowHeight -180, 190, 130);
+
+            tutorialRect2 = new Rectangle(mWindowWidth - 450, mWindowHeight / 6, 170, 110);
+            tutorialEdgeRect2 = new Rectangle(mWindowWidth - 460, mWindowHeight / 6 - 10, 190, 130);
+
+            tutorialRect3 = new Rectangle(mWindowWidth - 450, mWindowHeight / 2 + 20, 320, 110);
+            tutorialEdgeRect3 = new Rectangle(mWindowWidth - 460, mWindowHeight / 2 + 10, 340, 130);
 
             Vector2 length = storyStringSpriteFont.MeasureString("E");
 
@@ -169,12 +181,91 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         public override void Draw(SpriteBatch sprite_batch)
         {
             display_map_state.Draw(sprite_batch);
-            sprite_batch.Draw(blankTexture, displayOutterEdgeRect, Color.Silver * .75f);
-            sprite_batch.Draw(blankTexture, displayRect, Color.Black * .75f);
+            //sprite_batch.Draw(blankTexture, displayOutterEdgeRect, Color.Silver * .75f);
+            //sprite_batch.Draw(blankTexture, displayRect, Color.Black * .75f);
+            if (mPlayer1Tutorial.SpawnTutorial == true)
+            {
+                String box1 = "Purple squares represent locations that you can spawn units in, left click on them to spawn a program.";
+                String box2 = "You can see where the enemy units begin the game, they are represented by icons that look like this.";
+                String box3 = "When spawning units you must also take into account the spawn weights, each map has a spawn weight limit and each program has a spawn weight, your spawned units must be equal to or less than the spawn weight.";
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect2, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect3, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect3, Color.Black * .75f);
+                String temp1;
+                String temp2;
+                String temp3;
+                temp1 = WrapText(ArialFontSize12, box1, tutorialRect1.Width);
+                temp2 = WrapText(ArialFontSize12, box2, tutorialRect2.Width);
+                temp3 = WrapText(ArialFontSize12, box3, tutorialRect3.Width);
+                sprite_batch.DrawString(ArialFontSize12, temp1, new Vector2(tutorialRect1.X, tutorialRect1.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect2.X, tutorialRect2.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect3.X, tutorialRect3.Y + 5), Color.White);
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect1.Center.X, tutorialEdgeRect1.Top),
+                    new Vector2(40, 120), Color.Gold, 5);
+
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialEdgeRect2.Center.Y),
+                    new Vector2(260, 160), Color.Gold, 5);
+                
+            }
+            else if (mPlayer1Tutorial.CurrentNode == "Node1")
+            {
+                String box1 = "Purple squares represent locations that you can spawn units in, left click on them to spawn a program.";
+                String box2 = "You can see where the enemy units begin the game, they are represented by icons that look like this.";
+                String box3 = "When spawning units you must also take into account the spawn weights, each map has a spawn weight limit and each program has a spawn weight, your spawned units must be equal to or less than the spawn weight.";
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect2, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect3, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect3, Color.Black * .75f);
+                String temp1;
+                String temp2;
+                String temp3;
+                temp1 = WrapText(ArialFontSize12, box1, tutorialRect1.Width);
+                temp2 = WrapText(ArialFontSize12, box2, tutorialRect2.Width);
+                temp3 = WrapText(ArialFontSize12, box3, tutorialRect3.Width);
+                sprite_batch.DrawString(ArialFontSize12, temp1, new Vector2(tutorialRect1.X, tutorialRect1.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect2.X, tutorialRect2.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect3.X, tutorialRect3.Y + 5), Color.White);
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect1.Center.X, tutorialEdgeRect1.Top),
+                    new Vector2(40, 120), Color.Gold, 5);
+
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialEdgeRect2.Center.Y),
+                    new Vector2(260, 160), Color.Gold, 5);
+            }
+            else if (mPlayer1Tutorial.CurrentNode == "Node2")
+            {
+                String box1 = "Purple squares represent locations that you can spawn units in, left click on them to spawn a program.";
+                String box2 = "You can see where the enemy units begin the game, they are represented by icons that look like this.";
+                String box3 = "When spawning units you must also take into account the spawn weights, each map has a spawn weight limit and each program has a spawn weight, your spawned units must be equal to or less than the spawn weight.";
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect2, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect3, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect3, Color.Black * .75f);
+                String temp1;
+                String temp2;
+                String temp3;
+                temp1 = WrapText(ArialFontSize12, box1, tutorialRect1.Width);
+                temp2 = WrapText(ArialFontSize12, box2, tutorialRect2.Width);
+                temp3 = WrapText(ArialFontSize12, box3, tutorialRect3.Width);
+                sprite_batch.DrawString(ArialFontSize12, temp1, new Vector2(tutorialRect1.X, tutorialRect1.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect2.X, tutorialRect2.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect3.X, tutorialRect3.Y + 5), Color.White);
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect1.Center.X, tutorialEdgeRect1.Top),
+                    new Vector2(40, 120), Color.Gold, 5);
+
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialEdgeRect2.Center.Y),
+                    new Vector2(260, 160), Color.Gold, 5);
+            }
             overlay.Draw(sprite_batch);
             String temp;
             temp = WrapText(ArialFontSize12, storyString, displayRect.Width);
-            sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(displayRect.X, displayRect.Y + 5), Color.White);
+            //sprite_batch.DrawString(ArialFontSize12, temp, new Vector2(displayRect.X, displayRect.Y + 5), Color.White);
             //continue button
             if (isContinueButtonClicked)
             {
