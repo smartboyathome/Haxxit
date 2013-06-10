@@ -13,10 +13,14 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
     public class SpawnDialogGameState : HaxxitGameState
     {
         Texture2D rectangle_texture, scrollUpTexture, scrollDownTexture, scrollGripTexture;
-        DrawableRectangle overlay, popup_window, scrollUpButton, scrollDownButton, scrollBar, scrollGrip, aboveGrip, belowGrip;
+        Texture2D selectTexture, cancelTexture;
+        DrawableRectangle overlay, popup_window, scrollUpButton, scrollDownButton, scrollBar, scrollGrip, aboveGrip, belowGrip, commandInfoBox;
+        DrawableRectangle selectProgramButton, cancelButton;
         SpriteFont arial_16px_regular, arial_14px_regular, arial_12px_regular, arial_10px_regular;
         HaxxitGameState background_state;
         Haxxit.Maps.Map map;
+        Haxxit.Programs.ProgramFactory selectedProgram;
+        DrawableRectangle lastSelectedRectangle;
         Haxxit.Maps.Point spawn_point;
         List<Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle>> program_rectangles;
         int totalPrograms;
@@ -26,13 +30,19 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         int lastScrollWheelValue;
         int[] scrollGripPositions;
         bool mouseIsDraggingGrip;
+        BoolWrapper spawnDialogStatus;
+        ButtonHover buttonHover;
 
-        public SpawnDialogGameState(HaxxitGameState background_state, Haxxit.Maps.Map map, Haxxit.Maps.Point spawn_point) :
+        public SpawnDialogGameState(HaxxitGameState background_state, Haxxit.Maps.Map map, Haxxit.Maps.Point spawn_point, BoolWrapper newSpawnDialogStatus) :
             base()
         {
             this.background_state = background_state;
             this.map = map;
             this.spawn_point = spawn_point;
+            spawnDialogStatus = newSpawnDialogStatus;
+            spawnDialogStatus.Status = true;
+            selectedProgram = null;
+            lastSelectedRectangle = null;
         }
 
         public override void Init()
@@ -57,8 +67,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         {
             rectangle_texture = new Texture2D(graphics, 1, 1);
             rectangle_texture.SetData(new Color[] { Color.White });
+            selectTexture = content.Load<Texture2D>("Map-Button-TurnDone");
+            cancelTexture = content.Load<Texture2D>("Map-Button-LeaveMap");
             overlay = new DrawableRectangle(rectangle_texture, new Rectangle(0, 0, 800, 480), Color.Black * 0.5f);
             popup_window = new DrawableRectangle(rectangle_texture, new Rectangle(350, 20, 400, 350), Color.DarkBlue);
+            commandInfoBox = new DrawableRectangle(rectangle_texture, new Rectangle(10, 385, 650, 60), Color.DarkBlue);
+            cancelButton = new DrawableRectangle(cancelTexture, new Rectangle(740, 400, 32, 32), Color.Red);
+            cancelButton.OnMouseLeftClick += OnCancelClick;
+            cancelButton.OnMouseInside += OnButtonInside;
+            cancelButton.OnMouseOutside += OnButtonOutside;
+            buttonHover = null;
 
             arial_16px_regular = content.Load<SpriteFont>("Arial-16px-Regular");
             arial_14px_regular = content.Load<SpriteFont>("Arial-14px-Regular");
@@ -66,7 +84,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             arial_10px_regular = content.Load<SpriteFont>("Arial-10px-Regular");
 
             List<Haxxit.Programs.ProgramFactory> programs = new List<Haxxit.Programs.ProgramFactory>();
-            programs.Add(null);
+            programs.Add(null); // For "None" option
             foreach (Haxxit.Programs.ProgramFactory program in programs.Concat(map.CurrentPlayer.GetPrograms()))
             {
                 Rectangle program_location = new Rectangle(popup_window.Area.X + 10,
@@ -173,17 +191,69 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
         }
 
+        public void OnSelectClick(DrawableRectangle rectangle)
+        {
+            map.SpawnProgram(selectedProgram, spawn_point);
+            spawnDialogStatus.Status = false;
+            _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+        }
+
+        public void OnCancelClick(DrawableRectangle rectangle)
+        {
+            spawnDialogStatus.Status = false;
+            _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+        }
+
+        public void OnButtonInside(DrawableRectangle rectangle)
+        {
+            string tooltip = "";
+            if (rectangle == selectProgramButton)
+                tooltip = "Select this program for spawning.";
+            else if (rectangle == cancelButton)
+                tooltip = "Leave (exit) the spawn program dialog.";
+            buttonHover = new ButtonHover(rectangle, rectangle_texture, arial_12px_regular, tooltip);
+        }
+
+        public void OnButtonOutside(DrawableRectangle rectangle)
+        {
+            MouseState mouse_state = Mouse.GetState();
+            if(selectProgramButton == null)
+            {
+                if(!cancelButton.Area.Contains(mouse_state.X, mouse_state.Y))
+                {
+                    buttonHover = null;
+                }                
+            }
+            else if (!selectProgramButton.Area.Contains(mouse_state.X, mouse_state.Y)
+                     && !cancelButton.Area.Contains(mouse_state.X, mouse_state.Y))
+            {
+                buttonHover = null;
+            }
+        }
+
         private void OnProgramSelect(DrawableRectangle rectangle)
         {
             foreach (Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle> tuple in program_rectangles)
             {
                 if (Object.ReferenceEquals(tuple.Item2, rectangle))
                 {
-                    map.SpawnProgram(tuple.Item1, spawn_point);
+                    selectedProgram = tuple.Item1;
+                    if (lastSelectedRectangle != null)
+                    {
+                        lastSelectedRectangle.FillColor = Color.White * 0.2f;
+                    }
+                    tuple.Item2.FillColor = Color.Yellow * 0.5f;
+                    lastSelectedRectangle = tuple.Item2;
                     break;
                 }
             }
-            _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
+            if (selectProgramButton == null)
+            {
+                selectProgramButton = new DrawableRectangle(selectTexture, new Rectangle(700, 400, 32, 32), Color.Green);
+                selectProgramButton.OnMouseLeftClick += OnSelectClick;
+                selectProgramButton.OnMouseInside += OnButtonInside;
+                selectProgramButton.OnMouseOutside += OnButtonOutside;
+            }
         }
 
         public override void Update()
@@ -250,17 +320,24 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 belowGrip.Update();
             }
 
-            foreach (DrawableRectangle program_rectangle in program_rectangles.Select(x => x.Item2))
+            int currentProgram = 0;
+            foreach (Tuple<Haxxit.Programs.ProgramFactory, DrawableRectangle> tuple in program_rectangles)
             {
-                program_rectangle.Update();
+                if (currentProgram >= currentScrollLevel && currentProgram < currentScrollLevel + 4)
+                {
+                    if (tuple.Item1 == null || tuple.Item1.SpawnWeight <= map.TotalSpawnWeights - total_spawn_points)
+                    {
+                        tuple.Item2.Update();
+                    }
+                }
+                currentProgram++;
             }
 
-            /*
-            bool mouse_within_element = scrollDownButton.Area.Contains(mouse_position) || scrollUpButton.Area.Contains(mouse_position)
-                || popup_window.Area.Contains(mouse_position);
-            if (!mouse_within_element && mouse_state.LeftButton == ButtonState.Pressed)
-                _mediator_manager.Notify("haxxit.engine.state.pop", this, new EventArgs());
-            */
+            if (selectProgramButton != null)
+            {
+                selectProgramButton.Update();
+            }
+            cancelButton.Update();
         }
 
         public override void Draw(SpriteBatch sprite_batch)
@@ -268,6 +345,11 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             background_state.Draw(sprite_batch);
             overlay.Draw(sprite_batch);
             popup_window.Draw(sprite_batch);
+            if (selectProgramButton != null)
+            {
+                selectProgramButton.Draw(sprite_batch);
+            }
+            cancelButton.Draw(sprite_batch);
 
             // If there are enough programs that we need to support scrolling...
             if (totalPrograms > 4)
@@ -332,6 +414,23 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             if (currentScrollLevel < totalPrograms - 4)
             {
                 sprite_batch.DrawString(arial_16px_regular, "...", new Vector2(popup_window.Area.X + 10, popup_window.Area.Y + popup_window.Area.Height - 30), Color.White);
+            }
+            if (selectedProgram != null)
+            {
+                commandInfoBox.Draw(sprite_batch);
+                sprite_batch.DrawString(arial_16px_regular, selectedProgram.TypeName, new Vector2(10, 360), Color.White);
+                string commandInfo = "";
+                foreach (Haxxit.Commands.Command command in selectedProgram.Commands)
+                {
+                    commandInfo += command.Name;
+                    commandInfo += " (Range: " + command.Range.ToString() + "); " + command.Description + "";
+                    commandInfo += "\n";
+                }
+                sprite_batch.DrawString(arial_12px_regular, commandInfo, new Vector2(12, 385), Color.White);
+            }
+            if (buttonHover != null)
+            {
+                buttonHover.Draw(sprite_batch);
             }
         }
     }
