@@ -26,7 +26,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
         Rectangle displayRect, displayOutterEdgeRect;
         Texture2D blankTexture;
         Rectangle tutorialRect1, tutorialEdgeRect1, tutorialRect2, tutorialEdgeRect2,
-            tutorialRect3, tutorialEdgeRect3, tutorialRect4, tutorialEdgeRect4, tutorialRect5, tutorialEdgeRect5;
+            tutorialRect3, tutorialEdgeRect3, tutorialRect4, tutorialEdgeRect4, tutorialRect5, tutorialEdgeRect5, tutorialRect6, tutorialEdgeRect6;
 
         //story synopsis
         String storyString;
@@ -95,6 +95,16 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
 
             tutorialRect3 = new Rectangle(mWindowWidth - 450, mWindowHeight / 2 + 20, 320, 110);
             tutorialEdgeRect3 = new Rectangle(mWindowWidth - 460, mWindowHeight / 2 + 10, 340, 130);
+
+            tutorialRect4 = new Rectangle(mWindowWidth - 210, mWindowHeight / 6 + 10, 170, 110);
+            tutorialEdgeRect4 = new Rectangle(mWindowWidth - 220, mWindowHeight / 6, 190, 130);
+
+            tutorialRect5 = new Rectangle(mWindowWidth - 700, mWindowHeight - 130, 170, 110);
+            tutorialEdgeRect5 = new Rectangle(mWindowWidth - 710, mWindowHeight - 140, 190, 130);
+
+            tutorialRect6 = new Rectangle(mWindowWidth - 410, mWindowHeight - 180, 170, 110);
+            tutorialEdgeRect6 = new Rectangle(mWindowWidth - 420, mWindowHeight - 190, 190, 130);
+
 
             Vector2 length = storyStringSpriteFont.MeasureString("E");
 
@@ -214,52 +224,63 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
                 String box1 = "Left click on your units to move them to an adjacent square or to use one of their abilites or attacks.";
                 String box2 = "Left clicking on enemy units will show how many moves they have and what attack and abilites they can use.";
                 String box3 = "The objective of this level is to wipe out all enemy units, move your programs around the map to get them into range to defeat the enemy program.";
+                String box4 = "When a program is selected, their attacks and abilities will be displayed up here.";
                 sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
                 sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
                 sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
                 sprite_batch.Draw(blankTexture, tutorialRect2, Color.Black * .75f);
                 sprite_batch.Draw(blankTexture, tutorialEdgeRect3, Color.Silver * .75f);
                 sprite_batch.Draw(blankTexture, tutorialRect3, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect4, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect4, Color.Black * .75f);
                 String temp1;
                 String temp2;
                 String temp3;
+                String temp4;
                 temp1 = WrapText(ArialFontSize12, box1, tutorialRect1.Width);
                 temp2 = WrapText(ArialFontSize12, box2, tutorialRect2.Width);
                 temp3 = WrapText(ArialFontSize12, box3, tutorialRect3.Width);
+                temp4 = WrapText(ArialFontSize12, box4, tutorialRect4.Width);
                 sprite_batch.DrawString(ArialFontSize12, temp1, new Vector2(tutorialRect1.X, tutorialRect1.Y + 5), Color.White);
                 sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect2.X, tutorialRect2.Y + 5), Color.White);
                 sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect3.X, tutorialRect3.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp4, new Vector2(tutorialRect4.X, tutorialRect4.Y + 5), Color.White);
                 PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect1.Center.X, tutorialEdgeRect1.Top),
                     new Vector2(40, 120), Color.Gold, 5);
-
                 PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialEdgeRect2.Center.Y),
                     new Vector2(260, 160), Color.Gold, 5);
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect4.Center.X, tutorialEdgeRect4.Top),
+                    new Vector2(760, 50), Color.Gold, 5);
             }
             else if (mPlayer1Tutorial.CurrentNode == "Node2")
             {
-                String box1 = "Purple squares represent locations that you can spawn units in, left click on them to spawn a program.";
-                String box2 = "You can see where the enemy units begin the game, they are represented by icons that look like this.";
-                String box3 = "When spawning units you must also take into account the spawn weights, each map has a spawn weight limit and each program has a spawn weight, your spawned units must be equal to or less than the spawn weight.";
-                sprite_batch.Draw(blankTexture, tutorialEdgeRect1, Color.Silver * .75f);
-                sprite_batch.Draw(blankTexture, tutorialRect1, Color.Black * .75f);
-                sprite_batch.Draw(blankTexture, tutorialEdgeRect2, Color.Silver * .75f);
-                sprite_batch.Draw(blankTexture, tutorialRect2, Color.Black * .75f);
-                sprite_batch.Draw(blankTexture, tutorialEdgeRect3, Color.Silver * .75f);
-                sprite_batch.Draw(blankTexture, tutorialRect3, Color.Black * .75f);
+                String box1 = "Get a program to this node to retrieve the data and beat the level.";
+                String box2 = "Use Memman's fix ability to create new map cells to build be able to reach the data on the other side..";
+                String box3 = "Move a program onto a node containing silicoins to earn extra silicions to purchase more programs.";
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect4, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect4, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect5, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect5, Color.Black * .75f);
+                sprite_batch.Draw(blankTexture, tutorialEdgeRect6, Color.Silver * .75f);
+                sprite_batch.Draw(blankTexture, tutorialRect6, Color.Black * .75f);
                 String temp1;
                 String temp2;
                 String temp3;
-                temp1 = WrapText(ArialFontSize12, box1, tutorialRect1.Width);
-                temp2 = WrapText(ArialFontSize12, box2, tutorialRect2.Width);
-                temp3 = WrapText(ArialFontSize12, box3, tutorialRect3.Width);
-                sprite_batch.DrawString(ArialFontSize12, temp1, new Vector2(tutorialRect1.X, tutorialRect1.Y + 5), Color.White);
-                sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect2.X, tutorialRect2.Y + 5), Color.White);
-                sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect3.X, tutorialRect3.Y + 5), Color.White);
-                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect1.Center.X, tutorialEdgeRect1.Top),
-                    new Vector2(40, 120), Color.Gold, 5);
+                temp1 = WrapText(ArialFontSize12, box1, tutorialRect4.Width);
+                temp2 = WrapText(ArialFontSize12, box2, tutorialRect5.Width);
+                temp3 = WrapText(ArialFontSize12, box3, tutorialRect6.Width);
+                sprite_batch.DrawString(ArialFontSize12, temp1, new Vector2(tutorialRect4.X, tutorialRect4.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp2, new Vector2(tutorialRect5.X, tutorialRect5.Y + 5), Color.White);
+                sprite_batch.DrawString(ArialFontSize12, temp3, new Vector2(tutorialRect6.X, tutorialRect6.Y + 5), Color.White);
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect5.Center.X, tutorialEdgeRect5.Top),
+                    new Vector2(150, 120), Color.Gold, 5);
 
-                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect2.Left, tutorialEdgeRect2.Center.Y),
-                    new Vector2(260, 160), Color.Gold, 5);
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect4.Left, tutorialEdgeRect4.Center.Y),
+                    new Vector2(410, 160), Color.Gold, 5);
+
+                PrimiviteDrawing.DrawLineSegment(blankTexture, sprite_batch, new Vector2(tutorialEdgeRect6.Left, tutorialEdgeRect6.Center.Y),
+                    new Vector2(260, 260), Color.Gold, 5);
+
             }
             overlay.Draw(sprite_batch);
             String temp;
