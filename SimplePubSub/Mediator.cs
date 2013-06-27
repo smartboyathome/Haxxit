@@ -7,12 +7,14 @@ using SmartboyDevelopments.SimplePubSub.ExtensionMethods;
 
 namespace SmartboyDevelopments.SimplePubSub
 {
+    public delegate void SubscribableListener(string channel, object sender, EventArgs args);
+
     public interface ISubscribable
     {
-        bool Subscribe(string channel, Action<string, object, EventArgs> del);
-        void PatternSubscribe(string channel_pattern, Action<string, object, EventArgs> del);
-        bool Unsubscribe(string channel, Action<string, object, EventArgs> del);
-        void PatternUnsubscribe(string channel_pattern, Action<string, object, EventArgs> del);
+        bool Subscribe(string channel, SubscribableListener del);
+        void PatternSubscribe(string channel_pattern, SubscribableListener del);
+        bool Unsubscribe(string channel, SubscribableListener del);
+        void PatternUnsubscribe(string channel_pattern, SubscribableListener del);
     }
 
     public interface INotifiable
@@ -25,23 +27,23 @@ namespace SmartboyDevelopments.SimplePubSub
 
     public class SynchronousMediator : IMediator
     {
-        Dictionary<string, List<Action<string, object, EventArgs>>> channels;
-        Dictionary<string, List<Action<string, object, EventArgs>>> pattern_channels;
+        Dictionary<string, List<SubscribableListener>> channels;
+        Dictionary<string, List<SubscribableListener>> pattern_channels;
 
         public SynchronousMediator()
         {
-            channels = new Dictionary<string, List<Action<string, object, EventArgs>>>();
-            pattern_channels = new Dictionary<string, List<Action<string, object, EventArgs>>>();
+            channels = new Dictionary<string, List<SubscribableListener>>();
+            pattern_channels = new Dictionary<string, List<SubscribableListener>>();
         }
 
-        private List<Action<string, object, EventArgs>> DefaultChannelValue(string key)
+        private List<SubscribableListener> DefaultChannelValue(string key)
         {
-            List<Action<string, object, EventArgs>> subscribers = new List<Action<string, object, EventArgs>>();
-            foreach (KeyValuePair<string, List<Action<string, object, EventArgs>>> pattern_channel in pattern_channels)
+            List<SubscribableListener> subscribers = new List<SubscribableListener>();
+            foreach (KeyValuePair<string, List<SubscribableListener>> pattern_channel in pattern_channels)
             {
                 if (Regex.Match(key, pattern_channel.Key).Success)
                 {
-                    foreach (Action<string, object, EventArgs> subscriber in pattern_channel.Value)
+                    foreach (SubscribableListener subscriber in pattern_channel.Value)
                     {
                         if (!subscribers.Contains(subscriber))
                         {
@@ -53,15 +55,15 @@ namespace SmartboyDevelopments.SimplePubSub
             return subscribers;
         }
 
-        private List<Action<string, object, EventArgs>> DefaultPatternValue(string key)
+        private List<SubscribableListener> DefaultPatternValue(string key)
         {
             // Implemented as a method so that a new list is only created when needed.
-            return new List<Action<string, object, EventArgs>>();
+            return new List<SubscribableListener>();
         }
 
-        public bool Subscribe(string channel, Action<string, object, EventArgs> del)
+        public bool Subscribe(string channel, SubscribableListener del)
         {
-            List<Action<string, object, EventArgs>> subscribers = channels.GetValueOrDefault(channel, DefaultChannelValue);
+            List<SubscribableListener> subscribers = channels.GetValueOrDefault(channel, DefaultChannelValue);
             if (subscribers.Contains(del))
             {
                 return false;
@@ -70,14 +72,14 @@ namespace SmartboyDevelopments.SimplePubSub
             return true;
         }
 
-        public void PatternSubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public void PatternSubscribe(string channel_pattern, SubscribableListener del)
         {
-            List<Action<string, object, EventArgs>> pattern_channel = pattern_channels.GetValueOrDefault(channel_pattern, DefaultPatternValue);
+            List<SubscribableListener> pattern_channel = pattern_channels.GetValueOrDefault(channel_pattern, DefaultPatternValue);
             if (!pattern_channel.Contains(del))
             {
                 pattern_channel.Add(del);
             }
-            foreach(KeyValuePair<string, List<Action<string, object, EventArgs>>> channel in channels.GetAllMatchingRegex(channel_pattern))
+            foreach(KeyValuePair<string, List<SubscribableListener>> channel in channels.GetAllMatchingRegex(channel_pattern))
             {
                 if (!channel.Value.Contains(del))
                 {
@@ -86,9 +88,9 @@ namespace SmartboyDevelopments.SimplePubSub
             }
         }
 
-        public bool Unsubscribe(string channel, Action<string, object, EventArgs> del)
+        public bool Unsubscribe(string channel, SubscribableListener del)
         {
-            List<Action<string, object, EventArgs>> subscribers = channels.GetValueOrDefault(channel, DefaultChannelValue);
+            List<SubscribableListener> subscribers = channels.GetValueOrDefault(channel, DefaultChannelValue);
             if (!subscribers.Contains(del))
             {
                 return false;
@@ -97,17 +99,17 @@ namespace SmartboyDevelopments.SimplePubSub
             return true;
         }
 
-        public void PatternUnsubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public void PatternUnsubscribe(string channel_pattern, SubscribableListener del)
         {
-            List<Action<string, object, EventArgs>> pattern_channel = pattern_channels.GetValueOrDefault(channel_pattern, DefaultPatternValue);
+            List<SubscribableListener> pattern_channel = pattern_channels.GetValueOrDefault(channel_pattern, DefaultPatternValue);
             if (pattern_channel.Contains(del))
             {
                 pattern_channel.Remove(del);
             }
-            IEnumerable<KeyValuePair<string, List<Action<string, object, EventArgs>>>> matching_channels =
+            IEnumerable<KeyValuePair<string, List<SubscribableListener>>> matching_channels =
                 channels.GetAllMatchingRegex(channel_pattern);
             List<string> channels_to_remove = new List<string>();
-            foreach (KeyValuePair<string, List<Action<string, object, EventArgs>>> channel in matching_channels)
+            foreach (KeyValuePair<string, List<SubscribableListener>> channel in matching_channels)
             {
                 if (channel.Value.Contains(del))
                 {
@@ -122,7 +124,7 @@ namespace SmartboyDevelopments.SimplePubSub
 
         public void Notify(string channel, object sender, EventArgs args)
         {
-            foreach (Action<string, object, EventArgs> subscriber in channels.GetValueOrDefault(channel, DefaultChannelValue).ShallowCopy())
+            foreach (SubscribableListener subscriber in channels.GetValueOrDefault(channel, DefaultChannelValue).ShallowCopy())
             {
                 subscriber.Invoke(channel, sender, args);
             }
@@ -130,9 +132,9 @@ namespace SmartboyDevelopments.SimplePubSub
 
         public void PatternNotify(string channel_pattern, object sender, EventArgs args)
         {
-            foreach (KeyValuePair<string, List<Action<string, object, EventArgs>>> channel in channels.GetAllMatchingRegex(channel_pattern).ShallowCopy())
+            foreach (KeyValuePair<string, List<SubscribableListener>> channel in channels.GetAllMatchingRegex(channel_pattern).ShallowCopy())
             {
-                foreach (Action<string, object, EventArgs> subscriber in channel.Value.ShallowCopy())
+                foreach (SubscribableListener subscriber in channel.Value.ShallowCopy())
                 {
                     subscriber.Invoke(channel.Key, sender, args);
                 }

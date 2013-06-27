@@ -32,27 +32,27 @@ namespace SmartboyDevelopments.SimplePubSub
         public abstract void UnsubscribeAll();
         public abstract void SubscribeAll();
 
-        public virtual bool Subscribe(string channel, Action<string, object, EventArgs> del)
+        public virtual bool Subscribe(string channel, SubscribableListener del)
         {
             if (_subscribable != null)
                 return _subscribable.Subscribe(channel, del);
             return false;
         }
 
-        public virtual void PatternSubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public virtual void PatternSubscribe(string channel_pattern, SubscribableListener del)
         {
             if (_subscribable != null)
                 _subscribable.PatternSubscribe(channel_pattern, del);
         }
 
-        public virtual bool Unsubscribe(string channel, Action<string, object, EventArgs> del)
+        public virtual bool Unsubscribe(string channel, SubscribableListener del)
         {
             if (_subscribable != null)
                 return _subscribable.Unsubscribe(channel, del);
             return false;
         }
 
-        public virtual void PatternUnsubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public virtual void PatternUnsubscribe(string channel_pattern, SubscribableListener del)
         {
             if (_subscribable != null)
                 _subscribable.PatternSubscribe(channel_pattern, del);
@@ -122,22 +122,22 @@ namespace SmartboyDevelopments.SimplePubSub
             NotifiableManager = new NotifiableManager();
         }
 
-        public bool Subscribe(string channel, Action<string, object, EventArgs> del)
+        public bool Subscribe(string channel, SubscribableListener del)
         {
             return SubscribableManager.Subscribe(channel, del);
         }
 
-        public void PatternSubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public void PatternSubscribe(string channel_pattern, SubscribableListener del)
         {
             SubscribableManager.PatternSubscribe(channel_pattern, del);
         }
 
-        public bool Unsubscribe(string channel, Action<string, object, EventArgs> del)
+        public bool Unsubscribe(string channel, SubscribableListener del)
         {
             return SubscribableManager.Unsubscribe(channel, del);
         }
 
-        public void PatternUnsubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public void PatternUnsubscribe(string channel_pattern, SubscribableListener del)
         {
             SubscribableManager.PatternUnsubscribe(channel_pattern, del);
         }
@@ -156,13 +156,13 @@ namespace SmartboyDevelopments.SimplePubSub
     public class DefaultSubscribableManager : SubscribableManager
     {
         public event Action OnSubscribe;
-        private List<Tuple<string, Action<string, object, EventArgs>>> subscribed_delegates;
-        private List<Tuple<string, Action<string, object, EventArgs>>> pattern_subscribed_delegates;
+        private List<Tuple<string, SubscribableListener>> subscribed_delegates;
+        private List<Tuple<string, SubscribableListener>> pattern_subscribed_delegates;
 
         public DefaultSubscribableManager()
         {
-            subscribed_delegates = new List<Tuple<string, Action<string, object, EventArgs>>>();
-            pattern_subscribed_delegates = new List<Tuple<string, Action<string, object, EventArgs>>>();
+            subscribed_delegates = new List<Tuple<string, SubscribableListener>>();
+            pattern_subscribed_delegates = new List<Tuple<string, SubscribableListener>>();
         }
 
         public override void SubscribeAll()
@@ -172,11 +172,11 @@ namespace SmartboyDevelopments.SimplePubSub
 
         public override void  UnsubscribeAll()
         {
- 	        foreach(Tuple<string, Action<string, object, EventArgs>> item in subscribed_delegates)
+ 	        foreach(Tuple<string, SubscribableListener> item in subscribed_delegates)
             {
                 base.Unsubscribe(item.Item1, item.Item2);
             }
-            foreach(Tuple<string, Action<string, object, EventArgs>> item in pattern_subscribed_delegates)
+            foreach(Tuple<string, SubscribableListener> item in pattern_subscribed_delegates)
             {
                 base.PatternUnsubscribe(item.Item1, item.Item2);
             }
@@ -184,21 +184,21 @@ namespace SmartboyDevelopments.SimplePubSub
             pattern_subscribed_delegates.Clear();
         }
 
-        public override bool Subscribe(string channel, Action<string, object, EventArgs> del)
+        public override bool Subscribe(string channel, SubscribableListener del)
         {
             bool retval = base.Subscribe(channel, del);
             if (retval)
-                subscribed_delegates.Add(new Tuple<string, Action<string, object, EventArgs>>(channel, del));
+                subscribed_delegates.Add(new Tuple<string, SubscribableListener>(channel, del));
             return retval;
         }
 
-        public override void PatternSubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public override void PatternSubscribe(string channel_pattern, SubscribableListener del)
         {
             base.PatternSubscribe(channel_pattern, del);
-            pattern_subscribed_delegates.Add(new Tuple<string, Action<string, object, EventArgs>>(channel_pattern, del));
+            pattern_subscribed_delegates.Add(new Tuple<string, SubscribableListener>(channel_pattern, del));
         }
 
-        public override bool Unsubscribe(string channel, Action<string, object, EventArgs> del)
+        public override bool Unsubscribe(string channel, SubscribableListener del)
         {
             bool retval = base.Unsubscribe(channel, del);
             if (retval)
@@ -220,7 +220,7 @@ namespace SmartboyDevelopments.SimplePubSub
             return retval;
         }
 
-        public override void PatternUnsubscribe(string channel_pattern, Action<string, object, EventArgs> del)
+        public override void PatternUnsubscribe(string channel_pattern, SubscribableListener del)
         {
             base.PatternUnsubscribe(channel_pattern, del);
             int index = -1;

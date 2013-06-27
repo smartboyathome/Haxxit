@@ -22,7 +22,7 @@ namespace SimplePubSub.Tests
             mediator = new SynchronousMediator();
         }
 
-        Action<string, object, EventArgs> CreateSubscriber(string id)
+        SubscribableListener CreateSubscriber(string id)
         {
             return ((x, y, z) => output.Add(id + " called by channel " + x));
         }
@@ -59,7 +59,7 @@ namespace SimplePubSub.Tests
         [TestMethod]
         public void TestUnsubscribe()
         {
-            Action<string, object, EventArgs> subscriber3 = CreateSubscriber("Subscriber3");
+            SubscribableListener subscriber3 = CreateSubscriber("Subscriber3");
             mediator.Subscribe("test", CreateSubscriber("Subscriber1"));
             mediator.Subscribe("test", CreateSubscriber("Subscriber2"));
             mediator.Subscribe("test", subscriber3);
@@ -93,7 +93,7 @@ namespace SimplePubSub.Tests
         [TestMethod]
         public void TestPatternUnsubscribe()
         {
-            Action<string, object, EventArgs> subscriber = CreateSubscriber("Subscriber1");
+            SubscribableListener subscriber = CreateSubscriber("Subscriber1");
             mediator.Subscribe("test", subscriber);
             mediator.Subscribe("test1", subscriber);
             mediator.Subscribe("test2", subscriber);
@@ -114,7 +114,7 @@ namespace SimplePubSub.Tests
         [TestMethod]
         public void TestPatternNotify()
         {
-            Action<string, object, EventArgs> subscriber = CreateSubscriber("Subscriber1");
+            SubscribableListener subscriber = CreateSubscriber("Subscriber1");
             mediator.Subscribe("test", subscriber);
             mediator.Subscribe("test1", subscriber);
             mediator.Subscribe("test2", subscriber);
