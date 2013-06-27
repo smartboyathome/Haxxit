@@ -114,7 +114,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             return p.ToHaxxitPoint(map_rectangle_size, map_border_size);
         }
 
-        private void MapChangedListener(string channel, object sender, EventArgs args)
+        private void MapChangedListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             Haxxit.Maps.MapChangedEventArgs event_args = (Haxxit.Maps.MapChangedEventArgs)args;
             foreach (Haxxit.Maps.Point p in event_args.ChangedNodes)
@@ -133,7 +133,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Subscribe("haxxit.xxx.yyy.zzz", NameOfListener);
             //
             // You must also have a function in this class with the following structure:
-            // public void NameOfListener(string channel, object sender, EventArgs args)
+            // public void NameOfListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
             // With channel being the channel the notification is sent through, sender
             // being the object that sent the notification, and EventArgs being the
             // arguments for the listener. If you need arguments, create a subclass of

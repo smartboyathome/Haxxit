@@ -7,7 +7,7 @@ using SmartboyDevelopments.SimplePubSub.ExtensionMethods;
 
 namespace SmartboyDevelopments.SimplePubSub
 {
-    public delegate void SubscribableListener(string channel, object sender, EventArgs args);
+    public delegate void SubscribableListener(INotifiable notifiable, string channel, object sender, EventArgs args);
 
     public interface ISubscribable
     {
@@ -126,7 +126,7 @@ namespace SmartboyDevelopments.SimplePubSub
         {
             foreach (SubscribableListener subscriber in channels.GetValueOrDefault(channel, DefaultChannelValue).ShallowCopy())
             {
-                subscriber.Invoke(channel, sender, args);
+                subscriber.Invoke(this, channel, sender, args);
             }
         }
 
@@ -136,7 +136,7 @@ namespace SmartboyDevelopments.SimplePubSub
             {
                 foreach (SubscribableListener subscriber in channel.Value.ShallowCopy())
                 {
-                    subscriber.Invoke(channel.Key, sender, args);
+                    subscriber.Invoke(this, channel.Key, sender, args);
                 }
             }
         }

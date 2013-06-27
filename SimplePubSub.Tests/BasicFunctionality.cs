@@ -24,7 +24,7 @@ namespace SimplePubSub.Tests
 
         SubscribableListener CreateSubscriber(string id)
         {
-            return ((x, y, z) => output.Add(id + " called by channel " + x));
+            return ((w, x, y, z) => output.Add(id + " called by channel " + x));
         }
 
         void AssertListEqual<T>(IList<T> a, IList<T> b)

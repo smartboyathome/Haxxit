@@ -70,13 +70,13 @@ namespace SmartboyDevelopments.Haxxit.Maps
             _mediator_manager.Subscribe("haxxit.map.hacked.check", CheckIfHackedListener);
         }
 
-        public void TurnDoneListener(string channel, object sender, EventArgs args)
+        public void TurnDoneListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             TurnDone();
             _mediator_manager.Notify("haxxit.undo_stack.clear", this, new EventArgs());
         }
 
-        public void MoveListener(string channel, object sender, EventArgs args)
+        public void MoveListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             MoveEventArgs move_args = (MoveEventArgs)args;
             bool end_was_tailnode = NodeIsType<ProgramTailNode>(move_args.Start + move_args.Direction);
@@ -99,14 +99,14 @@ namespace SmartboyDevelopments.Haxxit.Maps
                 );
         }
 
-        public void UndoMoveListener(string channel, object sender, EventArgs args)
+        public void UndoMoveListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             UndoMoveEventArgs undo_move_args = (UndoMoveEventArgs)args;
             bool result = UndoMoveProgram(undo_move_args.Start, undo_move_args.Direction, undo_move_args.ProgramSizeIncreased,
                 undo_move_args.EndWasTailNode, undo_move_args.TailNodeLocation);
         }
 
-        public void CommandListener(string channel, object sender, EventArgs args)
+        public void CommandListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             CommandEventArgs attack_args = (CommandEventArgs)args;
             UndoCommand undo_command = RunCommand(attack_args.AttackerPoint, attack_args.AttackedPoint, attack_args.Command);
@@ -120,24 +120,24 @@ namespace SmartboyDevelopments.Haxxit.Maps
             }
         }
 
-        public void UndoCommandListener(string channel, object sender, EventArgs args)
+        public void UndoCommandListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             UndoCommandEventArgs undo_command_args = (UndoCommandEventArgs)args;
             RunUndoCommand(undo_command_args._undo_command);
         }
 
-        public void AddSilicoinListener(string channel, object sender, EventArgs args)
+        public void AddSilicoinListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             SilicoinEventArgs event_args = (SilicoinEventArgs)args;
             IncreraseEarnedSilicoins(event_args.Silicoins);
         }
 
-        public void CreateNodeListener(string channel, object sender, EventArgs args)
+        public void CreateNodeListener(INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             CreateNodeEventArgs event_args = (CreateNodeEventArgs)args;
             CreateNode(event_args.NodeFactory, event_args.NodeLocation);
         }
 
-        public abstract void CheckIfHackedListener(string channel, object sender, EventArgs args);
+        public abstract void CheckIfHackedListener(INotifiable notifiable, string channel, object sender, EventArgs args);
     }
 }

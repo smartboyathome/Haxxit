@@ -210,7 +210,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
         {
             Map map = WinnableEnemyMapFactory.NewInstance();
             List<HackedEventArgs> winners = new List<HackedEventArgs>();
-            SimplePubSub.SubscribableListener action = (x, y, z) => winners.Add((HackedEventArgs)z);
+            SimplePubSub.SubscribableListener action = (w, x, y, z) => winners.Add((HackedEventArgs)z);
             map.Mediator.Subscribe("haxxit.map.hacked", action);
             List<Point> moves = new List<Point>();
             moves.Add(new Point(0, 1));
@@ -260,7 +260,7 @@ namespace SmartboyDevelopments.Haxxit.Tests
             Map map = WinnableDataMapFactory.NewInstance();
             map.CreateNode(new DataNodeFactory(), 0, 2);
             List<HackedEventArgs> winners = new List<HackedEventArgs>();
-            SimplePubSub.SubscribableListener action = (x, y, z) => winners.Add((HackedEventArgs)z);
+            SimplePubSub.SubscribableListener action = (w, x, y, z) => winners.Add((HackedEventArgs)z);
             map.Mediator.Subscribe("haxxit.map.hacked", action);
             Assert.IsTrue(map.MoveProgram(new Point(0, 1), new Point(0, 1)));
             Assert.IsTrue(map.HasBeenHacked);

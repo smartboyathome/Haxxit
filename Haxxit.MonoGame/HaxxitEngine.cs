@@ -176,7 +176,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.change).</param>
         /// <param name="sender">The sender object of this notification.</param>
         /// <param name="args">The arguments for this notification (only takes ChangeStateEventArgs).</param>
-        public void ChangeStateListener(string channel, object sender, EventArgs args)
+        public void ChangeStateListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             ChangeStateEventArgs event_args = (ChangeStateEventArgs)args;
             ChangeState(event_args.State);
@@ -188,7 +188,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.push).</param>
         /// <param name="sender">The sender object of this notification.</param>
         /// <param name="args">The arguments for this notification (only takes ChangeStateEventArgs).</param>
-        public void PushStateListener(string channel, object sender, EventArgs args)
+        public void PushStateListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             ChangeStateEventArgs event_args = (ChangeStateEventArgs)args;
             PushState(event_args.State);
@@ -200,7 +200,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.pop).</param>
         /// <param name="sender">The sender object of this notification.</param>
         /// <param name="args">The arguments for this notification (requires no arguments).</param>
-        public void PopStateListener(string channel, object sender, EventArgs args)
+        public void PopStateListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             PopState();
         }
@@ -211,7 +211,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.clear_all).</param>
         /// <param name="sender">The sender object of this notification.</param>
         /// <param name="args">The arguments for this notification (requires no arguments).</param>
-        public void ClearAllStateListener(string channel, object sender, EventArgs args)
+        public void ClearAllStateListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             ClearStates();
         }
@@ -222,7 +222,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame
         /// <param name="channel">The channel the notification is being sent through (haxxit.engine.state.clear_change).</param>
         /// <param name="sender">The sender object of this notification.</param>
         /// <param name="args">The arguments for this notification (only takes ChangeStateEventArgs).</param>
-        public void ClearChangeStateListener(string channel, object sender, EventArgs args)
+        public void ClearChangeStateListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             ChangeStateEventArgs event_args = (ChangeStateEventArgs)args;
             ClearStates();

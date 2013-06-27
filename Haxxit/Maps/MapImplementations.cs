@@ -14,7 +14,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
         }
 
-        public override void CheckIfHackedListener(string channel, object sender, EventArgs args)
+        public override void CheckIfHackedListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             
         }
@@ -35,7 +35,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
             return retval;
         }
 
-        public override void CheckIfHackedListener(string channel, object sender, EventArgs args)
+        public override void CheckIfHackedListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             Player winner = CheckIfMapHacked();
             if (has_been_hacked)
@@ -83,7 +83,7 @@ namespace SmartboyDevelopments.Haxxit.Maps
 
         }
 
-        public override void CheckIfHackedListener(string channel, object sender, EventArgs args)
+        public override void CheckIfHackedListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             if (sender.GetType() != typeof(DataNode))
                 return;

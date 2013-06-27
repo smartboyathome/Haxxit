@@ -176,7 +176,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
         }
 
-        private void MapHackedListener(string channel, object sender, EventArgs args)
+        private void MapHackedListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             Haxxit.Maps.HackedEventArgs event_args = args as Haxxit.Maps.HackedEventArgs;
             //WinGameState new_state = new WinGameState(event_args.EarnedSilicoins, this);
@@ -184,7 +184,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             _mediator_manager.Notify("haxxit.engine.state.change", this, new ChangeStateEventArgs(new_state));
         }
 
-        private void SilicoinNodeListener(string channel, object sender, EventArgs args)
+        private void SilicoinNodeListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             SilicoinEventArgs event_args = (SilicoinEventArgs)args;
             TempDialogGameState new_state = new TempDialogGameState(this, "Added " + event_args.Silicoins.ToString() + " silicoins.", 500);
@@ -192,7 +192,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             //_mediator_manager.Notify("haxxit.engine.state.push", this, new ChangeStateEventArgs(new_state));
         }
 
-        private void MapChangedListener(string channel, object sender, EventArgs args)
+        private void MapChangedListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             Haxxit.Maps.MapChangedEventArgs event_args = (Haxxit.Maps.MapChangedEventArgs)args;
             foreach (Haxxit.Maps.Point p in event_args.ChangedNodes)
@@ -206,7 +206,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             }
         }
 
-        private void TurnDoneListener(string channel, object sender, EventArgs args)
+        private void TurnDoneListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
         {
             _mediator_manager.Notify("haxxit.undo_stack.clear", this, new EventArgs());
             TempDialogGameState new_state;
@@ -235,7 +235,7 @@ namespace SmartboyDevelopments.Haxxit.MonoGame.GameStates
             // Mediator.Subscribe("haxxit.xxx.yyy.zzz", NameOfListener);
             //
             // You must also have a function in this class with the following structure:
-            // public void NameOfListener(string channel, object sender, EventArgs args)
+            // public void NameOfListener(SimplePubSub.INotifiable notifiable, string channel, object sender, EventArgs args)
             // With channel being the channel the notification is sent through, sender
             // being the object that sent the notification, and EventArgs being the
             // arguments for the listener. If you need arguments, create a subclass of
